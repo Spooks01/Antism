@@ -8,8 +8,6 @@ public class Button  {
     public Button(Vec2 bL, Vec2 tR){
         coords[0] = bL;
         coords[1] = tR;
-        System.out.println(coords[0].x + " " + coords[0].y);
-        System.out.println(coords[1].x + " " + coords[1].y);
     }
     public boolean buttonUpdate(){
         isClicked = false;
@@ -18,7 +16,6 @@ public class Button  {
 
         if (Input.IsMouseButtonPressed(0) && (mouseY < coords[0].y && mouseX > coords[0].x) && (mouseY > coords[1].y && mouseX < coords[1].x)){
             isClicked = true;
-            System.out.println("clicked");
         }
         return isClicked;
     }

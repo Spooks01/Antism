@@ -22,6 +22,10 @@ public class Text extends Drawable {
         textH = textHeight;
         m_position = pos;
         m_color = c;
+        m_shader = new Shader("res/shaders/texture.vert", "res/shaders/texture.frag");
+        m_shader.Enable();
+        m_shader.SetUniformMat4f("pr_matrix", Mat4.Orthographic(0, Frame.GetWidth(), 0, Frame.GetHeight(), -1.0f, 1.0f));
+        m_shader.Disable();
         textSetup();
     }
     public int[] stringCodes(String S){
@@ -55,10 +59,7 @@ public class Text extends Drawable {
     }
 
     void textSetup(){
-        m_shader = new Shader("res/shaders/texture.vert", "res/shaders/texture.frag");
-        m_shader.Enable();
-        m_shader.SetUniformMat4f("pr_matrix", Mat4.Orthographic(0, Frame.GetWidth(), 0, Frame.GetHeight(), -1.0f, 1.0f));
-        m_shader.Disable();
+
         m_vao = new VertexArray();
         byte[] indices = new byte[999];
 
