@@ -135,7 +135,7 @@ public class Application {
         m_frame.Update();
         m_environment.Update();
         m_overlay.OverlayUpdate();
-        test2.updateText("Number of ants: " + ants.length);
+        test2.updateText("Number of ants: " + rand.nextInt(50));
         for (Ant ant : ants) {
             ant.Update();
         }

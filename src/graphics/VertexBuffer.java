@@ -9,6 +9,8 @@ import static org.lwjgl.opengl.GL30.*;
 
 import math.*;
 
+import java.nio.FloatBuffer;
+
 public class VertexBuffer {
     /** Constructor that takes in an array of vertices, and the size of one vertex */
     public VertexBuffer(float[] vertices, int size) {
@@ -39,6 +41,7 @@ public class VertexBuffer {
 
     /** Deletes the buffer from the GPUs memory */
     void Clear() { glDeleteBuffers(m_id); }
+
 
     // Accessors
     /** Returns the size of one vertex */

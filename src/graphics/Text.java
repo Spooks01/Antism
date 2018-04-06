@@ -27,7 +27,9 @@ public class Text extends Drawable {
         m_shader.SetUniformMat4f("pr_matrix", Mat4.Orthographic(0, Frame.GetWidth(), 0, Frame.GetHeight(), -1.0f, 1.0f));
         m_shader.Disable();
         textSetup();
+        genBuffers();
         genIndexBuffer(toDraw);
+
     }
     public int[] stringCodes(String S){
         char[] strChars = S.toCharArray();
@@ -57,13 +59,20 @@ public class Text extends Drawable {
     public void updateText(String newString){
         if (!this.toDraw.equals(newString)) {
             if (toDraw.length() != newString.length()){
-                System.out.println("new ibo");
+                m_ibo.Unbind();
                 m_ibo.Clear();
+                m_ibo = null;
                 this.genIndexBuffer(newString);
             }
             this.toDraw = newString;
+            m_vao.Unbind();
             m_vao.Clear();
+            m_vao = null;
+            sizes.Clear();
+            colours.Clear();
+            textureData.Clear();
             this.textSetup();
+            this.genBuffers();
         }
     }
 
@@ -80,15 +89,28 @@ public class Text extends Drawable {
             indices[q+5] = (byte)(offset + 0);
 
             offset+=4;
+
         }
         m_ibo = new IndexBuffer(indices);
     }
+    float[] fA, colors, fT;
+    VertexBuffer sizes, colours, textureData;
+    void genBuffers(){
+        sizes = new VertexBuffer(fA, 3);
+        colours = new VertexBuffer(colors, 4);
+        textureData = new VertexBuffer(fT, 2);
+        m_vao.AddBuffer(sizes, 0);
+        m_vao.AddBuffer(colours, 1);
+        m_vao.AddBuffer(textureData, 2);
+    }
+
+
+
 
     void textSetup(){
 
         m_vao = new VertexArray();
-        float[] fA = new float[12 * toDraw.length()];
-        float[] fC = new float[toDraw.length() * 12 * 4];
+        fA = new float[12 * toDraw.length()];
         for (int z = 0; z < (toDraw.length()) * 12; z+=12){
             fA[z] =  m_position.x + (z/12 * textH/2);
             fA[z + 1] = m_position.y;
@@ -105,7 +127,8 @@ public class Text extends Drawable {
 
         }
         int[] strCodes = this.stringCodes(toDraw);
-        float[] fT = new float[toDraw.length() * 2 * 4];
+        fT = new float[toDraw.length() * 2 * 4];
+
         for (int kys = 0; kys < (toDraw.length()) * 2 * 4; kys+=8){
             int currCode = strCodes[kys/8];
             int meme = 0;
@@ -128,7 +151,7 @@ public class Text extends Drawable {
             fT[kys + 5] = (y)/512.f;
         }
 
-        float[] colors = new float[toDraw.length() * 4 * 4];
+        colors = new float[toDraw.length() * 4 * 4];
         for (int fuckoff = 0; fuckoff < toDraw.length() * 4 * 4; fuckoff+=4){
             colors[fuckoff] = m_color.x;
             colors[fuckoff + 1] = m_color.y;
@@ -137,9 +160,7 @@ public class Text extends Drawable {
         }
 
 
-        m_vao.AddBuffer(new VertexBuffer(fA, 3), 0);
-        m_vao.AddBuffer(new VertexBuffer(colors, 4), 1);
-        m_vao.AddBuffer(new VertexBuffer(fT, 2), 2);
+
 
     }
 }
