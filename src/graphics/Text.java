@@ -27,6 +27,7 @@ public class Text extends Drawable {
         m_shader.SetUniformMat4f("pr_matrix", Mat4.Orthographic(0, Frame.GetWidth(), 0, Frame.GetHeight(), -1.0f, 1.0f));
         m_shader.Disable();
         textSetup();
+        genIndexBuffer(toDraw);
     }
     public int[] stringCodes(String S){
         char[] strChars = S.toCharArray();
@@ -54,19 +55,23 @@ public class Text extends Drawable {
     }
 
     public void updateText(String newString){
-        this.toDraw = newString;
-        this.textSetup();
+        if (!this.toDraw.equals(newString)) {
+            if (toDraw.length() != newString.length()){
+                System.out.println("new ibo");
+                m_ibo.Clear();
+                this.genIndexBuffer(newString);
+            }
+            this.toDraw = newString;
+            m_vao.Clear();
+            this.textSetup();
+        }
     }
 
-    void textSetup(){
-
-        m_vao = new VertexArray();
-        byte[] indices = new byte[999];
-
-
+    void genIndexBuffer(String str){
+        byte[] indices = new byte[str.length() * 6];
         int offset = 0;
 
-        for (int q = 0; q < (toDraw.length()) * 6; q+=6) {
+        for (int q = 0; q < (str.length()) * 6; q+=6) {
             indices[ q ] = (byte)(offset + 0);
             indices[q+1] = (byte)(offset + 1);
             indices[q+2] = (byte)(offset + 2);
@@ -76,7 +81,12 @@ public class Text extends Drawable {
 
             offset+=4;
         }
+        m_ibo = new IndexBuffer(indices);
+    }
 
+    void textSetup(){
+
+        m_vao = new VertexArray();
         float[] fA = new float[12 * toDraw.length()];
         float[] fC = new float[toDraw.length() * 12 * 4];
         for (int z = 0; z < (toDraw.length()) * 12; z+=12){
@@ -131,9 +141,5 @@ public class Text extends Drawable {
         m_vao.AddBuffer(new VertexBuffer(colors, 4), 1);
         m_vao.AddBuffer(new VertexBuffer(fT, 2), 2);
 
-
-
-        m_ibo = new IndexBuffer(indices);
-        //m_ibo = new IndexBuffer(indicesBuffer.array());
     }
 }

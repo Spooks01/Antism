@@ -105,7 +105,7 @@ public class Application {
 
        // test = new Text("People should really start contributing to the code", 20, new Vec3(50, 500));
        // test.SetPosition(50, 500);
-        test2 = new Text("big test", 50, new Vec3(700, 600, 1), Colour.magenta);
+        test2 = new Text("Number of ants: " + ants.length, 50, new Vec3(700, 600, 1), Colour.magenta);
       //  test2.SetPosition(50,600);
        // m_renderer.Push(test);
         m_renderer.Push(test2);
