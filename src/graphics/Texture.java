@@ -32,7 +32,9 @@ public class Texture {
     }
 
     public void Bind() { glBindTexture(GL_TEXTURE_2D, m_id); }
-    public void Unbind() { glBindTexture(GL_TEXTURE_2D, 0); }
+    public void Unbind() {  glBindTexture(GL_TEXTURE_2D, 0); }
+    public void Clear(){ glDeleteTextures(m_id); }
+
 
     // Variables
     private int m_width, m_height;

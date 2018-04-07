@@ -1,4 +1,4 @@
-package overlay;
+package graphics;
 
 import graphics.*;
 import input.Input;
@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Overlay extends Drawable {
     public Overlay(int width, int height){
-        this.Enabled = false;
+        this.m_enabled = false;
         m_position = new Vec3(0, 0, 0);
         m_width = width;
         m_height = height;
@@ -42,9 +42,11 @@ public class Overlay extends Drawable {
         };
 
         m_vao = new VertexArray();
-
-        m_vao.AddBuffer(new VertexBuffer(vertices, 3), 0);
-        m_vao.AddBuffer(new VertexBuffer(m_color, 4), 1);
+        m_vertexBuffers = new VertexBuffer[2];
+        m_vertexBuffers[0] = new VertexBuffer(vertices, 3);
+        m_vertexBuffers[1] = new VertexBuffer(m_color, 4);
+        m_vao.AddBuffer(m_vertexBuffers[0], 0);
+        m_vao.AddBuffer(m_vertexBuffers[1], 1);
 
         m_ibo = new IndexBuffer(indices);
 
@@ -64,9 +66,22 @@ public class Overlay extends Drawable {
         glDisable(GL_BLEND);
     }
 
+    @SuppressWarnings("Duplicates")
+    public void Destroy(){
+        m_vao.Clear();
+        m_vao = null;
+        m_ibo.Clear();
+        m_vao = null;
+
+        for (int i = 0; i < m_vertexBuffers.length; i++){
+            m_vertexBuffers[i].Clear();
+        }
+        m_vertexBuffers = null;
+    }
+
     public void OverlayUpdate(){
         if (Input.IsKeyPressed(GLFW_KEY_TAB)) {
-            this.Enabled = !this.Enabled;
+            this.ToggleEnabled();
         }
     }
 

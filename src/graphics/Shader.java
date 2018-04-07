@@ -72,6 +72,7 @@ public class Shader {
     public void Enable() { glUseProgram(m_id); }
     /** Reset the program id inside OpenGL's buffer */
     public void Disable() { glUseProgram(0); }
+    public void Clear(){glDeleteShader(m_id);}
     /** Retrieves the uniform location id based on name
      *  Each unique name is cached into a HashMap, as glGetUniformLocation is extremely expensive */
     private int GetUniformLocation(String name) {

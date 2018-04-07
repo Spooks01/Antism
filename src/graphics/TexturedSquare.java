@@ -39,9 +39,13 @@ public class TexturedSquare extends Drawable {
         };
 
         m_color = new Vec4(1.0f, 1.0f, 1.0f, 1.0f);
-        m_vao.AddBuffer(new VertexBuffer(vertices, 3), 0);
-        m_vao.AddBuffer(new VertexBuffer(m_color, 4), 1);
-        m_vao.AddBuffer(new VertexBuffer(texture, 2), 2);
+        m_vertexBuffers = new VertexBuffer[3];
+        m_vertexBuffers[0] = new VertexBuffer(vertices, 3);
+        m_vertexBuffers[1] = new VertexBuffer(m_color, 4);
+        m_vertexBuffers[2] = new VertexBuffer(texture, 2);
+        m_vao.AddBuffer(m_vertexBuffers[0], 0);
+        m_vao.AddBuffer(m_vertexBuffers[1], 1);
+        m_vao.AddBuffer(m_vertexBuffers[2], 2);
     }
 
     @Override
@@ -60,4 +64,24 @@ public class TexturedSquare extends Drawable {
         m_shader.Disable();
     }
 
+    @SuppressWarnings("Duplicates")
+    public void Destroy(){
+        m_vao.Unbind();
+        m_ibo.Unbind();
+        m_texture.Unbind();
+        m_texture.Clear();
+        m_vao.Clear();
+        m_vao = null;
+        m_ibo.Clear();
+        for (int i = 0; i < m_vertexBuffers.length; i++){
+            m_vertexBuffers[i].Clear();
+        }
+        m_ibo = null;
+        m_vertexBuffers = null;
+        m_shader.Clear();
+        m_shader = null;
+        if (m_button != null){
+            this.DeleteButton();
+        }
+    }
 }

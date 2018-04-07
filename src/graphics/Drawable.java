@@ -6,6 +6,7 @@ import math.*;
 public abstract class Drawable {
     // Constructors
     public Drawable() {
+        m_enabled = true;
         m_position = new Vec3(0, 0, 0);
         m_color = new Vec4(0, 0, 0, 1);
         m_angle = 0.f;
@@ -14,6 +15,8 @@ public abstract class Drawable {
 
     /** Abstract method, must be extended by its children */
     public abstract void Draw();
+
+    public abstract void Destroy();
 
     // Accessors
     public void SetShader(Shader shader) { m_shader = shader; }
@@ -67,17 +70,31 @@ public abstract class Drawable {
     public Button getButton(){
         return m_button;
     }
-
+    public void DeleteButton(){ m_button = null; }
     public float GetAngle() { return m_angle; }
     public float GetSize() { return m_size; }
+
+    public void ToggleEnabled(){
+        m_enabled = !m_enabled;
+    }
+
+    public void SetEnabled(boolean b){
+        m_enabled = b;
+    }
+
+    public boolean GetEnabled(){
+        return m_enabled;
+    }
 
     // Variables
     protected VertexArray m_vao;
     protected IndexBuffer m_ibo;
+    protected VertexBuffer[] m_vertexBuffers;
     protected Vec3 m_position;
     protected Vec4 m_color;
     protected float m_angle, m_size;
     protected Texture m_texture = null;
     protected Shader m_shader = null;
     protected Button m_button;
+    protected boolean m_enabled;
 }

@@ -28,8 +28,12 @@ public class Square extends Drawable {
 
         m_color = new Vec4(1.0f, 0.0f, 0.0f, 0.0f);
 
-        m_vao.AddBuffer(new VertexBuffer(vertices, 3), 0);
-        m_vao.AddBuffer(new VertexBuffer(m_color, 4), 1);
+        m_vertexBuffers = new VertexBuffer[2];
+        m_vertexBuffers[0] = new VertexBuffer(vertices, 3);
+        m_vertexBuffers[1] = new VertexBuffer(m_color, 4);
+
+        m_vao.AddBuffer(m_vertexBuffers[0], 0);
+        m_vao.AddBuffer(m_vertexBuffers[1], 1);
     }
 
     @Override
@@ -45,6 +49,21 @@ public class Square extends Drawable {
         m_vao.Unbind();
 
         m_shader.Disable();
+    }
+
+    public void Destroy(){
+        m_vao.Unbind();
+        m_ibo.Unbind();
+        m_vao.Clear();
+        m_vao = null;
+        m_ibo.Clear();
+        for (int i = 0; i < m_vertexBuffers.length; i++){
+            m_vertexBuffers[i].Clear();
+        }
+        m_ibo = null;
+        m_vertexBuffers = null;
+        m_shader.Clear();
+        m_shader = null;
     }
 
     //Variables

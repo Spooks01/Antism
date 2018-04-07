@@ -6,20 +6,14 @@ import ant.*;
 import environment.*;
 import input.Input;
 import math.*;
-import overlay.Overlay;
+import graphics.Overlay;
 import statemachine.StateMachine;
 import utils.Colour;
 import utils.TextData;
 
-import javax.swing.plaf.nimbus.State;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
-
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_0;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_TAB;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_V;
 
 
 public class Application {
@@ -48,10 +42,6 @@ public class Application {
         if (m_environment == null)
             return false;
 
-        m_overlay = new Overlay(600, Frame.GetHeight());
-        if (m_overlay == null)
-            return false;
-
         m_time = new Time();
         if (m_time == null)
             return false;
@@ -64,16 +54,14 @@ public class Application {
     // Methods
     /** Execution loop that runs as long as the frame is active */
     // DEBUG CODE
-    private final int MAX_ANTS = 50;
-    private Ant[] ants = new Ant[MAX_ANTS];
     private Random rand = new Random();
     TexturedSquare logo;
     private void SetupMenuState(){
-        StateMachine.menuState();
         m_renderer.clear();
+        logo = null;
+        StateMachine.menuState();
         logo = new TexturedSquare(500, "res/images/logo.png");
         logo.SetPosition(WIDTH/2 - 250, HEIGHT/2 - 200);
-        System.out.println((WIDTH/2 - 250) + " " + (HEIGHT/2 - 200));
         logo.AttachButton();
         m_renderer.Push(logo);
         Text titleScreenTest = new Text("Press R/Click the logo to run", 50, new Vec3(300, 100), Colour.orange);
@@ -83,17 +71,15 @@ public class Application {
     private void SetupRunState() {
         StateMachine.runState();
         m_renderer.clear();
-
+        m_overlay = null;
+        m_overlay = new Overlay(600, Frame.GetHeight());
         m_overlay.SetPosition(new Vec3(Frame.GetWidth() - 610, 0));
 
-        for (int i = 0; i < ants.length; i++) {
-            ants[i] = new Ant();
-
-            ants[i].EnableTarget = true;
-            ants[i].SetPosition(rand.nextInt(Frame.GetWidth()) - Ant.size - 1, rand.nextInt(Frame.GetHeight()) - Ant.size - 1);
-            //ants[i].GoTo(rand.nextInt(Frame.GetWidth()) - Ant.size - 1, rand.nextInt(Frame.GetHeight()) - Ant.size - 1);
-
-            m_renderer.Push(ants[i]);
+        AntContainer.GenAnts(100);
+        for (int i = 0; i < AntContainer.antList.size(); i++){
+            AntContainer.antList.get(i).EnableTarget = true;
+            AntContainer.antList.get(i).SetPosition(rand.nextInt(Frame.GetWidth()) - Ant.size - 1, rand.nextInt(Frame.GetHeight()) - Ant.size - 1);
+            m_renderer.Push(AntContainer.antList.get(i));
         }
 
         Food food = new Food();
@@ -105,10 +91,11 @@ public class Application {
 
        // test = new Text("People should really start contributing to the code", 20, new Vec3(50, 500));
        // test.SetPosition(50, 500);
-        test2 = new Text("Number of ants: " + ants.length, 50, new Vec3(700, 600, 1), Colour.magenta);
+        test2 = new Text("Number of ants: " + 50, 50, new Vec3(700, 600, 1), Colour.magenta);
       //  test2.SetPosition(50,600);
        // m_renderer.Push(test);
         m_renderer.Push(test2);
+        m_renderer.Push(m_overlay);
 
     }
 
@@ -135,13 +122,22 @@ public class Application {
         m_frame.Update();
         m_environment.Update();
         m_overlay.OverlayUpdate();
-        test2.updateText("Number of ants: " + rand.nextInt(50));
+        test2.updateText("Number of ants: " + 50);
+        if (!m_overlay.GetEnabled()){
+            test2.SetEnabled(false);
+        }
+        else {
+            test2.SetEnabled(true);
+        }
+        /*
         for (Ant ant : ants) {
             ant.Update();
         }
+        */
         StateMachine.Update();
         if (StateMachine.getCurrState() == 0){
             m_overlay.Enabled = false;
+            AntContainer.ClearAnts();
             SetupMenuState();
         }
 
@@ -155,17 +151,13 @@ public class Application {
             StateMachine.runState();
         }
         if (StateMachine.getCurrState() == 1){
+            m_renderer.clear();
             SetupRunState();
         }
     }
 
     private void render() {
         m_renderer.Render(0);
-        if (m_overlay.Enabled) {
-            m_overlay.Draw();
-            test2.Draw();
-        }
-        //test.Draw();
         m_frame.Display();
     }
 

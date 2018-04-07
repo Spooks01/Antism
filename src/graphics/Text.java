@@ -56,8 +56,25 @@ public class Text extends Drawable {
         glDisable(GL_BLEND);
     }
 
+    @SuppressWarnings("Duplicates")
+    public void Destroy(){
+        m_vao.Unbind();
+        m_ibo.Unbind();
+        m_vao.Clear();
+        m_vao = null;
+        m_ibo.Clear();
+        for (int i = 0; i < m_vertexBuffers.length; i++){
+            m_vertexBuffers[i].Clear();
+        }
+        m_ibo = null;
+        m_vertexBuffers = null;
+        m_shader.Clear();
+        m_shader = null;
+    }
+
+
     public void updateText(String newString){
-        if (!this.toDraw.equals(newString)) {
+        if (!this.toDraw.equals(newString) && this.m_enabled) {
             if (toDraw.length() != newString.length()){
                 m_ibo.Unbind();
                 m_ibo.Clear();
@@ -68,9 +85,10 @@ public class Text extends Drawable {
             m_vao.Unbind();
             m_vao.Clear();
             m_vao = null;
-            sizes.Clear();
-            colours.Clear();
-            textureData.Clear();
+            m_vertexBuffers[0].Clear();
+            m_vertexBuffers[1].Clear();
+            m_vertexBuffers[2].Clear();
+            m_vertexBuffers = null;
             this.textSetup();
             this.genBuffers();
         }
@@ -94,21 +112,20 @@ public class Text extends Drawable {
         m_ibo = new IndexBuffer(indices);
     }
     float[] fA, colors, fT;
-    VertexBuffer sizes, colours, textureData;
     void genBuffers(){
-        sizes = new VertexBuffer(fA, 3);
-        colours = new VertexBuffer(colors, 4);
-        textureData = new VertexBuffer(fT, 2);
-        m_vao.AddBuffer(sizes, 0);
-        m_vao.AddBuffer(colours, 1);
-        m_vao.AddBuffer(textureData, 2);
+        m_vertexBuffers = new VertexBuffer[3];
+        m_vertexBuffers[0] = new VertexBuffer(fA, 3);
+        m_vertexBuffers[1] = new VertexBuffer(colors, 4);
+        m_vertexBuffers[2] = new VertexBuffer(fT, 2);
+        m_vao.AddBuffer(m_vertexBuffers[0], 0);
+        m_vao.AddBuffer(m_vertexBuffers[1], 1);
+        m_vao.AddBuffer(m_vertexBuffers[2], 2);
     }
 
-
-
-
     void textSetup(){
-
+        fA = null;
+        fT = null;
+        colors = null;
         m_vao = new VertexArray();
         fA = new float[12 * toDraw.length()];
         for (int z = 0; z < (toDraw.length()) * 12; z+=12){

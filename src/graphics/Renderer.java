@@ -56,9 +56,17 @@ public class Renderer {
 
     // Methods
     public void Push(Drawable drawable) { m_drawables.add(drawable); }
-    public void Remove(int index) { m_drawables.remove(index); }
-    public void Remove(Drawable drawable){ m_drawables.remove(drawable); }
+    public void Remove(int index) {
+        m_drawables.get(index).Destroy();
+        m_drawables.remove(index);
+    }
+    public void Remove(Drawable drawable){
+        m_drawables.remove(drawable);
+    }
     public void clear(){
+        for (int i = 0; i < m_drawables.size(); i++){
+            m_drawables.get(i).Destroy();
+        }
         m_drawables.clear();
     }
 
@@ -67,10 +75,12 @@ public class Renderer {
             if (type == 0) {
                 m_shader.Enable();
                 for (int i = 0; i < m_drawables.size(); i++) {
-                    m_drawables.get(i).Draw();
+                    if (m_drawables.get(i).GetEnabled()) {
+                        m_drawables.get(i).Draw();
+                    }
                 }
                 m_shader.Disable();
-            } else if (type == 1) {
+            }/* else if (type == 1) {
                 m_shader.Enable();
 
                 {
@@ -109,21 +119,7 @@ public class Renderer {
                         m_buffer.put(tposition.z);
                         m_buffer.put(color);
 
-                        /*m_buffer.put((byte)tposition.x);
-                        m_buffer.put((byte)tposition.y);
-                        m_buffer.put((byte)tposition.z);
 
-                        m_buffer.put((byte)tposition.x);
-                        m_buffer.put((byte)(tposition.y + tsize));
-                        m_buffer.put((byte)tposition.z);
-
-                        m_buffer.put((byte)(tposition.x + tsize));
-                        m_buffer.put((byte)(tposition.y + tsize));
-                        m_buffer.put((byte)tposition.z);
-
-                        m_buffer.put((byte)(tposition.x + tsize));
-                        m_buffer.put((byte)tposition.y);
-                        m_buffer.put((byte)tposition.z);*/
 
                         m_count +=6;
                     }
@@ -142,6 +138,7 @@ public class Renderer {
 
                 m_shader.Disable();
             }
+            */
 
         m_count = 0;
     }
