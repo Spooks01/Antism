@@ -12,7 +12,7 @@
 class Application
 {
 public:
-	Application(int width, int height, std::string title);
+	Application(int width, int height, bool vS, std::string title);
 	~Application();
 
 	void run();
@@ -22,7 +22,7 @@ public:
 private:
 	sf::RenderWindow m_window;
 	Overlay m_overlay;
-	std::vector<Ant> m_ants;
+	std::vector<Ant *> m_ants;
 	sf::Text m_label;
 	Fps fps;
 	sf::View m_view;

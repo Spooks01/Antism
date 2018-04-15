@@ -4,15 +4,15 @@
 
 static bool toggle = false;
 
-Application::Application(int width, int height, std::string title) {
+Application::Application(int width, int height, bool vS, std::string title) {
 	m_window.create(sf::VideoMode(width, height), title);
 
-	m_window.setVerticalSyncEnabled(true);
+	m_window.setVerticalSyncEnabled(vS);
 	m_window.setFramerateLimit(60);
 
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
-	m_view.setSize(1280, 720);
-	m_view.setCenter(640, 360);
+	m_view.setSize(width, height);
+	m_view.setCenter(width/2, height/2);
 }
 
 
@@ -21,11 +21,13 @@ Application::~Application() {
 }
 
 void Application::run() {
-	Ant ant[50];
-	for (int i = 0; i < 50; i++) {
-		ant[i].setPosition(rand() % 1280 + 1, rand() % 720 + 1);
-		m_ants.push_back(ant[i]);
+	for (int i = 0; i < 5000; i++) {
+		m_ants.push_back(new Ant);
+		m_ants[i]->setPosition(rand() % 4000 + 1, rand() % 4000 + 1);
 	}
+	
+	m_overlay.setPosition(1000, 0);
+	m_overlay.setSize(sf::Vector2f(280, 720));
 
 	sf::Font font;
 	font.loadFromFile("arial.ttf");
@@ -57,16 +59,21 @@ void Application::update()
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
 			toggle = !toggle;
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-			m_view.move(0, -100);
+			m_view.move(0, -10);
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
-			m_view.move(0, 100);
+			m_view.move(0, 10);
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-			m_view.move(-100, 0);
+			m_view.move(-10, 0);
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-			m_view.move(100, 0);
+			m_view.move(10, 0);
 		if (event.type == sf::Event::MouseWheelMoved)
 			m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
 	}
+
+	for (int i = 0; i < m_ants.size(); i++) {
+		m_ants[i]->move(rand() % 5 + 1, rand() % 5 + 1);
+	}
+	
 
 	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
 }
@@ -77,12 +84,14 @@ void Application::render()
 	m_window.setView(m_view);
 
 	for (int i = 0; i < m_ants.size(); i++) {
-		m_window.draw(m_ants[i]);
+		m_window.draw(* m_ants[i]);
 	}
 
+	//draw HUD stuff after this
+	m_window.setView(m_window.getDefaultView());
 	if (toggle)
 		m_window.draw(m_overlay);
 	m_window.draw(m_label);
-
+	
 	m_window.display();
 }
