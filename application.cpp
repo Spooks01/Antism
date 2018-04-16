@@ -1,7 +1,8 @@
 #include "application.h"
 
 #include <cstdlib>
-
+#include <thread>
+#include <functional>
 static bool toggle = false;
 
 Application::Application(int width, int height, bool vS, std::string title) {
@@ -21,7 +22,7 @@ Application::~Application() {
 }
 
 void Application::run() {
-	for (int i = 0; i < 5000; i++) {
+	for (int i = 0; i < 1000; i++) {
 		m_ants.push_back(new Ant);
 		m_ants[i]->setPosition(rand() % 4000 + 1, rand() % 4000 + 1);
 	}
@@ -36,13 +37,19 @@ void Application::run() {
 	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
 	m_label.setCharacterSize(18);
 	m_label.setFillColor(sf::Color::White);
-
+	std::thread t1 (std::mem_fn(&Application::renderAnts), this);
+	std::thread t2 (std::mem_fn(&Application::renderHUD), this);
 	while (m_window.isOpen()) {
-		update();
-
-		render();
+		m_window.clear(sf::Color::Black);
+		m_window.setActive(false);
+		update();	
+		renderAnts();
+		renderHUD();
+		m_window.display();
+		m_window.setActive(true);
 	}
 }
+
 
 void Application::update()
 {
@@ -78,20 +85,19 @@ void Application::update()
 	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
 }
 
-void Application::render()
+void Application::renderAnts()
 {
-	m_window.clear(sf::Color::Black);
 	m_window.setView(m_view);
-
 	for (int i = 0; i < m_ants.size(); i++) {
-		m_window.draw(* m_ants[i]);
+		m_window.draw(*m_ants[i]);
 	}
+	
+	
+}
 
-	//draw HUD stuff after this
+void Application::renderHUD() {
 	m_window.setView(m_window.getDefaultView());
 	if (toggle)
 		m_window.draw(m_overlay);
 	m_window.draw(m_label);
-	
-	m_window.display();
 }

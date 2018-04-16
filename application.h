@@ -17,8 +17,8 @@ public:
 
 	void run();
 	void update();
-	void render();
-
+	void renderHUD();
+	void renderAnts();
 private:
 	sf::RenderWindow m_window;
 	Overlay m_overlay;
