@@ -162,6 +162,7 @@
     <ClInclude Include="application.h" />
     <ClInclude Include="colony.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="food.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="overlay.h" />
     <ClInclude Include="queen.h" />
@@ -173,6 +174,7 @@
     <ClCompile Include="application.cpp" />
     <ClCompile Include="colony.cpp" />
     <ClCompile Include="config.cpp" />
+    <ClCompile Include="food.cpp" />
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="overlay.cpp" />
     <ClCompile Include="queen.cpp" />
