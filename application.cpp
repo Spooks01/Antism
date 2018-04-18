@@ -23,62 +23,87 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_view.move(width * 2 - width / 2, height * 2 - height / 2);
 
 	m_grid = new Grid(width * 4, height * 4);
+	m_font.loadFromFile("arial.ttf");
+	m_overlay = new Overlay(&m_font);
+	m_overlay->setPosition(1000, 0);
+	m_overlay->setSize(sf::Vector2f(280, 720));
+	m_overlay->setUpText();
+
+	m_bg.setSize(sf::Vector2f(m_window.getSize().x * 4, m_window.getSize().y * 4));
+	m_bg.setFillColor(sf::Color(110, 50, 110, 50));
+	m_bg.setPosition(sf::Vector2f(0, 0));
+	m_label.setFont(m_font);
+	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
+	m_label.setCharacterSize(18);
+	m_label.setFillColor(sf::Color::White);
+	m_logoTexture.loadFromFile("logoTexture.png");
+	m_logo.setTexture(&m_logoTexture);
+	m_logo.setSize(sf::Vector2f(height/4, height/4));
+	m_logo.setPosition(sf::Vector2f((width / 2) - height/8, height / 8));
 }
 
 Application::~Application() {
 	m_window.close();
 }
 std::vector<Button> buttonList;
+std::vector<sf::Text> buttonLabels;
+
+void Application::setup() {
+	m_colony = new Colony(sf::Vector2f(m_window.getSize().x * 2, m_window.getSize().y * 2.f));
+	m_colony->generate(100);
+
+	//std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2) - 100, windowHeight / 2), sf::Vector2f(200, 50)));
+	buttonLabels.push_back(sf::Text());
+	buttonLabels.at(0).setFont(m_font);
+	buttonLabels.at(0).setString("Start");
+	buttonLabels.at(0).setCharacterSize(18);
+	buttonLabels.at(0).setFillColor(sf::Color::White);
+	buttonLabels.at(0).setPosition(sf::Vector2f(buttonList.at(0).getPosition().x + 80, buttonList.at(0).getPosition().y + 10));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2) - 100, (windowHeight / 2) + 70), sf::Vector2f(200, 50)));
+	buttonLabels.push_back(sf::Text());
+	buttonLabels.at(1).setFont(m_font);
+	buttonLabels.at(1).setString("Reset");
+	buttonLabels.at(1).setCharacterSize(18);
+	buttonLabels.at(1).setFillColor(sf::Color::White);
+	buttonLabels.at(1).setPosition(sf::Vector2f(buttonList.at(1).getPosition().x + 80, buttonList.at(1).getPosition().y + 10));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2) - 100, (windowHeight / 2) + 140), sf::Vector2f(200, 50)));
+	buttonLabels.push_back(sf::Text());
+	buttonLabels.at(2).setFont(m_font);
+	buttonLabels.at(2).setString("Exit");
+	buttonLabels.at(2).setCharacterSize(18);
+	buttonLabels.at(2).setFillColor(sf::Color::White);
+	buttonLabels.at(2).setPosition(sf::Vector2f(buttonList.at(2).getPosition().x + 85, buttonList.at(2).getPosition().y + 10));
+
+}
 void Application::run() {
-	Colony colony(sf::Vector2f(m_window.getSize().x * 2, m_window.getSize().y * 2.f));
-	colony.generate(100);
-
-	std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
-
-	Food food[200];
-	for (int i = 0; i < 200; i++)
-		food[i].move(sf::Vector2f(rand() % m_window.getSize().x * 4 + 1, rand() % m_window.getSize().y * 4 + 1));
-
-	m_overlay.setPosition(1000, 0);
-	m_overlay.setSize(sf::Vector2f(280, 720));
-
-	sf::Font font;
-	font.loadFromFile("arial.ttf");
-	m_label.setFont(font);
-	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
-	m_label.setCharacterSize(18);
-	m_label.setFillColor(sf::Color::White);
-
-	buttonList.push_back(Button(sf::Vector2f(windowWidth / 2, windowHeight / 2), sf::Vector2f(200, 50)));
-
-	m_overlay.setPosition(1000, 0);
-	m_overlay.setSize(sf::Vector2f(280, 720));
-
-	sf::RectangleShape bg;
-	bg.setSize(sf::Vector2f(m_window.getSize().x * 4, m_window.getSize().y * 4));
-	bg.setFillColor(sf::Color(110, 50, 110, 50));
-	bg.setPosition(sf::Vector2f(0, 0));
+	setup();
 
 	while (m_window.isOpen()) {
 		update();
 		m_window.clear(sf::Color::Black);
 		if (state == Run) {
-			colony.update();
+			m_colony->update();
+			m_overlay->update(m_colony->getAntCount());
 			m_window.setView(m_view);
 
-			m_window.draw(bg);
-			for (int i = 0; i < 200; ++i)
-				m_window.draw(food[i]);
-			m_window.draw(colony);
+			m_window.draw(m_bg);
+			m_window.draw(*m_colony);
 
 			m_window.setView(m_window.getDefaultView());
-			if (toggle)
-				m_window.draw(m_overlay);
+			if (toggle) {
+				m_window.draw(*m_overlay);
+				m_window.draw(m_overlay->overlayText1);
+			}
 		}
 		if (state == Menu) {
 			m_window.clear(sf::Color::Black);
+			m_window.draw(m_bg);
+			m_window.draw(m_logo);
+			
 			for (int i = 0; i < buttonList.size(); i++) {
 				m_window.draw(buttonList.at(i));
+				m_window.draw(buttonLabels.at(i));
 			}
 		}
 
@@ -131,6 +156,22 @@ void Application::update() {
 			if (i == 0) {
 				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
 					state = Run;
+					buttonLabels.at(i).setPosition(sf::Vector2f(buttonList.at(i).getPosition().x + 70, buttonList.at(i).getPosition().y + 10));
+					buttonLabels.at(i).setString("Resume");
+				}
+			}
+			if (i == 1) {
+				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
+					buttonList.clear();
+					buttonLabels.clear();
+					m_colony->clean();
+					delete m_colony;
+					setup();
+				}
+			}
+			if (i == 2) {
+				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
+					m_window.close();
 				}
 			}
 		}
