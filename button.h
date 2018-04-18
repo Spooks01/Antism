@@ -14,14 +14,13 @@ public:
 	~Button();
 	bool update(sf::Vector2f mousePos)
 	{
+		clicked = false;
 		if (mousePos.x > getPosition().x && mousePos.x < getPosition().x + getSize().x && mousePos.y > getPosition().y && mousePos.y < getPosition().y + getSize().y) {
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
 				clicked = true;
 			}
-			else {
-				clicked = false;
-			}
 		}
+
 		return clicked;
 	};
 
