@@ -22,14 +22,21 @@ public:
 			m_cells[i]->data = nullptr;
 		}
 	}
+
 	~Grid() {	
 		for (int i = 0; i < m_height; i++)
 			delete[] m_cells[i];
 		delete[] m_cells;
 	}
 
-	void updateCell(int index, Cell data) {
-		m_cells[index] = &data;
+	static Cell** GetGrid() { return m_cells; }
+
+	int getWidth() { return m_width; }
+	int getHeight() { return m_height; }
+	int getSize() { return m_width * m_height; }
+
+	static void UpdateCell(int index, Cell* data) {
+		m_cells[index] = data;
 	}
 
 	sf::Vector2f getCenter() {
@@ -37,6 +44,6 @@ public:
 	}
 
 private:
-	Cell** m_cells;
+	static Cell** m_cells;
 	int m_width, m_height;
 };

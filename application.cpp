@@ -1,11 +1,11 @@
 #include "application.h"
 
 #include <cstdlib>
-
+#include <thread>
+#include <functional>
 static bool toggle = false;
 
-Application::Application(int width, int height, bool vS, std::string title) : 
-	m_colony(sf::Vector2f(width, height)) {
+Application::Application(int width, int height, bool vS, std::string title) {
 	m_window.create(sf::VideoMode(width, height), title);
 
 	m_window.setVerticalSyncEnabled(vS);
@@ -19,16 +19,14 @@ Application::Application(int width, int height, bool vS, std::string title) :
 	m_grid = new Grid(width * 4, height * 4);
 }
 
-
 Application::~Application() {
 	m_window.close();
 }
 
 void Application::run() {
-	for (int i = 0; i < 100; i++) {
-		m_colony.spawnAnt(sf::Vector2f(rand() % 500 + 1, rand() % 500 + 1));
-	}
-	
+	Colony colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
+	colony.generate(100);
+
 	m_overlay.setPosition(1000, 0);
 	m_overlay.setSize(sf::Vector2f(280, 720));
 
@@ -40,17 +38,22 @@ void Application::run() {
 	m_label.setCharacterSize(18);
 	m_label.setFillColor(sf::Color::White);
 
-	while (m_window.isOpen()) {
+	while (m_window.isOpen()) {	
 		update();
 
-		render();
+		m_window.clear(sf::Color::Black);
+
+		renderAnts();
+		m_window.draw(colony);
+		
+		renderHUD();
+
+		m_window.display();
 	}
 }
 
-void Application::update()
-{
+void Application::update() {
 	sf::Event event;
-
 	while (m_window.pollEvent(event)) {
 		if (event.type == sf::Event::Closed)
 			m_window.close();
@@ -73,26 +76,19 @@ void Application::update()
 			m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
 	}
 
-	for (int i = 0; i < m_ants.size(); i++) {
-		//m_ants[i]->move(rand() % 5 + 1, rand() % 5 + 1);
-	}
-	
-
 	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
 }
 
-void Application::render()
+void Application::renderAnts()
 {
-	m_window.clear(sf::Color::Black);
 	m_window.setView(m_view);
 
-	m_window.draw(m_colony);
+	
+}
 
-	//draw HUD stuff after this
+void Application::renderHUD() {
 	m_window.setView(m_window.getDefaultView());
 	if (toggle)
 		m_window.draw(m_overlay);
 	m_window.draw(m_label);
-	
-	m_window.display();
 }

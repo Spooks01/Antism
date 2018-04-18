@@ -3,12 +3,13 @@
 #include <vector>
 #include <unordered_map>
 
-#include "ant.h"
+#include "queen.h"
 
-class Colony : public sf::Drawable, public sf::Transformable
+class Colony : public sf::Drawable
 {
 public:
 	Colony(sf::Vector2f center) {
+		m_center = center;
 	}
 
 	void addAnt(Ant* ant) {
@@ -19,8 +20,17 @@ public:
 		m_ants.erase(index);
 	}
 	
-	void spawnAnt(sf::Vector2f position = sf::Vector2f()) {
+	void spawnAnt(sf::Vector2f position) {
 		m_ants.emplace(index++, new Ant(position));
+	}
+
+	void spawnAnt() {
+		m_ants.emplace(index++, new Ant());
+	}
+
+	void update() {
+		for (int i = 0; i < m_ants.size(); ++i)
+			m_ants.at(i)->update();
 	}
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -29,11 +39,41 @@ public:
 			target.draw(*m_ants.at(i), states);
 	}
 
+	void generate(int size) {
+		clean();
+
+		m_ants.emplace(index++, new Queen(m_center));
+		Grid::GetGrid()[(int)m_center.x][(int)m_center.y] = { 2, nullptr };
+
+		for (int i = 0; i < size; ++i) {
+			int x = rand() % 100 + 1;
+			int y = rand() % 100 + 1;
+
+			int dx = rand() % 2 + 1;
+			int dy = rand() % 2 + 1;
+
+			if (dx == 2)
+				x = -x;
+			if (dy == 2)
+				y = -y;
+
+			sf::Vector2f pos = sf::Vector2f(m_center.x + x, m_center.y + y);
+			Grid::GetGrid()[(int)pos.x][(int)pos.y] = { 1, nullptr };
+
+			m_ants.emplace(index++, new Ant(pos));
+		}
+			
+	}
+
+	void clean() {
+		index = 0;
+		m_ants.clear();
+	}
 
 private:
 	int index = 0;
 	sf::Vector2f m_center;
-	//std::vector<Ant*> m_ants;
+
 	std::unordered_map<int, Ant*> m_ants;
 };
 
