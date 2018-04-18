@@ -22,9 +22,12 @@ public:
 	void update();
 	void renderHUD();
 	void renderAnts();
+	
 private:
-	sf::RenderWindow m_window;
+	enum States { Menu, Run, Pause };
+	States state;
 	Overlay m_overlay;
+	sf::RenderWindow m_window;
 	std::vector<Ant *> m_ants;
 	Grid* m_grid;
 	sf::Text m_label;

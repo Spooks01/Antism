@@ -30,7 +30,6 @@ public:
 				m_cells[j][i].id = -1;
 				m_cells[j][i].data = nullptr;
 			}
-			
 		}
 	}
 
