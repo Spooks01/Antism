@@ -43,7 +43,7 @@ public:
 		clean();
 
 		m_ants.emplace(index++, new Queen(m_center));
-		Grid::GetGrid()[(int)m_center.x][(int)m_center.y] = { 2, nullptr };
+		Grid::GetGrid()[(int)m_center.y][(int)m_center.x] = { 2, nullptr };
 
 		for (int i = 0; i < size; ++i) {
 			int x = rand() % 100 + 1;
@@ -58,7 +58,7 @@ public:
 				y = -y;
 
 			sf::Vector2f pos = sf::Vector2f(m_center.x + x, m_center.y + y);
-			Grid::GetGrid()[(int)pos.x][(int)pos.y] = { 1, nullptr };
+			Grid::GetGrid()[(int)pos.y][(int)pos.x] = { 1, nullptr };
 
 			m_ants.emplace(index++, new Ant(pos));
 		}

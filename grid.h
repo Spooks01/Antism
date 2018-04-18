@@ -9,17 +9,28 @@ class Grid
 {
 public:
 	struct Cell {
+		/*
+		-1 = Empty
+		0  = Food
+		1  = Basic Ant
+		2  = Queen
+		*/
 		int id;
 		void* data;
 	};
 
 public:
-	Grid(int width, int height) : m_width(width), m_height(height) {
+	Grid(int width, int height) {
+		Grid::m_width = width;
+		Grid::m_height = height;
 		m_cells = new Cell*[height];
-		for (int i = 0; i < height; i++) {
-			m_cells[i] = new Cell[width];
-			m_cells[i]->id = -1;
-			m_cells[i]->data = nullptr;
+		for (int j = 0; j < height; j++) {
+			m_cells[j] = new Cell[width];
+			for (int i = 0; i < width; i++) {
+				m_cells[j][i].id = -1;
+				m_cells[j][i].data = nullptr;
+			}
+			
 		}
 	}
 
@@ -31,9 +42,9 @@ public:
 
 	static Cell** GetGrid() { return m_cells; }
 
-	int getWidth() { return m_width; }
-	int getHeight() { return m_height; }
-	int getSize() { return m_width * m_height; }
+	static int getWidth() { return m_width; }
+	static int getHeight() { return m_height; }
+	static int getSize() { return m_width * m_height; }
 
 	static void UpdateCell(int index, Cell* data) {
 		m_cells[index] = data;
@@ -43,7 +54,8 @@ public:
 		return sf::Vector2f(m_width / 2.f, m_height / 2.f);
 	}
 
+
 private:
 	static Cell** m_cells;
-	int m_width, m_height;
+	static int m_width, m_height;
 };

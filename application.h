@@ -10,6 +10,7 @@
 #include "timer.h"
 #include "grid.h"
 #include "colony.h"
+#include "food.h"
 
 class Application
 {
