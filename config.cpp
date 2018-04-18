@@ -1,4 +1,5 @@
 #include "config.h"
+
 int Config::applicationWidth = 0;
 int Config::applicationHeight = 0;
 bool Config::vsync = true;

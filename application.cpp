@@ -4,7 +4,8 @@
 
 static bool toggle = false;
 
-Application::Application(int width, int height, bool vS, std::string title) {
+Application::Application(int width, int height, bool vS, std::string title) : 
+	m_colony(sf::Vector2f(width, height)) {
 	m_window.create(sf::VideoMode(width, height), title);
 
 	m_window.setVerticalSyncEnabled(vS);
@@ -12,7 +13,10 @@ Application::Application(int width, int height, bool vS, std::string title) {
 
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
 	m_view.setSize(width, height);
-	m_view.setCenter(width/2, height/2);
+	m_view.setCenter(width / 2.f, height / 2.f);
+	//m_view.move(width * 2, height * 2);
+
+	m_grid = new Grid(width * 4, height * 4);
 }
 
 
@@ -21,9 +25,8 @@ Application::~Application() {
 }
 
 void Application::run() {
-	for (int i = 0; i < 5000; i++) {
-		m_ants.push_back(new Ant);
-		m_ants[i]->setPosition(rand() % 4000 + 1, rand() % 4000 + 1);
+	for (int i = 0; i < 100; i++) {
+		m_colony.spawnAnt(sf::Vector2f(rand() % 500 + 1, rand() % 500 + 1));
 	}
 	
 	m_overlay.setPosition(1000, 0);
@@ -59,19 +62,19 @@ void Application::update()
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
 			toggle = !toggle;
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-			m_view.move(0, -10);
+			m_view.move(0, -100);
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
-			m_view.move(0, 10);
+			m_view.move(0, 100);
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-			m_view.move(-10, 0);
+			m_view.move(-100, 0);
 		if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-			m_view.move(10, 0);
+			m_view.move(100, 0);
 		if (event.type == sf::Event::MouseWheelMoved)
 			m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
 	}
 
 	for (int i = 0; i < m_ants.size(); i++) {
-		m_ants[i]->move(rand() % 5 + 1, rand() % 5 + 1);
+		//m_ants[i]->move(rand() % 5 + 1, rand() % 5 + 1);
 	}
 	
 
@@ -83,9 +86,7 @@ void Application::render()
 	m_window.clear(sf::Color::Black);
 	m_window.setView(m_view);
 
-	for (int i = 0; i < m_ants.size(); i++) {
-		m_window.draw(* m_ants[i]);
-	}
+	m_window.draw(m_colony);
 
 	//draw HUD stuff after this
 	m_window.setView(m_window.getDefaultView());

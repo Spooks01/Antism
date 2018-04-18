@@ -8,6 +8,8 @@
 #include "ant.h"
 #include "overlay.h"
 #include "timer.h"
+#include "grid.h"
+#include "colony.h"
 
 class Application
 {
@@ -23,6 +25,8 @@ private:
 	sf::RenderWindow m_window;
 	Overlay m_overlay;
 	std::vector<Ant *> m_ants;
+	Grid* m_grid;
+	Colony m_colony;
 	sf::Text m_label;
 	Fps fps;
 	sf::View m_view;
