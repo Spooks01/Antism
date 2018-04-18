@@ -4,6 +4,8 @@
 #include <thread>
 #include <functional>
 #include <vector>
+#include <iostream>
+
 static bool toggle = false;
 int windowWidth, windowHeight;
 Application::Application(int width, int height, bool vS, std::string title) {
@@ -28,6 +30,27 @@ Application::~Application() {
 }
 std::vector<Button> buttonList;
 void Application::run() {
+	Colony colony(sf::Vector2f(m_window.getSize().x * 2, m_window.getSize().y * 2.f));
+	colony.generate(100);
+
+	std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
+
+	int cc = 0;
+
+	for (int i = 0; i < m_grid->getHeight() - 1; i++) {
+		for (int j = 0; j < m_grid->getWidth() - 1; j++)
+			if (m_grid->GetGrid()[i][j].id != -1)
+				cc++;
+	}
+	std::cout << cc << std::endl;
+
+	Food food[200];
+	for (int i = 0; i < 200; i++)
+		food[i].move(sf::Vector2f(rand() % m_window.getSize().x * 4 + 1, rand() % m_window.getSize().y * 4 + 1));
+
+	m_overlay.setPosition(1000, 0);
+	m_overlay.setSize(sf::Vector2f(280, 720));
+
 	sf::Font font;
 	font.loadFromFile("arial.ttf");
 	m_label.setFont(font);
@@ -39,6 +62,21 @@ void Application::run() {
 	colony.generate(100);
 	m_overlay.setPosition(1000, 0);
 	m_overlay.setSize(sf::Vector2f(280, 720));
+
+	sf::RectangleShape bg;
+	bg.setSize(sf::Vector2f(m_window.getSize().x * 4, m_window.getSize().y * 4));
+	bg.setFillColor(sf::Color(110, 50, 110, 50));
+	bg.setPosition(sf::Vector2f(0, 0));
+
+	cc = 0;
+
+	for (int i = 0; i < m_grid->getHeight() - 1; i++) {
+		for (int j = 0; j < m_grid->getWidth() - 1; j++)
+			if (m_grid->GetGrid()[i][j].id != -1)
+				cc++;
+	}
+
+	std::cout << cc << std::endl;
 
 	while (m_window.isOpen()) {
 		update();
@@ -56,13 +94,23 @@ void Application::run() {
 			}
 			m_window.draw(m_label);	
 		}
+		
+		m_window.setView(m_view);
+		
+		m_window.draw(bg);
+		for (int i = 0; i < 200; ++i)
+			m_window.draw(food[i]);
+		m_window.draw(colony);
+		
+		renderHUD();
+
 		m_window.display();
 	}
 }
 
 void Application::update() {
 	sf::Event event;
-	if (state == Run) {	
+	if (state == Run) {
 		while (m_window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
 				m_window.close();
@@ -86,32 +134,61 @@ void Application::update() {
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
 				state = Menu;
 			}
-		}
-	}
-	else if (state == Menu) {
-		while (m_window.pollEvent(event)) {
-			if (event.type == sf::Event::Closed)
-				m_window.close();
-			if (event.type == sf::Event::Resized) {
-				sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-				m_window.setView(sf::View(visibleArea));
+
+			sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f);
+
+			while (m_window.pollEvent(event)) {
+				if (event.type == sf::Event::Closed)
+					m_window.close();
+
+				if (event.type == sf::Event::Resized) {
+					sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+					m_window.setView(sf::View(visibleArea));
+				}
 			}
-			for (int i = 0; i < buttonList.size(); i++) {
-				if (i == 0) {
-					if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
-						state = Run;
+			if (state == Menu) {
+				while (m_window.pollEvent(event)) {
+					if (event.type == sf::Event::Closed)
+						m_window.close();
+					if (event.type == sf::Event::Resized) {
+						sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+						m_window.setView(sf::View(visibleArea));
+					}
+					for (int i = 0; i < buttonList.size(); i++) {
+						if (i == 0) {
+							if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
+								state = Run;
+							}
+						}
 					}
 				}
 			}
+			m_label.setString("FPS " + std::to_string(fps.elapsed()));
+
+
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
+				sf::Vector2i mp = sf::Mouse::getPosition(m_window);
+
+				std::cout << mp.x << " " << mp.y << std::endl;
+
+				if (mp.x < winc.x)
+					m_view.move(-15, 0);
+				else
+					m_view.move(15, 0);
+
+				if (mp.y < winc.y)
+					m_view.move(0, -15);
+				else
+					m_view.move(0, 15);
+			}
+
+			m_label.setString("FPS: " + std::to_string(fps.elapsed()));
+
 		}
 	}
-	m_label.setString("FPS " + std::to_string(fps.elapsed()));
 }
-
 void Application::renderAnts()
 {
-	m_window.setView(m_view);
-
 	
 }
 

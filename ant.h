@@ -12,15 +12,37 @@ public:
 	~Ant();
 
 	void update() {
-		move(sf::Vector2f(1, 1));
+		int x = rand() % 15 + 1;
+		int y = rand() % 15 + 1;
+
+		int dx = rand() % 2 + 1;
+		int dy = rand() % 2 + 1;
+
+		if (dx == 2)
+			x = -x;
+		if (dy == 2)
+			y = -y;
+
+		move(sf::Vector2f(x, y));
 	}
 
 	void move(sf::Vector2f offset) {
 		sf::Vector2f cp = getPosition();
 		sf::Vector2f np = cp + offset;
 
-		Grid::GetGrid()[(int)cp.x][(int)cp.y] = { -1, nullptr };
-		Grid::GetGrid()[(int)np.x][(int)np.y] = { 1,  nullptr };
+		sf::Vector2f limit = sf::Vector2f(Grid::getWidth(), Grid::getHeight());
+		if (np.x < 0)
+			np.x = cp.x + 1;
+		else if (np.x >= limit.x)
+			np.x = cp.x - 1;
+
+		if (np.y < 0)
+			np.y = cp.y + 1;
+		else if (np.y >= limit.y)
+			np.y = cp.y - 1;
+
+		Grid::GetGrid()[(int)cp.y][(int)cp.x] = { -1, nullptr };
+		Grid::GetGrid()[(int)np.y][(int)np.x] = { 1,  nullptr };
 
 		setPosition(np);
 	}
