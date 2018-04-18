@@ -38,7 +38,8 @@ void Application::run() {
 	m_label.setCharacterSize(18);
 	m_label.setFillColor(sf::Color::White);
 
-	while (m_window.isOpen()) {	
+	while (m_window.isOpen()) {
+		colony.update();
 		update();
 
 		m_window.clear(sf::Color::Black);
