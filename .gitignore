@@ -8,3 +8,6 @@ x64/Debug/
 *.obj
 Debug/
 Release/
+Debug/stdafx.obj
+Debug/stdafx.obj
+Debug/stdafx.obj
