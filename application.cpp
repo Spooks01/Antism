@@ -7,7 +7,9 @@
 #include <iostream>
 
 static bool toggle = false;
+std::vector<Button> buttonList;
 int windowWidth, windowHeight;
+
 Application::Application(int width, int height, bool vS, std::string title) {
 	state = Menu;
 	windowWidth = width;
@@ -28,7 +30,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 Application::~Application() {
 	m_window.close();
 }
-std::vector<Button> buttonList;
+
 void Application::run() {
 	Colony colony(sf::Vector2f(m_window.getSize().x * 2, m_window.getSize().y * 2.f));
 	colony.generate(100);
@@ -85,6 +87,27 @@ void Application::run() {
 		m_window.draw(m_label);
 		m_window.display();
 	}
+
+	int nants = 0, nqueens = 0, nfood = 0;
+
+	for (int i = 0; i < m_grid->getHeight(); i++)
+		for (int j = 0; j < m_grid->getWidth(); j++) {
+			switch (m_grid->GetGrid()[i][j].id) {
+			case 0:
+				nfood++;
+				break;
+			case 1:
+				nants++;
+				break;
+			case 2:
+				nqueens++;
+				break;
+			}
+		}
+
+	std::cout << "Food: " << nfood << "; Ants: " << nants << "; Queens: " << nqueens << std::endl;
+
+	system("pause");
 }
 
 void Application::update() {
