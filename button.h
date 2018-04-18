@@ -20,6 +20,7 @@ public:
 				clicked = true;
 			}
 		}
+
 		return clicked;
 	};
 
