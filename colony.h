@@ -67,9 +67,16 @@ public:
 
 	void clean() {
 		index = 0;
+		
+		for (int i = 0; i < m_ants.size(); i++) {
+			delete m_ants[i];
+		}
 		m_ants.clear();
 	}
 
+	int getAntCount() {
+		return m_ants.size();
+	}
 private:
 	int index = 0;
 	sf::Vector2f m_center;

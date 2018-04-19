@@ -8,7 +8,7 @@ public:
 	Button(sf::Vector2f position, sf::Vector2f size) {
 		setPosition(position);
 		setSize(size);
-		setFillColor(sf::Color::Blue);
+		setFillColor(sf::Color(100, 100, 100, 255));
 		clicked = false;
 	};
 	~Button();
