@@ -10,6 +10,8 @@ class Grid
 public:
 	struct Cell {
 		/*
+		-4 = Update Ant
+		-3 = Update Food
 		-2 = Update Attributes
 		-1 = Empty
 		0  = Food
@@ -17,35 +19,48 @@ public:
 		2  = Queen
 		*/
 		int id = -1;
-		void* data = nullptr;
+		void* ant = nullptr;
+		void* food = nullptr;
 
 		// Smell & Pheromone
 		std::pair<float, float> attributes = std::make_pair<float, float>(0, 0);
 
 		void assign(Cell cell) {
-			if (id != -2)
+			if (id != -2) {
 				this->id = cell.id;
-			this->data = cell.data;
-
-			if (cell.attributes.first != 0)
-				this->attributes.first = cell.attributes.first;
-			if (cell.attributes.second != 0)
-				this->attributes.second = cell.attributes.second;
-		}
-
-		void assign(int id) {
-			if (id != -2)
-				this->id = id;
-			this->data = nullptr;
-			this->attributes = std::make_pair<float, float>(0, 0);
-		}
-
-		void assign(int id = -1, void* data = nullptr, std::pair<float, float> attributes = std::make_pair<float, float>(0, 0)) {
-			if (id != -2)
-				this->id = id;
-			this->data = data;
+				this->ant = cell.ant;
+				this->food = cell.food;
+			}
+				
 			this->attributes.first += attributes.first;
 			this->attributes.second += attributes.second;
+		}
+
+		void assign(int id = -1, void* ant = nullptr, void* food = nullptr, std::pair<float, float> attributes = std::make_pair<float, float>(0, 0)) {
+			if (id > -1) {
+				this->id = id;
+				this->ant = ant;
+				this->food = food;
+			}
+			else if (id == -2) {
+				this->attributes.first += attributes.first;
+				this->attributes.second += attributes.second;
+			} else if (id == -3) {
+				if (food == nullptr)
+					this->id = -1;
+				else
+					this->id = 0;
+
+				this->food = food;
+			}
+			else if (id == -4) {
+				if (ant == nullptr)
+					this->id = -1;
+				else
+					this->id = 1;
+
+				this->ant = ant;
+			}
 		}
 	};
 

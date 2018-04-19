@@ -25,44 +25,53 @@ public:
 		else if (np.y >= limit.y)
 			np.y = cp.y;
 
-		Grid::GetGrid()[(int)cp.y][(int)cp.x] = { -1, nullptr };
-		Grid::GetGrid()[(int)np.y][(int)np.x] = { 0,  this };
-
 		setPosition(np);
+
 		spawn();
+
+		Grid::GetGrid()[(int)cp.y][(int)cp.x].assign(-3, nullptr, nullptr);
+		Grid::GetGrid()[(int)np.y][(int)np.x].assign(-3, nullptr, this);
 	}
 
 	void spawn() {
-		for (int i = 1; i <= m_radius; i++) {
+		for (int i = 0; i < m_radius; i++) {
 			sf::Vector2i p = sf::Vector2i(getPosition());
 			sf::Vector2i limit = sf::Vector2i(Grid::getWidth(), Grid::getHeight());
 
+			if (p.x - i <= i)
+				p.x = i;
+			if (p.x  + i >= limit.x)
+				p.x = limit.x - 1 - i;
+			if (p.y - i <= i)
+				p.y = i;
+			if (p.y + i >= limit.y)
+				p.y = limit.y - 1 - i;
+
 			float smell = m_smell_strength * m_decay / i;
 
-			if (p.x >= i)
-				Grid::GetGrid()[p.y][p.x - i].assign({ -2,  nullptr, {smell, 0} });
-			if (p.x < limit.x - i)
-				Grid::GetGrid()[p.y][p.x + i].assign({ -2,  nullptr, {smell, 0} });
-			if (p.y >= i)
-				Grid::GetGrid()[p.y - i][p.x].assign({ -2,  nullptr,{ smell, 0 } });
-			if (p.y < limit.y - i)
-				Grid::GetGrid()[p.y + i][p.x].assign({ -2,  nullptr,{ smell, 0 } });
+			for (int j = p.x - i; j <= p.x + i; j++) {
+				for (int k = p.y - i; k <= p.y + i; k++) {
+					Grid::GetGrid()[k][j].assign(-2,  nullptr, nullptr, { smell, 0 });
+				}
 
-			if (p.x >= i && p.y >= i)
-				Grid::GetGrid()[p.y - i][p.x - i].assign({ -2,  nullptr,{ smell, 0 } });
-			if (p.x >= i && p.y < limit.y - i)
-				Grid::GetGrid()[p.y + i][p.x - i].assign({ -2,  nullptr,{ smell, 0 } });
-			if (p.x < limit.x - i && p.y < limit.y - i)
-				Grid::GetGrid()[p.y + i][p.x + i].assign({ -2,  nullptr,{ smell, 0 } });
-			if (p.x < limit.x - i && p.y >= i )
-				Grid::GetGrid()[p.y - i][p.x + i].assign({ -2,  nullptr,{ smell, 0 } });
+				Grid::GetGrid()[p.y][j].assign(-2,  nullptr, nullptr, { smell, 0 });
+			}
+
+			for (int k = p.y - i; k <= p.y + i; k++) {
+				for (int j = p.x - i; j <= p.x + i; j++) {
+					Grid::GetGrid()[k][j].assign(-2,  nullptr, nullptr, { smell, 0 });
+				} 
+				Grid::GetGrid()[k][p.x].assign(-2,  nullptr, nullptr, { smell, 0 });
+			}
 		}
 
 	}
 
+	int getRadius() { return m_radius; }
+
 private:
 	float m_smell_strength = 100;
 	float m_decay = 0.33;
-	int m_radius = 4;
+	int m_radius = 20;
 };
 

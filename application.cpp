@@ -7,6 +7,8 @@
 #include <iostream>
 
 static bool toggle = false;
+static bool smell_toggle = false;
+static bool pheromone_toggle = false;
 int windowWidth, windowHeight;
 
 std::vector<Button> buttonList;
@@ -28,10 +30,10 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
 	m_view.setSize(width, height);
 	m_view.setCenter(width / 2.f, height / 2.f);
-	//m_view.move(width * 2 - width / 2, height * 2 - height / 2);
+	m_view.move(width * 2 - width / 2, height * 2 - height / 2);
 
-	//m_grid = new Grid(width * 4, height * 4);
-	m_grid = new Grid(width, height);
+	m_grid = new Grid(width * 4, height * 4);
+	//m_grid = new Grid(width, height);
 
 	m_font.loadFromFile("arial.ttf");
 
@@ -40,8 +42,8 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_overlay->setSize(sf::Vector2f(280, 720));
 	m_overlay->setUpText();
 
-	//m_bg.setSize(sf::Vector2f(m_window.getSize().x * 4, m_window.getSize().y * 4));
-	m_bg.setSize(sf::Vector2f(m_window.getSize().x, m_window.getSize().y));
+	m_bg.setSize(sf::Vector2f(m_window.getSize().x * 4, m_window.getSize().y * 4));
+	//m_bg.setSize(sf::Vector2f(m_window.getSize().x, m_window.getSize().y));
 	m_bg.setFillColor(sf::Color(110, 50, 110, 50));
 	m_bg.setPosition(sf::Vector2f(0, 0));
 
@@ -62,22 +64,23 @@ Application::~Application() {
 }
 
 void Application::setup() {
-	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
+	m_colony = new Colony(sf::Vector2f(m_window.getSize().x * 2.f, m_window.getSize().y * 2.f));
 	m_colony->generate(100);
 
 	std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
 	
-	for (int i = 0; i < 200; i++) {
-		food.push_back(new Food(sf::Vector2f(rand() % m_window.getSize().x + 1, rand() % m_window.getSize().y + 1)));
+	for (int i = 0; i < 500; i++) {
+		food.push_back(new Food(sf::Vector2f(rand() % m_window.getSize().x * 4 + 1, rand() % m_window.getSize().y * 4 + 1)));
 	}
 
 	for (int i = 0; i < m_grid->getHeight(); i++) {
 		for (int j = 0; j < m_grid->getWidth(); j++) {
-			if (m_grid->GetGrid()[i][j].attributes.first > 0) {
+			if (m_grid->GetGrid()[i][j].id == 0) {
+				int r = ((Food*)m_grid->GetGrid()[i][j].food)->getRadius();
 				sf::RectangleShape s;
-				s.setFillColor(sf::Color(255, 255, 0, 100 + m_grid->GetGrid()[i][j].attributes.first));
-				s.setSize(sf::Vector2f(4.f, 4.f));
-				s.setPosition(j, i);
+				s.setFillColor(sf::Color(255, 255, 0, 100));
+				s.setSize(sf::Vector2f(r * 2, r * 2));
+				s.setPosition(j - r + 1, i - r + 1);
 				m_smells.push_back(s);
 			}
 			if (m_grid->GetGrid()[i][j].attributes.second > 0) {
@@ -131,16 +134,20 @@ void Application::run() {
 
 			m_window.draw(m_bg);
 
-			for (int i = 0; i < m_smells.size(); ++i)
-				m_window.draw(m_smells.at(i));
-
-			//for (int i = 0; i < m_pheromones.size(); ++i)
-			//m_window.draw(m_pheromones.at(i));
-
-			for (int i = 0; i < 200; ++i)
+			if (smell_toggle) {
+				for (int i = 0; i < m_smells.size(); ++i)
+					m_window.draw(m_smells.at(i));
+			}
+			
+			for (int i = 0; i < food.size(); ++i)
 				m_window.draw(*food[i]);
 
 			m_window.draw(*m_colony);
+
+			if (pheromone_toggle) {
+				//for (int i = 0; i < m_pheromones.size(); ++i)
+				//m_window.draw(m_pheromones.at(i));
+			}
 
 			m_window.setView(m_window.getDefaultView());
 			if (toggle) {
@@ -200,6 +207,10 @@ void Application::update() {
 			}
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
 				toggle = !toggle;
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1)
+				smell_toggle = !smell_toggle;
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num2)
+				pheromone_toggle = !pheromone_toggle;
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
 				m_view.move(0, -100);
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
@@ -216,8 +227,7 @@ void Application::update() {
 
 			
 		}
-	}
-	if (state == Menu) {
+	} else if (state == Menu) {
 		while (m_window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
 				m_window.close();

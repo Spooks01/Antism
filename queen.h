@@ -31,8 +31,8 @@ public:
 		else if (np.y >= limit.y)
 			np.y = cp.y - 1;
 
-		Grid::GetGrid()[(int)cp.y][(int)cp.x] = { -1, nullptr };
-		Grid::GetGrid()[(int)np.y][(int)np.x] = { 2,  this };
+		Grid::GetGrid()[(int)cp.y][(int)cp.x].assign(-4, nullptr, nullptr);
+		Grid::GetGrid()[(int)np.y][(int)np.x].assign(-4, this, nullptr);
 
 		setPosition(np);
 	}
