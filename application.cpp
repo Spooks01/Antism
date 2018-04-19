@@ -116,27 +116,26 @@ void Application::setup() {
 
 void Application::run() {
 	setup();
-
+	
 	sf::Clock clock;
 	sf::Time frame = sf::milliseconds(60.f);
 	sf::Time elapsed = frame;
 	int num_frames = 0;
-
 	//phero.detach();
 
 	while (m_window.isOpen()) {
 		
 		std::cout << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() <<"\n";
 		
-		do {
-			elapsed = clock.getElapsedTime();
+		//do {
+			//elapsed = clock.getElapsedTime();
 
 			//std::cout << "->" << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() << "\n";
 
 			update();
-		} while ((elapsed - frame).asMilliseconds() < num_frames * frame.asMilliseconds());
+		//} while ((elapsed - frame).asMilliseconds() < num_frames * frame.asMilliseconds());
 
-		elapsed = clock.restart();
+		//elapsed = clock.restart();
 		
 		m_window.clear(sf::Color::Black);
 		if (state == Run) {
