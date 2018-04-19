@@ -30,7 +30,7 @@ public:
 		spawn();
 
 		Grid::GetGrid()[(int)cp.y][(int)cp.x].assign(-3, nullptr, nullptr);
-		Grid::GetGrid()[(int)np.y][(int)np.x].assign(-3, nullptr, this);
+		Grid::GetGrid()[(int)np.y][(int)np.x].assign(-3, nullptr, this, {m_smell_strength, 0 });
 	}
 
 	void spawn() {
@@ -72,6 +72,6 @@ public:
 private:
 	float m_smell_strength = 100;
 	float m_decay = 0.33;
-	int m_radius = 20;
+	int m_radius = 3;
 };
 

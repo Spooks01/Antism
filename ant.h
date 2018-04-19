@@ -12,8 +12,8 @@ public:
 	~Ant();
 
 	void update() {
-		int x = rand() % 2 + 1;
-		int y = rand() % 2 + 1;
+		int x = rand() % 1 + 1;
+		int y = rand() % 1 + 1;
 
 		int dx = rand() % 2 + 1;
 		int dy = rand() % 2 + 1;
@@ -49,6 +49,6 @@ public:
 	}
 
 private:
-	float m_pheromone = 100.f;
+	float m_pheromone = 10000.f;
 };
 

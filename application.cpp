@@ -15,8 +15,7 @@ std::vector<Button> buttonList;
 std::vector<sf::Text> buttonLabels;
 
 std::vector<Food*> food;
-std::vector<sf::RectangleShape> m_smells;
-std::vector<sf::RectangleShape> m_pheromones;
+std::vector<sf::VertexArray> m_smells;
 
 Application::Application(int width, int height, bool vS, std::string title) {
 	state = Menu;
@@ -25,7 +24,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_window.create(sf::VideoMode(width, height), title);
 
 	//m_window.setVerticalSyncEnabled(vS);
-	m_window.setFramerateLimit(60);
+	//m_window.setFramerateLimit(60);
 
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
 	m_view.setSize(width, height);
@@ -42,7 +41,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_overlay->setSize(sf::Vector2f(280, 720));
 	m_overlay->setUpText();
 
-	m_bg.setSize(sf::Vector2f(m_window.getSize().x * 4, m_window.getSize().y * 4));
+	m_bg.setSize(sf::Vector2f(m_window.getSize().x, m_window.getSize().y));
 	//m_bg.setSize(sf::Vector2f(m_window.getSize().x, m_window.getSize().y));
 	m_bg.setFillColor(sf::Color(110, 50, 110, 50));
 	m_bg.setPosition(sf::Vector2f(0, 0));
@@ -65,23 +64,27 @@ Application::~Application() {
 
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
-	m_colony->generate(20);
+	m_colony->generate(100);
 
 	//std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
 	
-	for (int i = 0; i < 500; i++) {
+	for (int i = 0; i < 1000; i++) {
 		food.push_back(new Food(sf::Vector2f(rand() % m_window.getSize().x + 1, rand() % m_window.getSize().y + 1)));
 	}
 
 	for (int i = 0; i < m_grid->getHeight(); i++) {
 		for (int j = 0; j < m_grid->getWidth(); j++) {
-			if (m_grid->GetGrid()[i][j].id == 0) {
-				int r = ((Food*)m_grid->GetGrid()[i][j].food)->getRadius();
-				sf::RectangleShape s;
-				s.setFillColor(sf::Color(255, 255, 0, 100));
-				s.setSize(sf::Vector2f(r * 2, r * 2));
-				s.setPosition(j - r + 1, i - r + 1);
-				m_smells.push_back(s);
+			auto v = m_grid->GetGrid()[i][j];
+			if (v.id == 0) {
+				int r = ((Food*)v.food)->getRadius();
+				sf::VertexArray va(sf::Quads);
+
+				va.append({ sf::Vector2f(j - r + 1, i - r + 1), sf::Color(255, 255, 0, 100) });
+				va.append({ sf::Vector2f(j + r, i - r + 1), sf::Color(255, 255, 0, 100) });
+				va.append({ sf::Vector2f(j + r, i + r), sf::Color(255, 255, 0, 100) });
+				va.append({ sf::Vector2f(j - r + 1, i + r), sf::Color(255, 255, 0, 100) });
+				
+				m_smells.push_back(va);
 			}
 		}
 	}
@@ -202,27 +205,6 @@ void Application::run() {
 		m_window.draw(m_label);
 		m_window.display();
 	}
-
-	int nants = 0, nqueens = 0, nfood = 0;
-
-	for (int i = 0; i < m_grid->getHeight(); i++)
-		for (int j = 0; j < m_grid->getWidth(); j++) {
-			switch (m_grid->GetGrid()[i][j].id) {
-			case 0:
-				nfood++;
-				break;
-			case 1:
-				nants++;
-				break;
-			case 2:
-				nqueens++;
-				break;
-			}
-		}
-
-	std::cout << "Food: " << nfood << "; Ants: " << nants << "; Queens: " << nqueens << std::endl;
-
-	system("pause");
 }
 
 void Application::update() {
@@ -230,17 +212,6 @@ void Application::update() {
 	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f);
 
 	if (state == Run) {
-		if (pheromone_toggle) {
-			//for (int i = 0; i < m_grid->getPheromones().size(); ++i) {
-			//	sf::Vector2i pos = m_grid->getPheromones()[i].second;
-			//	sf::RectangleShape s;
-			//	s.setFillColor(sf::Color::Cyan);
-			//	s.setSize(sf::Vector2f(1.f, 1.f));
-			//	s.setPosition(pos.x, pos.y);
-			//	m_pheromones.push_back(s);
-			//}
-		}
-
 		while (m_window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
 				m_window.close();
@@ -291,15 +262,19 @@ void Application::update() {
 				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
 					buttonList.clear();
 					buttonLabels.clear();
+
 					m_colony->clean();
 					delete m_colony;
+					
 					m_grid->clearGrid();
 					food.clear();
+					
 					smell_toggle = false;
 					pheromone_toggle = false;
 					toggle = false;
+					
 					m_smells.clear();
-					m_pheromones.clear();
+					
 					setup();
 				}
 			}
@@ -313,8 +288,6 @@ void Application::update() {
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
 		sf::Vector2i mp = sf::Mouse::getPosition(m_window);
-
-		std::cout << mp.x << " " << mp.y << std::endl;
 
 		if (mp.x < winc.x)
 			m_view.move(-15, 0);
