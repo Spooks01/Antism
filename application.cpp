@@ -16,7 +16,7 @@ std::vector<sf::Text> buttonLabels;
 
 std::vector<Food*> food;
 std::vector<sf::RectangleShape> m_smells;
-std::vector<sf::Vertex> m_pheromones;
+std::vector<sf::RectangleShape> m_pheromones;
 
 Application::Application(int width, int height, bool vS, std::string title) {
 	state = Menu;
@@ -120,8 +120,7 @@ void Application::run() {
 	sf::Clock clock;
 	sf::Time frame = sf::milliseconds(60.f);
 	sf::Time elapsed = frame;
-	int num_frames = 0
-		;
+	int num_frames = 0;
 
 	//phero.detach();
 
@@ -170,11 +169,13 @@ void Application::run() {
 			m_window.draw(*m_colony);
 
 			if (pheromone_toggle) {	
-				//for (int i = 0; i < m_pheromones.size(); ++i)
-				m_window.draw(&m_pheromones[0], m_pheromones.size(), sf::Points);
+				for (int i = 0; i < m_pheromones.size(); ++i)
+				m_window.draw(m_pheromones.at(i));
 				m_pheromones.clear();
 			}
 			
+			
+
 			m_window.setView(m_window.getDefaultView());
 			if (toggle) {
 				m_window.draw(*m_overlay);
@@ -229,10 +230,11 @@ void Application::update() {
 	if (state == Run) {
 		if (pheromone_toggle) {
 			for (int i = 0; i < m_grid->getPheromones().size(); ++i) {
-				sf::Vector2f pos = (sf::Vector2f)m_grid->getPheromones()[i].second;
-				sf::Vertex s;
-				s.color = sf::Color::Cyan;
-				s.position = pos;
+				sf::Vector2i pos = m_grid->getPheromones()[i].second;
+				sf::RectangleShape s;
+				s.setFillColor(sf::Color::Cyan);
+				s.setSize(sf::Vector2f(1.f, 1.f));
+				s.setPosition(pos.x, pos.y);
 				m_pheromones.push_back(s);
 			}
 		}
