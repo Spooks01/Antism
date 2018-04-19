@@ -12,8 +12,8 @@ public:
 	~Ant();
 
 	void update() {
-		int x = rand() % 15 + 1;
-		int y = rand() % 15 + 1;
+		int x = rand() % 2 + 1;
+		int y = rand() % 2 + 1;
 
 		int dx = rand() % 2 + 1;
 		int dy = rand() % 2 + 1;
@@ -41,13 +41,14 @@ public:
 		else if (np.y >= limit.y)
 			np.y = cp.y - 1;
 
+		setPosition(np);
+
+		Grid::GetGrid()[(int)cp.y][(int)cp.x].assign(-2, nullptr, nullptr, {0, m_pheromone }, sf::Vector2i(cp.x, cp.y) );
 		Grid::GetGrid()[(int)cp.y][(int)cp.x].assign(-4, nullptr, nullptr);
 		Grid::GetGrid()[(int)np.y][(int)np.x].assign(-4, this, nullptr);
-
-		setPosition(np);
 	}
 
 private:
-	
+	float m_pheromone = 5.f;
 };
 

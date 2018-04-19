@@ -24,16 +24,16 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	windowHeight = height;
 	m_window.create(sf::VideoMode(width, height), title);
 
-	m_window.setVerticalSyncEnabled(vS);
-	m_window.setFramerateLimit(60);
+	//m_window.setVerticalSyncEnabled(vS);
+	//m_window.setFramerateLimit(60);
 
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
 	m_view.setSize(width, height);
 	m_view.setCenter(width / 2.f, height / 2.f);
-	m_view.move(width * 2 - width / 2, height * 2 - height / 2);
+	//m_view.move(width * 2 - width / 2, height * 2 - height / 2);
 
-	m_grid = new Grid(width * 4, height * 4);
-	//m_grid = new Grid(width, height);
+	//m_grid = new Grid(width * 4, height * 4);
+	m_grid = new Grid(width, height);
 
 	m_font.loadFromFile("arial.ttf");
 
@@ -64,13 +64,13 @@ Application::~Application() {
 }
 
 void Application::setup() {
-	m_colony = new Colony(sf::Vector2f(m_window.getSize().x * 2.f, m_window.getSize().y * 2.f));
-	m_colony->generate(100);
+	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
+	m_colony->generate(20);
 
 	std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
 	
 	for (int i = 0; i < 500; i++) {
-		food.push_back(new Food(sf::Vector2f(rand() % m_window.getSize().x * 4 + 1, rand() % m_window.getSize().y * 4 + 1)));
+		food.push_back(new Food(sf::Vector2f(rand() % m_window.getSize().x + 1, rand() % m_window.getSize().y + 1)));
 	}
 
 	for (int i = 0; i < m_grid->getHeight(); i++) {
@@ -82,13 +82,6 @@ void Application::setup() {
 				s.setSize(sf::Vector2f(r * 2, r * 2));
 				s.setPosition(j - r + 1, i - r + 1);
 				m_smells.push_back(s);
-			}
-			if (m_grid->GetGrid()[i][j].attributes.second > 0) {
-				sf::RectangleShape s;
-				s.setFillColor(sf::Color::Cyan);
-				s.setSize(sf::Vector2f(4.f, 4.f));
-				s.setPosition(i, j);
-				m_pheromones.push_back(s);
 			}
 		}
 	}
@@ -124,13 +117,43 @@ void Application::setup() {
 void Application::run() {
 	setup();
 
+	sf::Clock clock;
+	sf::Time frame = sf::milliseconds(60.f);
+	sf::Time elapsed = frame;
+	int num_frames = 0;
+
+	//phero.detach();
+
 	while (m_window.isOpen()) {
-		update();
+		
+		std::cout << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() <<"\n";
+		
+		do {
+			elapsed = clock.getElapsedTime();
+
+			//std::cout << "->" << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() << "\n";
+
+			update();
+		} while ((elapsed - frame).asMilliseconds() < num_frames * frame.asMilliseconds());
+
+		elapsed = clock.restart();
+		
 		m_window.clear(sf::Color::Black);
 		if (state == Run) {
 			m_colony->update();
+			
+			std::thread phero(&Grid::update);
+
 			m_overlay->update(m_colony->getAntCount());
 			m_window.setView(m_view);
+
+			//elapsed = clock.restart();
+			//std::cout << frame.asSeconds() << " " << elapsed.asSeconds() << " " << (frame - elapsed).asSeconds() << "\n";
+			//if (elapsed > frame) {
+			//	phero.join();
+
+			//	continue;
+			//}
 
 			m_window.draw(m_bg);
 
@@ -144,16 +167,21 @@ void Application::run() {
 
 			m_window.draw(*m_colony);
 
-			if (pheromone_toggle) {
-				//for (int i = 0; i < m_pheromones.size(); ++i)
-				//m_window.draw(m_pheromones.at(i));
+			if (pheromone_toggle) {	
+				for (int i = 0; i < m_pheromones.size(); ++i)
+				m_window.draw(m_pheromones.at(i));
+				m_pheromones.clear();
 			}
+			
+			
 
 			m_window.setView(m_window.getDefaultView());
 			if (toggle) {
 				m_window.draw(*m_overlay);
 				m_window.draw(m_overlay->overlayText1);
 			}
+
+			phero.join();
 		}
 		if (state == Menu) {
 			m_window.clear(sf::Color::Black);
@@ -197,6 +225,17 @@ void Application::update() {
 	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f);
 
 	if (state == Run) {
+		if (pheromone_toggle) {
+			for (int i = 0; i < m_grid->getPheromones().size(); ++i) {
+				sf::Vector2i pos = m_grid->getPheromones()[i].second;
+				sf::RectangleShape s;
+				s.setFillColor(sf::Color::Cyan);
+				s.setSize(sf::Vector2f(1.f, 1.f));
+				s.setPosition(pos.x, pos.y);
+				m_pheromones.push_back(s);
+			}
+		}
+
 		while (m_window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
 				m_window.close();
@@ -224,8 +263,6 @@ void Application::update() {
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
 				state = Menu;
 			}	
-
-			
 		}
 	} else if (state == Menu) {
 		while (m_window.pollEvent(event)) {

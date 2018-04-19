@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <array>
+#include <iostream>
 
 #include <SFML/System.hpp>
 
@@ -36,7 +37,7 @@ public:
 			this->attributes.second += attributes.second;
 		}
 
-		void assign(int id = -1, void* ant = nullptr, void* food = nullptr, std::pair<float, float> attributes = std::make_pair<float, float>(0, 0)) {
+		void assign(int id = -1, void* ant = nullptr, void* food = nullptr, std::pair<float, float> attributes = std::make_pair<float, float>(0, 0), sf::Vector2i position = sf::Vector2i()) {
 			if (id > -1) {
 				this->id = id;
 				this->ant = ant;
@@ -44,7 +45,12 @@ public:
 			}
 			else if (id == -2) {
 				this->attributes.first += attributes.first;
-				this->attributes.second += attributes.second;
+				if (attributes.second > 0) {
+					Grid::m_pheromones.push_back({ this, position});
+
+					this->attributes.second += attributes.second;
+				}
+					
 			} else if (id == -3) {
 				if (food == nullptr)
 					this->id = -1;
@@ -84,23 +90,31 @@ public:
 	}
 
 	static Cell** GetGrid() { return m_cells; }
+	static std::vector<std::pair<Cell*, sf::Vector2i>> getPheromones() {
+		return m_pheromones;
+	}
 
 	static int getWidth() { return m_width; }
 	static int getHeight() { return m_height; }
 	static int getSize() { return m_width * m_height; }
 
-	static void UpdateCell(int index, Cell* data) {
-		m_cells[index] = data;
-
-
+	static void update() {
+		for (int i = 0; i < m_pheromones.size(); i++) {
+			if (m_pheromones.at(i).first->attributes.second >= 2.5f)
+				m_pheromones.at(i).first->attributes.second -= 2.5f;
+			else {
+				m_pheromones.erase(m_pheromones.begin() + i, m_pheromones.begin() + i + 1);
+			}
+				
+		}
 	}
 
 	sf::Vector2f getCenter() {
 		return sf::Vector2f(m_width / 2.f, m_height / 2.f);
 	}
 
-
 private:
 	static Cell** m_cells;
+	static std::vector<std::pair<Cell*, sf::Vector2i>> m_pheromones;
 	static int m_width, m_height;
 };

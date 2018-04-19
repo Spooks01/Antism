@@ -9,7 +9,7 @@ class Food : public sf::RectangleShape
 public:
 	Food(sf::Vector2f position) {
 		setFillColor(sf::Color::Magenta);
-		setSize(sf::Vector2f(4, 4));
+		setSize(sf::Vector2f(1, 1));
 
 		sf::Vector2f cp = getPosition();
 		sf::Vector2f np = position;
