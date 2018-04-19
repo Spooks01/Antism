@@ -1,2 +1,23 @@
-﻿  grid.cpp
-  antism.vcxproj -> C:\Users\Chris\source\repos\antism\Debug\antism.exe
+﻿  application.cpp
+z:\repo\antism\ant.h(26): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\ant.h(33): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\queen.h(23): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\colony.h(32): warning C4018: '<': signed/unsigned mismatch
+z:\repo\antism\colony.h(38): warning C4018: '<': signed/unsigned mismatch
+z:\repo\antism\colony.h(71): warning C4018: '<': signed/unsigned mismatch
+z:\repo\antism\food.h(26): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(22): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(24): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(33): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(42): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(43): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(53): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(57): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(64): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(71): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(105): warning C4018: '<': signed/unsigned mismatch
+z:\repo\antism\application.cpp(139): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\repo\antism\application.cpp(147): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(172): warning C4244: 'argument': conversion from 'unsigned int' to 'float', possible loss of data
+z:\repo\antism\application.cpp(177): warning C4018: '<': signed/unsigned mismatch
+  antism.vcxproj -> Z:\Repo\Antism\Debug\antism.exe

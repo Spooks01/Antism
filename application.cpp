@@ -7,7 +7,6 @@
 #include <iostream>
 
 static bool toggle = false;
-std::vector<Button> buttonList;
 int windowWidth, windowHeight;
 
 Application::Application(int width, int height, bool vS, std::string title) {
@@ -78,26 +77,6 @@ void Application::setup() {
 	buttonLabels.at(2).setPosition(sf::Vector2f(buttonList.at(2).getPosition().x + 85, buttonList.at(2).getPosition().y + 10));
 }
 
-void Application::run() {
-	Colony colony(sf::Vector2f(m_window.getSize().x * 2, m_window.getSize().y * 2.f));
-	colony.generate(100);
-
-	std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
-
-	Food food[200];
-	for (int i = 0; i < 200; i++)
-		food[i].move(sf::Vector2f(rand() % m_window.getSize().x * 4 + 1, rand() % m_window.getSize().y * 4 + 1));
-
-	m_overlay.setPosition(1000, 0);
-	m_overlay.setSize(sf::Vector2f(280, 720));
-
-	sf::Font font;
-	font.loadFromFile("arial.ttf");
-	m_label.setFont(font);
-	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
-	m_label.setCharacterSize(18);
-	m_label.setFillColor(sf::Color::White);
-}
 void Application::run() {
 	setup();
 
