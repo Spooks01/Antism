@@ -166,6 +166,7 @@
     <ClInclude Include="food.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="overlay.h" />
+    <ClInclude Include="pheromone.h" />
     <ClInclude Include="queen.h" />
     <ClInclude Include="timer.h" />
   </ItemGroup>
@@ -179,6 +180,7 @@
     <ClCompile Include="food.cpp" />
     <ClCompile Include="grid.cpp" />
     <ClCompile Include="overlay.cpp" />
+    <ClCompile Include="pheromone.cpp" />
     <ClCompile Include="queen.cpp" />
     <ClCompile Include="timer.cpp" />
   </ItemGroup>

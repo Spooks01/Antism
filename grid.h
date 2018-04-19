@@ -10,13 +10,43 @@ class Grid
 public:
 	struct Cell {
 		/*
+		-2 = Update Attributes
 		-1 = Empty
 		0  = Food
 		1  = Basic Ant
 		2  = Queen
 		*/
-		int id;
-		void* data;
+		int id = -1;
+		void* data = nullptr;
+
+		// Smell & Pheromone
+		std::pair<float, float> attributes = std::make_pair<float, float>(0, 0);
+
+		void assign(Cell cell) {
+			if (id != -2)
+				this->id = cell.id;
+			this->data = cell.data;
+
+			if (cell.attributes.first != 0)
+				this->attributes.first = cell.attributes.first;
+			if (cell.attributes.second != 0)
+				this->attributes.second = cell.attributes.second;
+		}
+
+		void assign(int id) {
+			if (id != -2)
+				this->id = id;
+			this->data = nullptr;
+			this->attributes = std::make_pair<float, float>(0, 0);
+		}
+
+		void assign(int id = -1, void* data = nullptr, std::pair<float, float> attributes = std::make_pair<float, float>(0, 0)) {
+			if (id != -2)
+				this->id = id;
+			this->data = data;
+			this->attributes.first += attributes.first;
+			this->attributes.second += attributes.second;
+		}
 	};
 
 public:
@@ -27,8 +57,7 @@ public:
 		for (int j = 0; j < height; j++) {
 			m_cells[j] = new Cell[width];
 			for (int i = 0; i < width; i++) {
-				m_cells[j][i].id = -1;
-				m_cells[j][i].data = nullptr;
+				
 			}
 		}
 	}
@@ -47,6 +76,8 @@ public:
 
 	static void UpdateCell(int index, Cell* data) {
 		m_cells[index] = data;
+
+
 	}
 
 	sf::Vector2f getCenter() {
