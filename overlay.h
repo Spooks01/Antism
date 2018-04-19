@@ -35,6 +35,18 @@ public:
 		overlayFoodCount.setPosition(sf::Vector2f(this->getPosition().x + 30, this->getPosition().y + 100));
 		pheremoneDecay.setPosition(sf::Vector2f(this->getPosition().x + 30, this->getPosition().y + 125));
 	}
+	int editMode = 0;
+	void checkTextHover(sf::Vector2f mousePos) {
+		if (mousePos.x > pheremoneDecay.getPosition().x && mousePos.x < pheremoneDecay.getPosition().x + pheremoneDecay.getLocalBounds().width
+			&& mousePos.y > pheremoneDecay.getPosition().y && mousePos.y < pheremoneDecay.getPosition().y + pheremoneDecay.getLocalBounds().height) {
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+				editMode = 1;
+			}
+		}
+		else {
+			
+		}
+	}
 	//stats
 	sf::Text overlayAntCount;
 	sf::Text overlayQueenCount;

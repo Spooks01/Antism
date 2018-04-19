@@ -24,7 +24,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_window.create(sf::VideoMode(width, height), title);
 
 	//m_window.setVerticalSyncEnabled(vS);
-	//m_window.setFramerateLimit(60);
+	m_window.setFramerateLimit(60);
 
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
 	m_view.setSize(width, height);
@@ -64,11 +64,11 @@ Application::~Application() {
 
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
-	m_colony->generate(100);
+	m_colony->generate(20);
 
 	//std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
 	
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < 10; i++) {
 		food.push_back(new Food(sf::Vector2f(rand() % m_window.getSize().x + 1, rand() % m_window.getSize().y + 1)));
 	}
 
@@ -128,7 +128,7 @@ void Application::run() {
 
 	while (m_window.isOpen()) {
 		
-		std::cout << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() <<"\n";
+		//std::cout << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() <<"\n";
 		
 		//do {
 			//elapsed = clock.getElapsedTime();
@@ -206,10 +206,12 @@ void Application::run() {
 		m_window.display();
 	}
 }
-
+sf::String temp;
+std::string::size_type si;
 void Application::update() {
 	sf::Event event;
 	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f);
+	m_overlay->checkTextHover((sf::Vector2f) sf::Mouse::getPosition(m_window));
 
 	if (state == Run) {
 		while (m_window.pollEvent(event)) {
@@ -238,7 +240,20 @@ void Application::update() {
 				m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
 				state = Menu;
-			}	
+			}
+			if (m_overlay->editMode == 1 && toggle) {
+				if (event.type == sf::Event::TextEntered) {
+						temp += event.text.unicode;
+						std::cout << temp.toAnsiString();
+						Config::pheremoneDecay = std::stof(temp.toAnsiString(), &si);		
+				}
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
+					m_overlay->editMode = 0;
+					std::cout << "Current decay: " << Config::pheremoneDecay;
+					Config::writeDecay(Config::pheremoneDecay);
+					temp = "";
+				}
+			}
 		}
 	} else if (state == Menu) {
 		while (m_window.pollEvent(event)) {

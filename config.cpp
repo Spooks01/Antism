@@ -20,6 +20,7 @@ Config::~Config()
 }
 std::string temp;
 std::string::size_type sz;
+std::fstream *file;
 void Config::loadConfig(std::fstream *f) {
 	std::getline(*f, temp);
 	pheremoneDecay = std::stof(temp, &sz);
@@ -27,4 +28,11 @@ void Config::loadConfig(std::fstream *f) {
 	smellStrength = std::stof(temp, &sz);
 	std::getline(*f, temp);
 	smellRadius = std::stof(temp, &sz);
+	file = f;
+}
+
+
+void Config::writeDecay(float stat){
+	//make this write the float to the first line of cfg
+
 }

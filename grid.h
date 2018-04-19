@@ -119,7 +119,7 @@ public:
 	static int getSize() { return m_width * m_height; }
 
 	static void update() {
-		std::cout << "Ph: " << m_pvertices.size() << std::endl;
+		//std::cout << "Ph: " << m_pvertices.size() << std::endl;
 
 		auto i = m_pvertices.begin();
 		while (i != m_pvertices.end()) {
