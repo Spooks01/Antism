@@ -49,6 +49,6 @@ public:
 	}
 
 private:
-	float m_pheromone = 5.f;
+	float m_pheromone = 100.f;
 };
 
