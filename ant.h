@@ -26,7 +26,7 @@ public:
 		move(sf::Vector2f(x, y));
 	}
 
-	void move(sf::Vector2f offset) {
+	virtual void move(sf::Vector2f offset) {
 		sf::Vector2f cp = getPosition();
 		sf::Vector2f np = cp + offset;
 
@@ -42,7 +42,7 @@ public:
 			np.y = cp.y - 1;
 
 		Grid::GetGrid()[(int)cp.y][(int)cp.x] = { -1, nullptr };
-		Grid::GetGrid()[(int)np.y][(int)np.x] = { 1,  nullptr };
+		Grid::GetGrid()[(int)np.y][(int)np.x] = { 1,  this };
 
 		setPosition(np);
 	}

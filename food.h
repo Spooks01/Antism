@@ -35,7 +35,7 @@ public:
 			np.y = cp.y;
 
 		Grid::GetGrid()[(int)cp.y][(int)cp.x] = { -1, nullptr };
-		Grid::GetGrid()[(int)np.y][(int)np.x] = { 0,  nullptr };
+		Grid::GetGrid()[(int)np.y][(int)np.x] = { 0,  this    };
 
 		setPosition(np);
 	}
