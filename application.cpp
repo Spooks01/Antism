@@ -9,6 +9,13 @@
 static bool toggle = false;
 int windowWidth, windowHeight;
 
+std::vector<Button> buttonList;
+std::vector<sf::Text> buttonLabels;
+
+std::vector<Food*> food;
+std::vector<sf::RectangleShape> m_smells;
+std::vector<sf::RectangleShape> m_pheromones;
+
 Application::Application(int width, int height, bool vS, std::string title) {
 	state = Menu;
 	windowWidth = width;
@@ -21,23 +28,30 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
 	m_view.setSize(width, height);
 	m_view.setCenter(width / 2.f, height / 2.f);
-	m_view.move(width * 2 - width / 2, height * 2 - height / 2);
+	//m_view.move(width * 2 - width / 2, height * 2 - height / 2);
 
-	m_grid = new Grid(width * 4, height * 4);
+	//m_grid = new Grid(width * 4, height * 4);
+	m_grid = new Grid(width, height);
+
 	m_font.loadFromFile("arial.ttf");
+
 	m_overlay = new Overlay(&m_font);
 	m_overlay->setPosition(1000, 0);
 	m_overlay->setSize(sf::Vector2f(280, 720));
 	m_overlay->setUpText();
 
-	m_bg.setSize(sf::Vector2f(m_window.getSize().x * 4, m_window.getSize().y * 4));
+	//m_bg.setSize(sf::Vector2f(m_window.getSize().x * 4, m_window.getSize().y * 4));
+	m_bg.setSize(sf::Vector2f(m_window.getSize().x, m_window.getSize().y));
 	m_bg.setFillColor(sf::Color(110, 50, 110, 50));
 	m_bg.setPosition(sf::Vector2f(0, 0));
+
 	m_label.setFont(m_font);
 	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
 	m_label.setCharacterSize(18);
 	m_label.setFillColor(sf::Color::White);
+
 	m_logoTexture.loadFromFile("logoTexture.png");
+
 	m_logo.setTexture(&m_logoTexture);
 	m_logo.setSize(sf::Vector2f(height/4, height/4));
 	m_logo.setPosition(sf::Vector2f((width / 2) - height/8, height / 8));
@@ -46,29 +60,56 @@ Application::Application(int width, int height, bool vS, std::string title) {
 Application::~Application() {
 	m_window.close();
 }
-std::vector<Button> buttonList;
-std::vector<sf::Text> buttonLabels;
 
 void Application::setup() {
-	m_colony = new Colony(sf::Vector2f(m_window.getSize().x * 2, m_window.getSize().y * 2.f));
+	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
 	m_colony->generate(100);
 
-	//std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
+	std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
+	
+	for (int i = 0; i < 200; i++) {
+		food.push_back(new Food(sf::Vector2f(rand() % m_window.getSize().x + 1, rand() % m_window.getSize().y + 1)));
+	}
+
+	for (int i = 0; i < m_grid->getHeight(); i++) {
+		for (int j = 0; j < m_grid->getWidth(); j++) {
+			if (m_grid->GetGrid()[i][j].attributes.first > 0) {
+				sf::RectangleShape s;
+				s.setFillColor(sf::Color(255, 255, 0, 100 + m_grid->GetGrid()[i][j].attributes.first));
+				s.setSize(sf::Vector2f(4.f, 4.f));
+				s.setPosition(j, i);
+				m_smells.push_back(s);
+			}
+			if (m_grid->GetGrid()[i][j].attributes.second > 0) {
+				sf::RectangleShape s;
+				s.setFillColor(sf::Color::Cyan);
+				s.setSize(sf::Vector2f(4.f, 4.f));
+				s.setPosition(i, j);
+				m_pheromones.push_back(s);
+			}
+		}
+	}
+
 	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2) - 100, windowHeight / 2), sf::Vector2f(200, 50)));
+
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(0).setFont(m_font);
 	buttonLabels.at(0).setString("Start");
 	buttonLabels.at(0).setCharacterSize(18);
 	buttonLabels.at(0).setFillColor(sf::Color::White);
 	buttonLabels.at(0).setPosition(sf::Vector2f(buttonList.at(0).getPosition().x + 80, buttonList.at(0).getPosition().y + 10));
+
 	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2) - 100, (windowHeight / 2) + 70), sf::Vector2f(200, 50)));
+
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(1).setFont(m_font);
 	buttonLabels.at(1).setString("Reset");
 	buttonLabels.at(1).setCharacterSize(18);
 	buttonLabels.at(1).setFillColor(sf::Color::White);
 	buttonLabels.at(1).setPosition(sf::Vector2f(buttonList.at(1).getPosition().x + 80, buttonList.at(1).getPosition().y + 10));
+
 	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2) - 100, (windowHeight / 2) + 140), sf::Vector2f(200, 50)));
+
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(2).setFont(m_font);
 	buttonLabels.at(2).setString("Exit");
@@ -89,6 +130,16 @@ void Application::run() {
 			m_window.setView(m_view);
 
 			m_window.draw(m_bg);
+
+			for (int i = 0; i < m_smells.size(); ++i)
+				m_window.draw(m_smells.at(i));
+
+			//for (int i = 0; i < m_pheromones.size(); ++i)
+			//m_window.draw(m_pheromones.at(i));
+
+			for (int i = 0; i < 200; ++i)
+				m_window.draw(*food[i]);
+
 			m_window.draw(*m_colony);
 
 			m_window.setView(m_window.getDefaultView());
@@ -162,6 +213,8 @@ void Application::update() {
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
 				state = Menu;
 			}	
+
+			
 		}
 	}
 	if (state == Menu) {
