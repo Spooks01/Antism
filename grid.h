@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include <SFML/System.hpp>
-
+#include "config.h"
 class Grid
 {
 public:
@@ -83,6 +83,15 @@ public:
 		}
 	}
 
+	void clearGrid() {
+		for (int i = 0; i < getHeight(); i++) {
+			for (int j = 0; j < getWidth(); j++) {
+				m_cells[i][j] = {};
+			}
+		}
+		
+	}
+
 	~Grid() {	
 		for (int i = 0; i < m_height; i++)
 			delete[] m_cells[i];
@@ -100,8 +109,8 @@ public:
 
 	static void update() {
 		for (int i = 0; i < m_pheromones.size(); i++) {
-			if (m_pheromones.at(i).first->attributes.second >= 2.5f)
-				m_pheromones.at(i).first->attributes.second -= 2.5f;
+			if (m_pheromones.at(i).first->attributes.second >= Config::pheremoneDecay)
+				m_pheromones.at(i).first->attributes.second -= Config::pheremoneDecay;
 			else {
 				m_pheromones.erase(m_pheromones.begin() + i, m_pheromones.begin() + i + 1);
 			}

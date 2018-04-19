@@ -4,7 +4,7 @@
 
 #include <cstring>
 #include <vector>
-
+#include <fstream>
 #include "ant.h"
 #include "overlay.h"
 #include "timer.h"

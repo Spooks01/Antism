@@ -1,8 +1,13 @@
 #include "config.h"
-
-int Config::applicationWidth = 0;
-int Config::applicationHeight = 0;
+#include <fstream>
+#include <string>
+int Config::applicationWidth = 1280;
+int Config::applicationHeight = 720;
 bool Config::vsync = true;
+
+float Config::pheremoneDecay = 0.0f;
+float Config::smellStrength = 0.0f;
+float Config::smellRadius = 0.0f;
 
 
 Config::Config()
@@ -13,9 +18,13 @@ Config::Config()
 Config::~Config()
 {
 }
-
-void Config::genDefaults() {
-	Config::applicationWidth = 1280;
-	Config::applicationHeight = 720;
-	Config::vsync = true;
+std::string temp;
+std::string::size_type sz;
+void Config::loadConfig(std::fstream *f) {
+	std::getline(*f, temp);
+	pheremoneDecay = std::stof(temp, &sz);
+	std::getline(*f, temp);
+	smellStrength = std::stof(temp, &sz);
+	std::getline(*f, temp);
+	smellRadius = std::stof(temp, &sz);
 }

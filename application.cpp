@@ -25,7 +25,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_window.create(sf::VideoMode(width, height), title);
 
 	//m_window.setVerticalSyncEnabled(vS);
-	//m_window.setFramerateLimit(60);
+	m_window.setFramerateLimit(60);
 
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
 	m_view.setSize(width, height);
@@ -53,7 +53,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_label.setFillColor(sf::Color::White);
 
 	m_logoTexture.loadFromFile("logoTexture.png");
-
+	m_logoTexture.setSmooth(true);
 	m_logo.setTexture(&m_logoTexture);
 	m_logo.setSize(sf::Vector2f(height/4, height/4));
 	m_logo.setPosition(sf::Vector2f((width / 2) - height/8, height / 8));
@@ -67,7 +67,7 @@ void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
 	m_colony->generate(20);
 
-	std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
+	//std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
 	
 	for (int i = 0; i < 500; i++) {
 		food.push_back(new Food(sf::Vector2f(rand() % m_window.getSize().x + 1, rand() % m_window.getSize().y + 1)));
@@ -145,7 +145,8 @@ void Application::run() {
 			
 			std::thread phero(&Grid::update);
 
-			m_overlay->update(m_colony->getAntCount());
+			m_overlay->updateStats(m_colony->getAntCount(), food.size());
+			m_overlay->updateField(std::to_string(Config::pheremoneDecay));
 			m_window.setView(m_view);
 
 			//elapsed = clock.restart();
@@ -177,7 +178,9 @@ void Application::run() {
 			m_window.setView(m_window.getDefaultView());
 			if (toggle) {
 				m_window.draw(*m_overlay);
-				m_window.draw(m_overlay->overlayText1);
+				m_window.draw(m_overlay->overlayAntCount);
+				m_window.draw(m_overlay->overlayFoodCount);
+				m_window.draw(m_overlay->pheremoneDecay);
 			}
 
 			phero.join();
@@ -286,6 +289,13 @@ void Application::update() {
 					buttonLabels.clear();
 					m_colony->clean();
 					delete m_colony;
+					m_grid->clearGrid();
+					food.clear();
+					smell_toggle = false;
+					pheromone_toggle = false;
+					toggle = false;
+					m_smells.clear();
+					m_pheromones.clear();
 					setup();
 				}
 			}

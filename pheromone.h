@@ -1,5 +1,6 @@
 #pragma once
-
+#include <string>
+#include "Config.h"
 class Pheromone
 {
 public:
@@ -13,6 +14,6 @@ public:
 
 private:
 	float m_strength = 100;
-	float m_decay = 1.0f;
+	float m_decay = Config::pheremoneDecay;
 };
 
