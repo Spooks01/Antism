@@ -168,14 +168,17 @@ void Application::run() {
 
 			m_window.draw(*m_colony);
 
+			phero.join();
 			if (pheromone_toggle) {	
-				for (int i = 0; i < m_pheromones.size(); ++i)
-				m_window.draw(m_pheromones.at(i));
-				m_pheromones.clear();
+				auto v = Grid::m_pvertices;
+				for (int i = 0; i < v.size(); i++) {
+					if (v[i].second.size() == 0)
+						continue;
+				
+					m_window.draw(&v[i].second[0], 4, sf::Quads);
+				}
 			}
 			
-			
-
 			m_window.setView(m_window.getDefaultView());
 			if (toggle) {
 				m_window.draw(*m_overlay);
@@ -184,7 +187,7 @@ void Application::run() {
 				m_window.draw(m_overlay->pheremoneDecay);
 			}
 
-			phero.join();
+			
 		}
 		if (state == Menu) {
 			m_window.clear(sf::Color::Black);
@@ -229,14 +232,14 @@ void Application::update() {
 
 	if (state == Run) {
 		if (pheromone_toggle) {
-			for (int i = 0; i < m_grid->getPheromones().size(); ++i) {
-				sf::Vector2i pos = m_grid->getPheromones()[i].second;
-				sf::RectangleShape s;
-				s.setFillColor(sf::Color::Cyan);
-				s.setSize(sf::Vector2f(1.f, 1.f));
-				s.setPosition(pos.x, pos.y);
-				m_pheromones.push_back(s);
-			}
+			//for (int i = 0; i < m_grid->getPheromones().size(); ++i) {
+			//	sf::Vector2i pos = m_grid->getPheromones()[i].second;
+			//	sf::RectangleShape s;
+			//	s.setFillColor(sf::Color::Cyan);
+			//	s.setSize(sf::Vector2f(1.f, 1.f));
+			//	s.setPosition(pos.x, pos.y);
+			//	m_pheromones.push_back(s);
+			//}
 		}
 
 		while (m_window.pollEvent(event)) {
@@ -326,12 +329,4 @@ void Application::update() {
 	}
 
 	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
-}
-void Application::renderAnts()
-{
-	
-}
-
-void Application::renderHUD() {
-	
 }

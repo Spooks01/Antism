@@ -5,7 +5,10 @@
 #include <iostream>
 
 #include <SFML/System.hpp>
+#include <SFML/Graphics/Vertex.hpp>
+
 #include "config.h"
+
 class Grid
 {
 public:
@@ -46,9 +49,17 @@ public:
 			else if (id == -2) {
 				this->attributes.first += attributes.first;
 				if (attributes.second > 0) {
-					Grid::m_pheromones.push_back({ this, position});
-
 					this->attributes.second += attributes.second;
+
+					std::vector<sf::Vertex> quads;
+
+					quads.push_back({sf::Vector2f(position) + sf::Vector2f(0, 0), sf::Color::Cyan});
+					quads.push_back({sf::Vector2f(position) + sf::Vector2f(1, 0), sf::Color::Cyan});
+					quads.push_back({sf::Vector2f(position) + sf::Vector2f(1, 1), sf::Color::Cyan});
+					quads.push_back({sf::Vector2f(position) + sf::Vector2f(0, 1), sf::Color::Cyan});
+
+					Grid::m_pheromones.push_back({ this, position });
+					Grid::m_pvertices.push_back({ this, quads });
 				}
 					
 			} else if (id == -3) {
@@ -108,22 +119,35 @@ public:
 	static int getSize() { return m_width * m_height; }
 
 	static void update() {
-		for (int i = 0; i < m_pheromones.size(); i++) {
-			if (m_pheromones.at(i).first->attributes.second >= Config::pheremoneDecay)
-				m_pheromones.at(i).first->attributes.second -= Config::pheremoneDecay;
-			else {
-				m_pheromones.erase(m_pheromones.begin() + i, m_pheromones.begin() + i + 1);
+		std::cout << "Ph: " << m_pvertices.size() << std::endl;
+
+		auto i = m_pvertices.begin();
+		while (i != m_pvertices.end()) {
+			if ((*i).first->attributes.second < Config::pheremoneDecay) {
+				(*i).first = {};
+				(*i).second.clear();
+				i = m_pvertices.erase(i);
 			}
-				
+			else {
+				(*i).first->attributes.second -= Config::pheremoneDecay;
+				++i;
+			}
 		}
+
+
 	}
 
 	sf::Vector2f getCenter() {
 		return sf::Vector2f(m_width / 2.f, m_height / 2.f);
 	}
 
+	static std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> getVertices() { return m_pvertices; }
+public:
+	static std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> m_pvertices;
+
 private:
 	static Cell** m_cells;
 	static std::vector<std::pair<Cell*, sf::Vector2i>> m_pheromones;
+	
 	static int m_width, m_height;
 };

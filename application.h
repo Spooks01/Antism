@@ -20,8 +20,7 @@ public:
 
 	void run();
 	void update();
-	void renderHUD();
-	void renderAnts();
+
 	void setup();
 	
 private:
