@@ -48,8 +48,7 @@ void Overlay::setUpText() {
 	div1.setPosition(sf::Vector2f(this->getPosition().x, this->getPosition().y + 75));
 	pheremoneDecay.setPosition(sf::Vector2f(this->getPosition().x + 30, this->getPosition().y + 100));
 	foodSmellRadius.setPosition(sf::Vector2f(this->getPosition().x + 30, this->getPosition().y + 125));
-	ovButton = new Button(sf::Vector2f(this->getPosition().x + 10, this->getPosition().y + 150), sf::Vector2f(this->getSize().x - 20, 30));
-	ovButton->setFillColor(sf::Color(255, 255, 255, 100));
+	ovButton = new Button(sf::Vector2f(this->getPosition().x + 10, this->getPosition().y + 150), sf::Vector2f(this->getSize().x - 20, 30), sf::Color(255, 255, 255, 100));
 	buttonLabel.setPosition(sf::Vector2f(ovButton->getPosition().x + 70, ovButton->getPosition().y + 5));
 	buttonLabel.setString("Save changes");
 }

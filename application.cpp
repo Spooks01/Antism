@@ -95,7 +95,7 @@ void Application::setup() {
 		++k;
 	}
 
-	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, windowHeight / 2.f), sf::Vector2f(200, 50)));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, windowHeight / 2.f), sf::Vector2f(200, 50), sf::Color(100, 100, 100, 255)));
 
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(0).setFont(m_font);
@@ -104,16 +104,16 @@ void Application::setup() {
 	buttonLabels.at(0).setFillColor(sf::Color::White);
 	buttonLabels.at(0).setPosition(sf::Vector2f(buttonList.at(0).getPosition().x + 80, buttonList.at(0).getPosition().y + 10));
 
-	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) + 70), sf::Vector2f(200, 50)));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) + 70), sf::Vector2f(200, 50), sf::Color(100, 100, 100, 255)));
 
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(1).setFont(m_font);
 	buttonLabels.at(1).setString("Reset");
 	buttonLabels.at(1).setCharacterSize(18);
 	buttonLabels.at(1).setFillColor(sf::Color::White);
-	buttonLabels.at(1).setPosition(sf::Vector2f(buttonList.at(1).getPosition().x + 80, buttonList.at(1).getPosition().y + 10));
+	buttonLabels.at(1).setPosition(sf::Vector2f(buttonList.at(1).getPosition().x + 78, buttonList.at(1).getPosition().y + 10));
 
-	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) + 140), sf::Vector2f(200, 50)));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) + 140), sf::Vector2f(200, 50), sf::Color(100, 100, 100, 255)));
 
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(2).setFont(m_font);
@@ -313,7 +313,6 @@ void Application::update() {
 				}
 			}
 			if (m_overlay->ovButton->update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
-				m_overlay->ovButton->setFillColor(sf::Color::Black);
 				Config::writeConfig();
 			}
 		}
