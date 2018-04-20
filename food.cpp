@@ -27,7 +27,7 @@ Food::Food(sf::Vector2f position) {
 }
 
 void Food::spawn() {
-	for (int i = 0; i < m_radius; i++) {
+	for (int i = 0; i < Config::FoodSmellRadius; i++) {
 		sf::Vector2i p = sf::Vector2i(getPosition());
 		sf::Vector2i limit = sf::Vector2i(Grid::getWidth(), Grid::getHeight());
 
@@ -60,4 +60,4 @@ void Food::spawn() {
 
 }
 
-int Food::getRadius() { return m_radius; }
+int Food::getRadius() { return Config::FoodSmellRadius; }

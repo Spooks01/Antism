@@ -37,6 +37,6 @@ private:
 	sf::Font m_font;
 	sf::RectangleShape m_logo;
 	sf::Texture m_logoTexture;
-	bool editingOverlayPh;
+	bool editingOverlayPh, editingOverlayFo;
 };
 

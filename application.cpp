@@ -19,6 +19,7 @@ std::vector<sf::VertexArray> m_smells;
 
 Application::Application(int width, int height, bool vS, std::string title) {
 	editingOverlayPh = false;
+	editingOverlayFo = false;
 	state = Menu;
 	windowWidth = width;
 	windowHeight = height;
@@ -190,12 +191,21 @@ void Application::run() {
 				m_window.draw(*m_overlay);
 				m_window.draw(m_overlay->overlayAntCount);
 				m_window.draw(m_overlay->overlayFoodCount);
+				m_window.draw(m_overlay->div1);
 				if (!editingOverlayPh) {
 					m_window.draw(m_overlay->pheremoneDecay);
 				}
 				else {
 					m_window.draw(m_tempOverlayLabel);
 				}
+				if (!editingOverlayFo) {
+					m_window.draw(m_overlay->foodSmellRadius);
+				}
+				else {
+					m_window.draw(m_tempOverlayLabel);
+				}
+				m_window.draw(*m_overlay->ovButton);
+				m_window.draw(m_overlay->buttonLabel);
 			}
 
 			
@@ -262,19 +272,49 @@ void Application::update() {
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
 					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0) {
-						m_overlay->updateField(std::to_string(Config::PheremoneDecay));
+						m_overlay->updateFieldPh(std::to_string(Config::PheremoneDecay));
 						m_overlay->editMode = 0;
 					}
 					else {
 						Config::PheremoneDecay = std::stof(temp.toAnsiString(), &si);
-						m_overlay->updateField(std::to_string(Config::PheremoneDecay));
+						m_overlay->updateFieldPh(std::to_string(Config::PheremoneDecay));
 						m_overlay->editMode = 0;
 					}
 					std::cout << "Current decay: " << Config::PheremoneDecay;
-					Config::writeConfig();
+					//Config::writeConfig();
+					m_tempOverlayLabel.setString("");
 					temp = "";
 					editingOverlayPh = false;
 				}
+			}
+			if (m_overlay->editMode == 2 && toggle) {
+				editingOverlayFo = true;
+				m_tempOverlayLabel.setPosition(m_overlay->foodSmellRadius.getPosition());
+				if (event.type == sf::Event::TextEntered) {
+					temp += event.text.unicode;
+					std::cout << temp.toAnsiString();
+					m_tempOverlayLabel.setString(temp);
+				}
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
+					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0) {
+						m_overlay->updateFieldFo(std::to_string(Config::FoodSmellRadius));
+						m_overlay->editMode = 0;
+					}
+					else {
+						Config::FoodSmellRadius = std::stof(temp.toAnsiString(), &si);
+						m_overlay->updateFieldFo(std::to_string(Config::FoodSmellRadius));
+						m_overlay->editMode = 0;
+					}
+					std::cout << "Food radius: " << Config::FoodSmellRadius;
+					//Config::writeConfig();
+					m_tempOverlayLabel.setString("");
+					temp = "";
+					editingOverlayFo = false;
+				}
+			}
+			if (m_overlay->ovButton->update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
+				m_overlay->ovButton->setFillColor(sf::Color::Black);
+				Config::writeConfig();
 			}
 		}
 	} else if (state == Menu) {
@@ -312,7 +352,8 @@ void Application::update() {
 					
 					m_smells.clear();
 					Config::loadConfig();
-					m_overlay->updateField(std::to_string(Config::PheremoneDecay));
+					m_overlay->updateFieldPh(std::to_string(Config::PheremoneDecay));
+					m_overlay->updateFieldFo(std::to_string(Config::FoodSmellRadius));
 					setup();
 				}
 			}

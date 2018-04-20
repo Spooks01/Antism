@@ -15,7 +15,7 @@ public:
 	static bool vsync;
 	static float PheremoneDecay;
 	static float smellStrength;
-	static float smellRadius;
+	static float FoodSmellRadius;
 
 	static bool isFloatNumber(const std::string& string) {
 		std::string::const_iterator it = string.begin();
