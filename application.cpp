@@ -23,11 +23,11 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	windowHeight = height;
 	m_window.create(sf::VideoMode(width, height), title);
 
-	//m_window.setVerticalSyncEnabled(vS);
-	//m_window.setFramerateLimit(60);
+	m_window.setVerticalSyncEnabled(vS);
+	m_window.setFramerateLimit(60);
 
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
-	m_view.setSize(width, height);
+	m_view.setSize((float)width, (float)height);
 	m_view.setCenter(width / 2.f, height / 2.f);
 	//m_view.move(width * 2 - width / 2, height * 2 - height / 2);
 
@@ -41,7 +41,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_overlay->setSize(sf::Vector2f(280, 720));
 	m_overlay->setUpText();
 
-	m_bg.setSize(sf::Vector2f(m_window.getSize().x, m_window.getSize().y));
+	m_bg.setSize(sf::Vector2f((float)m_window.getSize().x, (float)m_window.getSize().y));
 	//m_bg.setSize(sf::Vector2f(m_window.getSize().x, m_window.getSize().y));
 	m_bg.setFillColor(sf::Color(110, 50, 110, 50));
 	m_bg.setPosition(sf::Vector2f(0, 0));
@@ -54,8 +54,8 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_logoTexture.loadFromFile("logoTexture.png");
 	m_logoTexture.setSmooth(true);
 	m_logo.setTexture(&m_logoTexture);
-	m_logo.setSize(sf::Vector2f(height/4, height/4));
-	m_logo.setPosition(sf::Vector2f((width / 2) - height/8, height / 8));
+	m_logo.setSize(sf::Vector2f(height / 4.f, height / 4.f));
+	m_logo.setPosition(sf::Vector2f((width / 2.f) - height / 8.f, height / 8.f));
 }
 
 Application::~Application() {
@@ -69,7 +69,7 @@ void Application::setup() {
 	//std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
 	
 	for (int i = 0; i < 10; i++) {
-		food.push_back(new Food(sf::Vector2f(rand() % m_window.getSize().x + 1, rand() % m_window.getSize().y + 1)));
+		food.push_back(new Food(sf::Vector2f((float)(rand() % m_window.getSize().x + 1), (float)(rand() % m_window.getSize().y + 1))));
 	}
 
 	for (int i = 0; i < m_grid->getHeight(); i++) {
@@ -79,17 +79,17 @@ void Application::setup() {
 				int r = ((Food*)v.food)->getRadius();
 				sf::VertexArray va(sf::Quads);
 
-				va.append({ sf::Vector2f(j - r + 1, i - r + 1), sf::Color(255, 255, 0, 100) });
-				va.append({ sf::Vector2f(j + r, i - r + 1), sf::Color(255, 255, 0, 100) });
-				va.append({ sf::Vector2f(j + r, i + r), sf::Color(255, 255, 0, 100) });
-				va.append({ sf::Vector2f(j - r + 1, i + r), sf::Color(255, 255, 0, 100) });
+				va.append({ sf::Vector2f(j - r + 1.f, i - r + 1.f), sf::Color(255, 255, 0, 100) });
+				va.append({ sf::Vector2f(j + r + 0.f, i - r + 1.f), sf::Color(255, 255, 0, 100) });
+				va.append({ sf::Vector2f(j + r + 0.f, i + r + 0.f), sf::Color(255, 255, 0, 100) });
+				va.append({ sf::Vector2f(j - r + 1.f, i + r + 0.f), sf::Color(255, 255, 0, 100) });
 				
 				m_smells.push_back(va);
 			}
 		}
 	}
 
-	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2) - 100, windowHeight / 2), sf::Vector2f(200, 50)));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, windowHeight / 2.f), sf::Vector2f(200, 50)));
 
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(0).setFont(m_font);
@@ -98,7 +98,7 @@ void Application::setup() {
 	buttonLabels.at(0).setFillColor(sf::Color::White);
 	buttonLabels.at(0).setPosition(sf::Vector2f(buttonList.at(0).getPosition().x + 80, buttonList.at(0).getPosition().y + 10));
 
-	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2) - 100, (windowHeight / 2) + 70), sf::Vector2f(200, 50)));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) + 70), sf::Vector2f(200, 50)));
 
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(1).setFont(m_font);
@@ -107,7 +107,7 @@ void Application::setup() {
 	buttonLabels.at(1).setFillColor(sf::Color::White);
 	buttonLabels.at(1).setPosition(sf::Vector2f(buttonList.at(1).getPosition().x + 80, buttonList.at(1).getPosition().y + 10));
 
-	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2) - 100, (windowHeight / 2) + 140), sf::Vector2f(200, 50)));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) + 140), sf::Vector2f(200, 50)));
 
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(2).setFont(m_font);
@@ -121,7 +121,7 @@ void Application::run() {
 	setup();
 	
 	sf::Clock clock;
-	sf::Time frame = sf::milliseconds(60.f);
+	sf::Time frame = sf::milliseconds(60);
 	sf::Time elapsed = frame;
 	int num_frames = 0;
 	//phero.detach();
@@ -161,11 +161,11 @@ void Application::run() {
 			m_window.draw(m_bg);
 
 			if (smell_toggle) {
-				for (int i = 0; i < m_smells.size(); ++i)
+				for (size_t i = 0; i < m_smells.size(); ++i)
 					m_window.draw(m_smells.at(i));
 			}
 			
-			for (int i = 0; i < food.size(); ++i)
+			for (size_t i = 0; i < food.size(); ++i)
 				m_window.draw(*food[i]);
 
 			m_window.draw(*m_colony);
@@ -173,7 +173,7 @@ void Application::run() {
 			phero.join();
 			if (pheromone_toggle) {	
 				auto v = Grid::m_pvertices;
-				for (int i = 0; i < v.size(); i++) {
+				for (size_t i = 0; i < v.size(); i++) {
 					if (v[i].second.size() == 0)
 						continue;
 				
@@ -196,7 +196,7 @@ void Application::run() {
 			m_window.draw(m_bg);
 			m_window.draw(m_logo);
 			
-			for (int i = 0; i < buttonList.size(); i++) {
+			for (size_t i = 0; i < buttonList.size(); i++) {
 				m_window.draw(buttonList.at(i));
 				m_window.draw(buttonLabels.at(i));
 			}
@@ -210,7 +210,7 @@ sf::String temp;
 std::string::size_type si;
 void Application::update() {
 	sf::Event event;
-	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f);
+	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2, m_window.getSize().y / 2);
 	m_overlay->checkTextHover((sf::Vector2f) sf::Mouse::getPosition(m_window));
 
 	if (state == Run) {
@@ -219,7 +219,7 @@ void Application::update() {
 				m_window.close();
 
 			if (event.type == sf::Event::Resized) {
-				sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+				sf::FloatRect visibleArea(0.f, 0.f, (float)event.size.width, (float)event.size.height);
 				m_window.setView(sf::View(visibleArea));
 			}
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
@@ -260,15 +260,16 @@ void Application::update() {
 			if (event.type == sf::Event::Closed)
 				m_window.close();
 			if (event.type == sf::Event::Resized) {
-				sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+				sf::FloatRect visibleArea(0.f, 0.f, (float)event.size.width, (float)event.size.height);
 				m_window.setView(sf::View(visibleArea));
 			}
 		}
 
-		for (int i = 0; i < buttonList.size(); i++) {
+		for (size_t i = 0; i < buttonList.size(); i++) {
 			if (i == 0) {
 				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
 					state = Run;
+
 					buttonLabels.at(i).setPosition(sf::Vector2f(buttonList.at(i).getPosition().x + 70, buttonList.at(i).getPosition().y + 10));
 					buttonLabels.at(i).setString("Resume");
 				}

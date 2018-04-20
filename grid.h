@@ -83,62 +83,21 @@ public:
 	};
 
 public:
-	Grid(int width, int height) {
-		Grid::m_width = width;
-		Grid::m_height = height;
-		m_cells = new Cell*[height];
-		for (int j = 0; j < height; j++) {
-			m_cells[j] = new Cell[width];
-			for (int i = 0; i < width; i++) {
-				
-			}
-		}
-	}
+	Grid(int width, int height);
+	~Grid();
 
-	void clearGrid() {
-		for (int i = 0; i < getHeight(); i++) {
-			for (int j = 0; j < getWidth(); j++) {
-				m_cells[i][j] = {};
-			}
-		}
-		
-	}
-
-	~Grid() {	
-		for (int i = 0; i < m_height; i++)
-			delete[] m_cells[i];
-		delete[] m_cells;
-	}
+	void clearGrid();
 
 	static Cell** GetGrid() { return m_cells; }
-	static std::vector<std::pair<Cell*, sf::Vector2i>> getPheromones() {
-		return m_pheromones;
-	}
+	static std::vector<std::pair<Cell*, sf::Vector2i>> getPheromones();
 
 	static int getWidth() { return m_width; }
 	static int getHeight() { return m_height; }
 	static int getSize() { return m_width * m_height; }
 
-	static void update() {
-		//std::cout << "Ph: " << m_pvertices.size() << std::endl;
+	static void update();
 
-		auto i = m_pvertices.begin();
-		while (i != m_pvertices.end()) {
-			if ((*i).first->attributes.second < Config::pheremoneDecay) {
-				(*i).first = {};
-				(*i).second.clear();
-				i = m_pvertices.erase(i);
-			}
-			else {
-				(*i).first->attributes.second -= Config::pheremoneDecay;
-				++i;
-			}
-		}
-	}
-
-	sf::Vector2f getCenter() {
-		return sf::Vector2f(m_width / 2.f, m_height / 2.f);
-	}
+	sf::Vector2f getCenter();
 
 public:
 	static std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> m_pvertices;

@@ -16,11 +16,21 @@ public:
 		setSize(sf::Vector2f(3, 3));
 	}
 
+	void update() override {
+		if (m_cooldown >= m_spawn_rate) {
+			m_cooldown = 0.f;
+			m_status = true;
+		}
+			
+		
+		m_cooldown++;
+	}
+
 	void move(sf::Vector2f offset) override {
 		sf::Vector2f cp = getPosition();
 		sf::Vector2f np = cp + offset;
 
-		sf::Vector2f limit = sf::Vector2f(Grid::getWidth(), Grid::getHeight());
+		sf::Vector2f limit = sf::Vector2f((float)Grid::getWidth(), (float)Grid::getHeight());
 		if (np.x < 0)
 			np.x = cp.x + 1;
 		else if (np.x >= limit.x)
@@ -37,7 +47,17 @@ public:
 		setPosition(np);
 	}
 
-private:
+	void setStatus(bool status) {
+		m_status = status;
+	}
 
+	bool getStatus() {
+		return m_status;
+	}
+
+private:
+	float m_spawn_rate = 20.f;
+	float m_cooldown = 0.f;
+	bool m_status = false;
 };
 
