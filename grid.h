@@ -20,7 +20,7 @@ public:
 
 	static Cell** GetGrid() { return m_cells; }
 	static void Assign(int i, int j, Cell data, sf::Vector2i position = sf::Vector2i());
-	static std::vector<std::pair<Cell*, sf::Vector2i>> getPheromones();
+	//static std::vector<std::pair<Cell*, sf::Vector2i>> getPheromones();
 
 	static int getWidth() { return m_width; }
 	static int getHeight() { return m_height; }
@@ -35,7 +35,7 @@ public:
 	static std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> Pheromones;
 	static std::vector <std::pair<Cell*, sf::Vector2i>> Food;
 	static std::vector <void*> Colonies;
-
+	static std::vector <std::pair<int, std::vector<sf::Vertex>>> Pheromones2;
 private:
 	static Cell** m_cells;
 	

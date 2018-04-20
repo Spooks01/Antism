@@ -29,10 +29,22 @@ void Config::loadConfig(std::fstream *f) {
 	std::getline(*f, temp);
 	smellRadius = std::stof(temp, &sz);
 	file = f;
+	file->clear();
+}
+
+void Config::loadConfig() {
+	file->seekg(0, file->beg);
+	std::getline(*file, temp);
+	PheremoneDecay = std::stof(temp, &sz);
+	std::getline(*file, temp);
+	smellStrength = std::stof(temp, &sz);
+	std::getline(*file, temp);
+	smellRadius = std::stof(temp, &sz);
+	file->clear();
 }
 
 
-void Config::writeDecay(float stat){
+void Config::writeConfig(){
 	//make this write the float to the first line of cfg
 
 }

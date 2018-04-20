@@ -25,7 +25,7 @@ void Overlay::updateStats(int nAnt, int nFo) {
 }
 
 void Overlay::updateField(sf::String nT) {
-	pheremoneDecay.setString("Pheremone decay:" + nT);
+	pheremoneDecay.setString("Pheremone decay: " + nT);
 }
 
 void Overlay::setUpText() {

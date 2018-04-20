@@ -18,6 +18,7 @@ std::vector<Food*> food;
 std::vector<sf::VertexArray> m_smells;
 
 Application::Application(int width, int height, bool vS, std::string title) {
+	editingOverlayPh = false;
 	state = Menu;
 	windowWidth = width;
 	windowHeight = height;
@@ -40,6 +41,10 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_overlay->setPosition(1000, 0);
 	m_overlay->setSize(sf::Vector2f(280, 720));
 	m_overlay->setUpText();
+	m_tempOverlayLabel.setFont(m_font);
+	m_tempOverlayLabel.setString("");
+	m_tempOverlayLabel.setCharacterSize(18);
+	m_tempOverlayLabel.setFillColor(sf::Color::White);
 
 	m_bg.setSize(sf::Vector2f((float)m_window.getSize().x, (float)m_window.getSize().y));
 	//m_bg.setSize(sf::Vector2f(m_window.getSize().x, m_window.getSize().y));
@@ -147,7 +152,6 @@ void Application::run() {
 			std::thread phero(&Grid::update);
 
 			m_overlay->updateStats(m_colony->getAntCount(), food.size());
-			m_overlay->updateField(std::to_string(Config::PheremoneDecay));
 			m_window.setView(m_view);
 
 			//elapsed = clock.restart();
@@ -186,7 +190,12 @@ void Application::run() {
 				m_window.draw(*m_overlay);
 				m_window.draw(m_overlay->overlayAntCount);
 				m_window.draw(m_overlay->overlayFoodCount);
-				m_window.draw(m_overlay->pheremoneDecay);
+				if (!editingOverlayPh) {
+					m_window.draw(m_overlay->pheremoneDecay);
+				}
+				else {
+					m_window.draw(m_tempOverlayLabel);
+				}
 			}
 
 			
@@ -222,36 +231,49 @@ void Application::update() {
 				sf::FloatRect visibleArea(0.f, 0.f, (float)event.size.width, (float)event.size.height);
 				m_window.setView(sf::View(visibleArea));
 			}
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
-				toggle = !toggle;
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1)
-				smell_toggle = !smell_toggle;
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num2)
-				pheromone_toggle = !pheromone_toggle;
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-				m_view.move(0, -100);
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
-				m_view.move(0, 100);
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-				m_view.move(-100, 0);
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-				m_view.move(100, 0);
-			if (event.type == sf::Event::MouseWheelMoved)
-				m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
-				state = Menu;
+			if (!editingOverlayPh) {
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
+					toggle = !toggle;
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1)
+					smell_toggle = !smell_toggle;
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num2)
+					pheromone_toggle = !pheromone_toggle;
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+					m_view.move(0, -100);
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
+					m_view.move(0, 100);
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
+					m_view.move(-100, 0);
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
+					m_view.move(100, 0);
+				if (event.type == sf::Event::MouseWheelMoved)
+					m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+					state = Menu;
+				}
 			}
 			if (m_overlay->editMode == 1 && toggle) {
+				editingOverlayPh = true;
+				m_tempOverlayLabel.setPosition(m_overlay->pheremoneDecay.getPosition());
 				if (event.type == sf::Event::TextEntered) {
 						temp += event.text.unicode;
 						std::cout << temp.toAnsiString();
-						Config::PheremoneDecay = std::stof(temp.toAnsiString(), &si);		
+						m_tempOverlayLabel.setString(temp);
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
-					m_overlay->editMode = 0;
+					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0) {
+						m_overlay->updateField(std::to_string(Config::PheremoneDecay));
+						m_overlay->editMode = 0;
+					}
+					else {
+						Config::PheremoneDecay = std::stof(temp.toAnsiString(), &si);
+						m_overlay->updateField(std::to_string(Config::PheremoneDecay));
+						m_overlay->editMode = 0;
+					}
 					std::cout << "Current decay: " << Config::PheremoneDecay;
-					Config::writeDecay(Config::PheremoneDecay);
+					Config::writeConfig();
 					temp = "";
+					editingOverlayPh = false;
 				}
 			}
 		}
@@ -284,13 +306,13 @@ void Application::update() {
 					
 					m_grid->clear();
 					food.clear();
-					
 					smell_toggle = false;
 					pheromone_toggle = false;
 					toggle = false;
 					
 					m_smells.clear();
-					
+					Config::loadConfig();
+					m_overlay->updateField(std::to_string(Config::PheremoneDecay));
 					setup();
 				}
 			}

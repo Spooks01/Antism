@@ -13,6 +13,7 @@
     <ClCompile Include="queen.cpp" />
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="pheromone.cpp" />
+    <ClCompile Include="cell.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ant.h" />
@@ -26,6 +27,7 @@
     <ClInclude Include="queen.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="pheromone.h" />
+    <ClInclude Include="cell.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.cfg" />
