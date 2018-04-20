@@ -24,7 +24,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_window.create(sf::VideoMode(width, height), title);
 
 	//m_window.setVerticalSyncEnabled(vS);
-	m_window.setFramerateLimit(60);
+	//m_window.setFramerateLimit(60);
 
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
 	m_view.setSize(width, height);

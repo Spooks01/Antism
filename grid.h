@@ -69,6 +69,7 @@ public:
 					this->id = 0;
 
 				this->food = food;
+				this->attributes.first += attributes.first;
 			}
 			else if (id == -4) {
 				if (ant == nullptr)
@@ -133,15 +134,12 @@ public:
 				++i;
 			}
 		}
-
-
 	}
 
 	sf::Vector2f getCenter() {
 		return sf::Vector2f(m_width / 2.f, m_height / 2.f);
 	}
 
-	static std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> getVertices() { return m_pvertices; }
 public:
 	static std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> m_pvertices;
 
