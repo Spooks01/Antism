@@ -3,7 +3,9 @@
 Cell** Grid::m_cells = nullptr;
 
 std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> Grid::Pheromones;
-
+std::vector <std::pair< int, sf::Vertex >> Grid::Pheromones2;;
+std::vector <std::pair<Cell*, sf::Vector2i>> Grid::Food;
+std::vector <void*> Grid::Colonies;
 int Grid::m_height = 0;
 int Grid::m_width = 0;
 
@@ -13,9 +15,7 @@ Grid::Grid(int width, int height) {
 	m_cells = new Cell*[height];
 	for (int j = 0; j < height; j++) {
 		m_cells[j] = new Cell[width];
-		for (int i = 0; i < width; i++) {
-
-		}
+		
 	}
 }
 
@@ -25,6 +25,9 @@ void Grid::clear() {
 			m_cells[i][j] = {};
 		}
 	}
+
+	Pheromones.clear();
+	Food.clear();
 
 }
 

@@ -68,25 +68,25 @@ void Application::setup() {
 
 	std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 100; i++) {
 		food.push_back(new Food(sf::Vector2f((float)(rand() % m_window.getSize().x + 1), (float)(rand() % m_window.getSize().y + 1))));
 	}
 
-	for (int i = 0; i < m_grid->getHeight(); i++) {
-		for (int j = 0; j < m_grid->getWidth(); j++) {
-			auto v = m_grid->GetGrid()[i][j];
-			if (v.id == 0) {
-				int r = ((Food*)v.food)->getRadius();
-				sf::VertexArray va(sf::Quads);
+	auto k = Grid::Food.begin();
+	while (k != Grid::Food.end()) {
+		int r = ((Food*)((*k).first->food))->getRadius();
+		int i = (*k).second.x;
+		int j = (*k).second.y;
+		sf::VertexArray va(sf::Quads);
 
-				va.append({ sf::Vector2f(j - r + 1.f, i - r + 1.f), sf::Color(255, 255, 0, 100) });
-				va.append({ sf::Vector2f(j + r + 0.f, i - r + 1.f), sf::Color(255, 255, 0, 100) });
-				va.append({ sf::Vector2f(j + r + 0.f, i + r + 0.f), sf::Color(255, 255, 0, 100) });
-				va.append({ sf::Vector2f(j - r + 1.f, i + r + 0.f), sf::Color(255, 255, 0, 100) });
-				
-				m_smells.push_back(va);
-			}
-		}
+		va.append({ sf::Vector2f(j - r + 1.f, i - r + 1.f), sf::Color(255, 255, 0, 100) });
+		va.append({ sf::Vector2f(j + r + 0.f, i - r + 1.f), sf::Color(255, 255, 0, 100) });
+		va.append({ sf::Vector2f(j + r + 0.f, i + r + 0.f), sf::Color(255, 255, 0, 100) });
+		va.append({ sf::Vector2f(j - r + 1.f, i + r + 0.f), sf::Color(255, 255, 0, 100) });
+
+		m_smells.push_back(va);
+
+		++k;
 	}
 
 	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, windowHeight / 2.f), sf::Vector2f(200, 50)));

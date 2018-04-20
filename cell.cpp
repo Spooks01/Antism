@@ -27,8 +27,12 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 	else if (id == -3) {
 		if (food == nullptr)
 			this->id = -1;
-		else
+		else {
 			this->id = 0;
+
+			Grid::Food.push_back({ this, position });
+		}
+			
 
 		this->food = food;
 		this->attributes.first += attributes.first;

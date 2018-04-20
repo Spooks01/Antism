@@ -7,7 +7,7 @@ Food::Food(sf::Vector2f position) {
 	sf::Vector2f cp = getPosition();
 	sf::Vector2f np = position;
 
-	sf::Vector2f limit = sf::Vector2f((float)Grid::getWidth(), (float)Grid::getHeight());
+	sf::Vector2i limit = Grid::GetSize();
 	if (np.x < 0)
 		np.x = cp.x;
 	else if (np.x >= limit.x)
@@ -23,7 +23,7 @@ Food::Food(sf::Vector2f position) {
 	spawn();
 
 	Grid::Assign((int)cp.y, (int)cp.x, { -3, nullptr, nullptr });
-	Grid::Assign((int)np.y, (int)np.x, { -3, nullptr, this, { m_smell_strength, 0.f } });
+	Grid::Assign((int)np.y, (int)np.x, { -3, nullptr, this, { m_smell_strength, 0.f } }, sf::Vector2i(np.y, np.x));
 }
 
 void Food::spawn() {

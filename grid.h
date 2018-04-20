@@ -33,6 +33,8 @@ public:
 
 public:
 	static std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> Pheromones;
+	static std::vector <std::pair<Cell*, sf::Vector2i>> Food;
+	static std::vector <void*> Colonies;
 
 private:
 	static Cell** m_cells;
