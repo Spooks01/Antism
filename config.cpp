@@ -5,7 +5,7 @@ int Config::applicationWidth = 1280;
 int Config::applicationHeight = 720;
 bool Config::vsync = true;
 
-float Config::pheremoneDecay = 0.0f;
+float Config::PheremoneDecay = 0.0f;
 float Config::smellStrength = 0.0f;
 float Config::smellRadius = 0.0f;
 
@@ -23,7 +23,7 @@ std::string::size_type sz;
 std::fstream *file;
 void Config::loadConfig(std::fstream *f) {
 	std::getline(*f, temp);
-	pheremoneDecay = std::stof(temp, &sz);
+	PheremoneDecay = std::stof(temp, &sz);
 	std::getline(*f, temp);
 	smellStrength = std::stof(temp, &sz);
 	std::getline(*f, temp);

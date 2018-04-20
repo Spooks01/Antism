@@ -66,7 +66,7 @@ void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
 	m_colony->generate(20);
 
-	//std::cout << m_grid->getWidth() << " " << m_grid->getHeight() << std::endl;
+	std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
 	for (int i = 0; i < 10; i++) {
 		food.push_back(new Food(sf::Vector2f((float)(rand() % m_window.getSize().x + 1), (float)(rand() % m_window.getSize().y + 1))));
@@ -147,7 +147,7 @@ void Application::run() {
 			std::thread phero(&Grid::update);
 
 			m_overlay->updateStats(m_colony->getAntCount(), food.size());
-			m_overlay->updateField(std::to_string(Config::pheremoneDecay));
+			m_overlay->updateField(std::to_string(Config::PheremoneDecay));
 			m_window.setView(m_view);
 
 			//elapsed = clock.restart();
@@ -172,7 +172,7 @@ void Application::run() {
 
 			phero.join();
 			if (pheromone_toggle) {	
-				auto v = Grid::m_pvertices;
+				auto v = Grid::Pheromones;
 				for (size_t i = 0; i < v.size(); i++) {
 					if (v[i].second.size() == 0)
 						continue;
@@ -245,12 +245,12 @@ void Application::update() {
 				if (event.type == sf::Event::TextEntered) {
 						temp += event.text.unicode;
 						std::cout << temp.toAnsiString();
-						Config::pheremoneDecay = std::stof(temp.toAnsiString(), &si);		
+						Config::PheremoneDecay = std::stof(temp.toAnsiString(), &si);		
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
 					m_overlay->editMode = 0;
-					std::cout << "Current decay: " << Config::pheremoneDecay;
-					Config::writeDecay(Config::pheremoneDecay);
+					std::cout << "Current decay: " << Config::PheremoneDecay;
+					Config::writeDecay(Config::PheremoneDecay);
 					temp = "";
 				}
 			}
@@ -282,7 +282,7 @@ void Application::update() {
 					m_colony->clean();
 					delete m_colony;
 					
-					m_grid->clearGrid();
+					m_grid->clear();
 					food.clear();
 					
 					smell_toggle = false;

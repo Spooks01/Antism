@@ -14,6 +14,6 @@ public:
 
 private:
 	float m_strength = 100;
-	float m_decay = Config::pheremoneDecay;
+	float m_decay = Config::PheremoneDecay;
 };
 

@@ -1,8 +1,9 @@
 #include "grid.h"
 
-Grid::Cell** Grid::m_cells = nullptr;
-std::vector<std::pair<Grid::Cell*, sf::Vector2i>> Grid::m_pheromones;
-std::vector <std::pair<Grid::Cell*, std::vector<sf::Vertex>>> Grid::m_pvertices;
+Cell** Grid::m_cells = nullptr;
+
+std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> Grid::Pheromones;
+
 int Grid::m_height = 0;
 int Grid::m_width = 0;
 
@@ -18,7 +19,7 @@ Grid::Grid(int width, int height) {
 	}
 }
 
-void Grid::clearGrid() {
+void Grid::clear() {
 	for (int i = 0; i < getHeight(); i++) {
 		for (int j = 0; j < getWidth(); j++) {
 			m_cells[i][j] = {};
@@ -27,22 +28,22 @@ void Grid::clearGrid() {
 
 }
 
-std::vector<std::pair<Grid::Cell*, sf::Vector2i>> Grid::getPheromones() {
-	return m_pheromones;
+void Grid::Assign(int i, int j, Cell data, sf::Vector2i position) {
+	m_cells[i][j].assign(data, position);
 }
 
 void Grid::update() {
 	//std::cout << "Ph: " << m_pvertices.size() << std::endl;
 
-	auto i = m_pvertices.begin();
-	while (i != m_pvertices.end()) {
-		if ((*i).first->attributes.second < Config::pheremoneDecay) {
+	auto i = Pheromones.begin();
+	while (i != Pheromones.end()) {
+		if ((*i).first->attributes.second < Config::PheremoneDecay) {
 			(*i).first = {};
 			(*i).second.clear();
-			i = m_pvertices.erase(i);
+			i = Pheromones.erase(i);
 		}
 		else {
-			(*i).first->attributes.second -= Config::pheremoneDecay;
+			(*i).first->attributes.second -= Config::PheremoneDecay;
 			++i;
 		}
 	}
@@ -53,6 +54,8 @@ sf::Vector2f Grid::getCenter() {
 }
 
 Grid::~Grid() {
+	clear();
+
 	for (int i = 0; i < m_height; i++)
 		delete[] m_cells[i];
 	delete[] m_cells;

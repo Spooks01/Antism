@@ -12,7 +12,7 @@ Overlay::Overlay(sf::Font * font) {
 	pheremoneDecay.setFont(*font);
 	pheremoneDecay.setCharacterSize(18);
 	pheremoneDecay.setFillColor(sf::Color::White);
-	pheremoneDecay.setString("Pheremone decay: " + std::to_string(Config::pheremoneDecay));
+	pheremoneDecay.setString("Pheremone decay: " + std::to_string(Config::PheremoneDecay));
 }
 
 Overlay::~Overlay()

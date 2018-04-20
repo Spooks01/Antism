@@ -22,8 +22,8 @@ Food::Food(sf::Vector2f position) {
 
 	spawn();
 
-	Grid::GetGrid()[(int)cp.y][(int)cp.x].assign(-3, nullptr, nullptr);
-	Grid::GetGrid()[(int)np.y][(int)np.x].assign(-3, nullptr, this, { m_smell_strength, 0.f });
+	Grid::Assign((int)cp.y, (int)cp.x, { -3, nullptr, nullptr });
+	Grid::Assign((int)np.y, (int)np.x, { -3, nullptr, this, { m_smell_strength, 0.f } });
 }
 
 void Food::spawn() {
@@ -44,17 +44,17 @@ void Food::spawn() {
 
 		for (int j = p.x - i; j <= p.x + i; j++) {
 			for (int k = p.y - i; k <= p.y + i; k++) {
-				Grid::GetGrid()[k][j].assign(-2, nullptr, nullptr, { smell, 0.f });
+				Grid::Assign(k, j, { -2, nullptr, nullptr, { smell, 0.f } });
 			}
 
-			Grid::GetGrid()[p.y][j].assign(-2, nullptr, nullptr, { smell, 0.f });
+			Grid::Assign(p.y, j, { -2, nullptr, nullptr, { smell, 0.f } });
 		}
 
 		for (int k = p.y - i; k <= p.y + i; k++) {
 			for (int j = p.x - i; j <= p.x + i; j++) {
-				Grid::GetGrid()[k][j].assign(-2, nullptr, nullptr, { smell, 0.f });
+				Grid::Assign(k, j, { -2, nullptr, nullptr, { smell, 0.f } });
 			}
-			Grid::GetGrid()[k][p.x].assign(-2, nullptr, nullptr, { smell, 0.f });
+			Grid::Assign(k, p.x, { -2, nullptr, nullptr, { smell, 0.f } });
 		}
 	}
 

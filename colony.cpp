@@ -58,8 +58,10 @@ void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 void Colony::generate(int size) {
 	clean();
 
+	m_generation = 1;
+
 	m_queen = new Queen(m_center);
-	Grid::GetGrid()[(int)m_center.y][(int)m_center.x].assign(-4, m_queen, nullptr);
+	Grid::Assign((int)m_center.y, (int)m_center.x, { -4, m_queen, nullptr });
 
 	for (int i = 0; i < size; ++i) {
 		int x = rand() % 100 + 1;
@@ -74,7 +76,7 @@ void Colony::generate(int size) {
 			y = -y;
 
 		sf::Vector2f pos = sf::Vector2f(m_center.x + x, m_center.y + y);
-		Grid::GetGrid()[(int)pos.y][(int)pos.x] = { 1, nullptr };
+		Grid::Assign((int)pos.y, (int)pos.x, { 1, nullptr });
 
 		m_ants.emplace(index++, new Ant(pos));
 	}

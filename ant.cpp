@@ -47,7 +47,7 @@ void Ant::move(sf::Vector2f offset) {
 	sf::Vector2f cp = getPosition();
 	sf::Vector2f np = cp + offset;
 
-	sf::Vector2f limit = sf::Vector2f((float)Grid::getWidth(), (float)Grid::getHeight());
+	sf::Vector2i limit = Grid::GetSize();
 	if (np.x < 0)
 		np.x = cp.x + 1;
 	else if (np.x >= limit.x)
@@ -60,8 +60,8 @@ void Ant::move(sf::Vector2f offset) {
 
 	setPosition(np);
 
-	Grid::GetGrid()[(int)cp.y][(int)cp.x].assign(-2, nullptr, nullptr, { 0.f, m_pheromone }, sf::Vector2i((int)cp.x, (int)cp.y));
-	Grid::GetGrid()[(int)cp.y][(int)cp.x].assign(-4, nullptr, nullptr);
-	Grid::GetGrid()[(int)np.y][(int)np.x].assign(-4, this, nullptr);
+	Grid::Assign((int)cp.y, (int)cp.x, { -2, nullptr, nullptr, { 0.f, m_pheromone } }, sf::Vector2i((int)cp.x, (int)cp.y));
+	Grid::Assign((int)cp.y, (int)cp.x, { -4, nullptr, nullptr });
+	Grid::Assign((int)np.y, (int)np.x, { -4, this, nullptr });
 }
 

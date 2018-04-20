@@ -10,7 +10,7 @@ public:
 	static int applicationWidth;
 	static int applicationHeight;
 	static bool vsync;
-	static float pheremoneDecay;
+	static float PheremoneDecay;
 	static float smellStrength;
 	static float smellRadius;
 };

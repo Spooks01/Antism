@@ -28,6 +28,7 @@ public:
 	}
 private:
 	int index = 0;
+	int m_generation = 0;
 	sf::Vector2f m_center;
 
 	std::unordered_map<int, Ant*> m_ants;
