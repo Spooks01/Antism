@@ -18,6 +18,8 @@ std::vector<Food*> food;
 std::vector<sf::VertexArray> m_smells;
 
 Application::Application(int width, int height, bool vS, std::string title) {
+	editingOverlayPh = false;
+	editingOverlayFo = false;
 	state = Menu;
 	windowWidth = width;
 	windowHeight = height;
@@ -40,6 +42,10 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_overlay->setPosition(1000, 0);
 	m_overlay->setSize(sf::Vector2f(280, 720));
 	m_overlay->setUpText();
+	m_tempOverlayLabel.setFont(m_font);
+	m_tempOverlayLabel.setString("");
+	m_tempOverlayLabel.setCharacterSize(18);
+	m_tempOverlayLabel.setFillColor(sf::Color::White);
 
 	m_bg.setSize(sf::Vector2f((float)m_window.getSize().x, (float)m_window.getSize().y));
 	//m_bg.setSize(sf::Vector2f(m_window.getSize().x, m_window.getSize().y));
@@ -89,7 +95,7 @@ void Application::setup() {
 		++k;
 	}
 
-	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, windowHeight / 2.f), sf::Vector2f(200, 50)));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, windowHeight / 2.f), sf::Vector2f(200, 50), sf::Color(100, 100, 100, 255)));
 
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(0).setFont(m_font);
@@ -98,16 +104,16 @@ void Application::setup() {
 	buttonLabels.at(0).setFillColor(sf::Color::White);
 	buttonLabels.at(0).setPosition(sf::Vector2f(buttonList.at(0).getPosition().x + 80, buttonList.at(0).getPosition().y + 10));
 
-	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) + 70), sf::Vector2f(200, 50)));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) + 70), sf::Vector2f(200, 50), sf::Color(100, 100, 100, 255)));
 
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(1).setFont(m_font);
 	buttonLabels.at(1).setString("Reset");
 	buttonLabels.at(1).setCharacterSize(18);
 	buttonLabels.at(1).setFillColor(sf::Color::White);
-	buttonLabels.at(1).setPosition(sf::Vector2f(buttonList.at(1).getPosition().x + 80, buttonList.at(1).getPosition().y + 10));
+	buttonLabels.at(1).setPosition(sf::Vector2f(buttonList.at(1).getPosition().x + 78, buttonList.at(1).getPosition().y + 10));
 
-	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) + 140), sf::Vector2f(200, 50)));
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) + 140), sf::Vector2f(200, 50), sf::Color(100, 100, 100, 255)));
 
 	buttonLabels.push_back(sf::Text());
 	buttonLabels.at(2).setFont(m_font);
@@ -145,10 +151,8 @@ void Application::run() {
 			m_colony->update();
 			
 			std::thread phero(&Grid::update);
-			phero.join();
 
 			m_overlay->updateStats(m_colony->getAntCount(), food.size());
-			m_overlay->updateField(std::to_string(Config::PheremoneDecay));
 			m_window.setView(m_view);
 
 			//elapsed = clock.restart();
@@ -171,15 +175,15 @@ void Application::run() {
 
 			m_window.draw(*m_colony);
 
-			//phero.join();
+			phero.join();
 			if (pheromone_toggle) {	
-				/*auto v = Grid::Pheromones;
+				auto v = Grid::Pheromones;
 				for (size_t i = 0; i < v.size(); i++) {
 					if (v[i].second.size() == 0)
 						continue;
 				
 					m_window.draw(&v[i].second[0], 4, sf::Quads);
-				}*/
+				}
 			}
 			
 			m_window.setView(m_window.getDefaultView());
@@ -187,7 +191,21 @@ void Application::run() {
 				m_window.draw(*m_overlay);
 				m_window.draw(m_overlay->overlayAntCount);
 				m_window.draw(m_overlay->overlayFoodCount);
-				m_window.draw(m_overlay->pheremoneDecay);
+				m_window.draw(m_overlay->div1);
+				if (!editingOverlayPh) {
+					m_window.draw(m_overlay->pheremoneDecay);
+				}
+				else {
+					m_window.draw(m_tempOverlayLabel);
+				}
+				if (!editingOverlayFo) {
+					m_window.draw(m_overlay->foodSmellRadius);
+				}
+				else {
+					m_window.draw(m_tempOverlayLabel);
+				}
+				m_window.draw(*m_overlay->ovButton);
+				m_window.draw(m_overlay->buttonLabel);
 			}
 
 			
@@ -223,37 +241,79 @@ void Application::update() {
 				sf::FloatRect visibleArea(0.f, 0.f, (float)event.size.width, (float)event.size.height);
 				m_window.setView(sf::View(visibleArea));
 			}
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
-				toggle = !toggle;
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1)
-				smell_toggle = !smell_toggle;
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num2)
-				pheromone_toggle = !pheromone_toggle;
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-				m_view.move(0, -100);
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
-				m_view.move(0, 100);
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-				m_view.move(-100, 0);
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-				m_view.move(100, 0);
-			if (event.type == sf::Event::MouseWheelMoved)
-				m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
-				state = Menu;
+			if (!editingOverlayPh) {
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
+					toggle = !toggle;
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1)
+					smell_toggle = !smell_toggle;
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num2)
+					pheromone_toggle = !pheromone_toggle;
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+					m_view.move(0, -100);
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
+					m_view.move(0, 100);
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
+					m_view.move(-100, 0);
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
+					m_view.move(100, 0);
+				if (event.type == sf::Event::MouseWheelMoved)
+					m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+					state = Menu;
+				}
 			}
 			if (m_overlay->editMode == 1 && toggle) {
+				editingOverlayPh = true;
+				m_tempOverlayLabel.setPosition(m_overlay->pheremoneDecay.getPosition());
 				if (event.type == sf::Event::TextEntered) {
 						temp += event.text.unicode;
 						std::cout << temp.toAnsiString();
-						Config::PheremoneDecay = std::stof(temp.toAnsiString(), &si);		
+						m_tempOverlayLabel.setString(temp);
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
-					m_overlay->editMode = 0;
+					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0) {
+						m_overlay->updateFieldPh(std::to_string(Config::PheremoneDecay));
+						m_overlay->editMode = 0;
+					}
+					else {
+						Config::PheremoneDecay = std::stof(temp.toAnsiString(), &si);
+						m_overlay->updateFieldPh(std::to_string(Config::PheremoneDecay));
+						m_overlay->editMode = 0;
+					}
 					std::cout << "Current decay: " << Config::PheremoneDecay;
-					Config::writeDecay(Config::PheremoneDecay);
+					//Config::writeConfig();
+					m_tempOverlayLabel.setString("");
 					temp = "";
+					editingOverlayPh = false;
 				}
+			}
+			if (m_overlay->editMode == 2 && toggle) {
+				editingOverlayFo = true;
+				m_tempOverlayLabel.setPosition(m_overlay->foodSmellRadius.getPosition());
+				if (event.type == sf::Event::TextEntered) {
+					temp += event.text.unicode;
+					std::cout << temp.toAnsiString();
+					m_tempOverlayLabel.setString(temp);
+				}
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
+					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0) {
+						m_overlay->updateFieldFo(std::to_string(Config::FoodSmellRadius));
+						m_overlay->editMode = 0;
+					}
+					else {
+						Config::FoodSmellRadius = std::stof(temp.toAnsiString(), &si);
+						m_overlay->updateFieldFo(std::to_string(Config::FoodSmellRadius));
+						m_overlay->editMode = 0;
+					}
+					std::cout << "Food radius: " << Config::FoodSmellRadius;
+					//Config::writeConfig();
+					m_tempOverlayLabel.setString("");
+					temp = "";
+					editingOverlayFo = false;
+				}
+			}
+			if (m_overlay->ovButton->update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
+				Config::writeConfig();
 			}
 		}
 	} else if (state == Menu) {
@@ -285,13 +345,14 @@ void Application::update() {
 					
 					m_grid->clear();
 					food.clear();
-					
 					smell_toggle = false;
 					pheromone_toggle = false;
 					toggle = false;
 					
 					m_smells.clear();
-					
+					Config::loadConfig();
+					m_overlay->updateFieldPh(std::to_string(Config::PheremoneDecay));
+					m_overlay->updateFieldFo(std::to_string(Config::FoodSmellRadius));
 					setup();
 				}
 			}
