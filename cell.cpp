@@ -11,14 +11,14 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 	else if (id == -2) {
 		if (attributes.second > 0) {
 
-			std::vector<sf::Vertex> quads;
+			/*std::vector<sf::Vertex> quads;
 
 			quads.push_back({ sf::Vector2f(position) + sf::Vector2f(0, 0), sf::Color::Cyan });
 			quads.push_back({ sf::Vector2f(position) + sf::Vector2f(1, 0), sf::Color::Cyan });
 			quads.push_back({ sf::Vector2f(position) + sf::Vector2f(1, 1), sf::Color::Cyan });
 			quads.push_back({ sf::Vector2f(position) + sf::Vector2f(0, 1), sf::Color::Cyan });
 
-			Grid::Pheromones.push_back({ this, quads });
+			Grid::Pheromones.push_back({ this, quads });*/
 		}
 
 	}
@@ -43,7 +43,16 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 
 		this->ant = ant;
 	}
-
+	
 	this->attributes.first += attributes.first;
 	this->attributes.second += attributes.second;
+
+	if (id == -5) {
+		this->id = -1;
+		this->ant = nullptr;
+		this->food = nullptr;
+		this->attributes.first = 0;
+		this->attributes.second = 0;
+	}
+
 }

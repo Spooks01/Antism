@@ -2,8 +2,10 @@
 
 Ant::Ant()
 {
-	setFillColor(sf::Color::Green);
-	setSize(sf::Vector2f(1, 1));
+	m_vertices[0].color = sf::Color::Green;
+	m_vertices[1].color = sf::Color::Green;
+	m_vertices[2].color = sf::Color::Green;
+	m_vertices[3].color = sf::Color::Green;
 
 	m_health = float(rand() % 1500 + 1000);
 }
@@ -12,8 +14,10 @@ Ant::Ant(sf::Vector2f position)
 {
 	setPosition(position);
 
-	setFillColor(sf::Color::Green);
-	setSize(sf::Vector2f(1, 1));
+	m_vertices[0].color = sf::Color::Green;
+	m_vertices[1].color = sf::Color::Green;
+	m_vertices[2].color = sf::Color::Green;
+	m_vertices[3].color = sf::Color::Green;
 
 	m_health = float(rand() % 1500 + 1000);
 }
@@ -23,7 +27,7 @@ Ant::~Ant()
 {
 }
 
-void Ant::update(int frame) {
+void Ant::update() {
 	float x = (float)(rand() % 1 + 1);
 	float y = (float)(rand() % 1 + 1);
 
@@ -39,37 +43,28 @@ void Ant::update(int frame) {
 	
 	//m_health--;
 
-	if (m_identifier < 0) {
-		sf::Vector2i pos = (*m_trail.begin());
-		Grid::Assign(pos.x, pos.y, { -2 });
-
-		m_trail.erase(m_trail.begin());
-	}
-
-	if (frame % 60 == 0) {
-		auto v = m_trail.front();
-		if (Grid::Get(v.y, v.x).attributes.second <= m_pheromone) {
-			Grid::Assign(v.y, v.x, { -2 });
-			m_trail.pop_front();
-			
-			m_pvertices.pop_back();
-			m_pvertices.pop_back();
-			m_pvertices.pop_back();
-			m_pvertices.pop_back();
-		}
-		else
-			Grid::Assign(v.y, v.x, { -2, nullptr, nullptr, { 0, -m_pheromone } });
-	}
+	auto v = m_trail.front();
+	if (Grid::Get(v.y, v.x).attributes.second < m_decay) {
+		Grid::Assign(v.y, v.x, { -5 });
+		m_trail.pop_front();
 		
+		m_pvertices.pop_back();
+		m_pvertices.pop_back();
+		m_pvertices.pop_back();
+		m_pvertices.pop_back();
+	}
+	else
+		Grid::Assign(v.y, v.x, { -2, nullptr, nullptr, { 0, -m_decay } });
+	
 }
 
 float Ant::getHealth() {
 	return m_health;
 }
 
-std::deque<sf::Vector2i> Ant::getTrail()
+void Ant::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
-	return m_trail;
+	target.draw(m_vertices, 4, sf::Quads);
 }
 
 void Ant::move(sf::Vector2f offset) {
@@ -90,26 +85,19 @@ void Ant::move(sf::Vector2f offset) {
 	m_trail.push_back(sf::Vector2i(cp));
 	setPosition(np);
 	
-	Grid::Assign((int)cp.y, (int)cp.x, { -2, nullptr, nullptr, { 0.f, m_pheromone } }, sf::Vector2i((int)cp.x, (int)cp.y));
-	Grid::Assign((int)cp.y, (int)cp.x, { -4, nullptr, nullptr });
+	Grid::Assign((int)cp.y, (int)cp.x, { -4, nullptr, nullptr, { 0.f, m_pheromone } });
 	Grid::Assign((int)np.y, (int)np.x, { -4, this, nullptr });
 
-	m_trail.push_back(sf::Vector2i(cp));
+	m_pvertices.insert(m_pvertices.begin(), { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(0, 0), sf::Color::Cyan });
+	m_pvertices.insert(m_pvertices.begin(), { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(1, 0), sf::Color::Cyan });
+	m_pvertices.insert(m_pvertices.begin(), { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(1, 1), sf::Color::Cyan });
+	m_pvertices.insert(m_pvertices.begin(), { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(0, 1), sf::Color::Cyan });
+}
 
-	sf::Vertex vertices[4];
-
-	vertices[0] = { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(0, 0), sf::Color::Cyan };
-	vertices[1] = { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(1, 0), sf::Color::Cyan };
-	vertices[2] = { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(1, 1), sf::Color::Cyan };
-	vertices[3] = { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(0, 1), sf::Color::Cyan };
-
-	m_pvertices.insert(m_pvertices.begin(), vertices[0]);
-	m_pvertices.insert(m_pvertices.begin(), vertices[1]);
-	m_pvertices.insert(m_pvertices.begin(), vertices[2]);
-	m_pvertices.insert(m_pvertices.begin(), vertices[3]);
-
-	//m_pvertices.push_back(vertices[0]);
-	//m_pvertices.push_back(vertices[1]);
-	//m_pvertices.push_back(vertices[2]);
-	//m_pvertices.push_back(vertices[3]);
+void Ant::setPosition(sf::Vector2f position)
+{
+	m_vertices[0].position = position + sf::Vector2f(0, 0);
+	m_vertices[1].position = position + sf::Vector2f(m_size, 0);
+	m_vertices[2].position = position + sf::Vector2f(m_size, m_size);
+	m_vertices[3].position = position + sf::Vector2f(0, m_size);
 }

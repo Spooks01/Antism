@@ -6,25 +6,34 @@
 
 #include <deque>
 
-class Ant : public sf::RectangleShape
+class Ant : public sf::Drawable
 {
 public:
 	Ant();
 	Ant(sf::Vector2f position);
 	~Ant();
 
-	virtual void update(int frame);
+	virtual void update();
 	virtual void move(sf::Vector2f offset);
+	virtual void setPosition(sf::Vector2f position);
+	virtual sf::Vector2f getPosition() { return { m_vertices[0].position.x, m_vertices[0].position.y }; }
 
 	float getHealth();
-	std::deque<sf::Vector2i> getTrail();
-	std::vector<sf::Vertex> getVertices() { return m_pvertices; }
+	std::vector<sf::Vertex> getTrail() { return m_pvertices; }
+	sf::Vertex* getVertices() { return m_vertices; }
 
 protected:
-	float m_pheromone = 100.f;
+	float m_pheromone = 1.f;
+	float m_decay = 1.f;
 	float m_identifier = 100.f;
 	float m_health = 1500;
 	std::deque<sf::Vector2i> m_trail;
 	std::vector<sf::Vertex> m_pvertices;
+
+	// Inherited via Drawable
+	virtual void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
+
+	int m_size = 1;
+	sf::Vertex m_vertices[4];
 };
 

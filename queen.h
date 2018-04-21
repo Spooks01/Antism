@@ -8,17 +8,25 @@ class Queen : public Ant
 {
 public:
 	Queen() {
-		setFillColor(sf::Color::Red);
-		setSize(sf::Vector2f(3, 3));
+		m_vertices[0].color = sf::Color::Red;
+		m_vertices[1].color = sf::Color::Red;
+		m_vertices[2].color = sf::Color::Red;
+		m_vertices[3].color = sf::Color::Red;
+
+		m_size = 3;
 	}
 	Queen(sf::Vector2f position) : Ant(position) {
-		setPosition(position);
+		m_vertices[0].color = sf::Color::Red;
+		m_vertices[1].color = sf::Color::Red;
+		m_vertices[2].color = sf::Color::Red;
+		m_vertices[3].color = sf::Color::Red;
 
-		setFillColor(sf::Color::Red);
-		setSize(sf::Vector2f(3, 3));
+		m_size = 3;
+
+		setPosition(position);
 	}
 
-	void update(int frame) override {
+	void update() override {
 		if (m_cooldown >= m_spawn_rate) {
 			m_cooldown = 0.f;
 			m_status = true;
@@ -56,6 +64,8 @@ public:
 	bool getStatus() {
 		return m_status;
 	}
+
+	
 
 private:
 	float m_spawn_rate = 20.f;

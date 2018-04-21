@@ -70,7 +70,7 @@ Application::~Application() {
 
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
-	m_colony->generate(20);
+	m_colony->generate(5);
 
 	std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
@@ -133,7 +133,8 @@ void Application::run() {
 	//phero.detach();
 
 	while (m_window.isOpen()) {
-		
+		if (num_frames > 10)
+			num_frames = 0;
 		//std::cout << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() <<"\n";
 		
 		//do {
@@ -141,14 +142,14 @@ void Application::run() {
 
 			//std::cout << "->" << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() << "\n";
 
-			update();
+		update();
 		//} while ((elapsed - frame).asMilliseconds() < num_frames * frame.asMilliseconds());
 
 		//elapsed = clock.restart();
 		
 		m_window.clear(sf::Color::Black);
 		if (state == Run) {
-			m_colony->update();
+			m_colony->update(num_frames);
 			
 			//std::thread phero(&Grid::update);
 			//phero.join();
@@ -224,6 +225,8 @@ void Application::run() {
 
 		m_window.draw(m_label);
 		m_window.display();
+
+		num_frames++;
 	}
 }
 sf::String temp;

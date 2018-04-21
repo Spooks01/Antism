@@ -16,7 +16,7 @@ public:
 	void spawnAnt(sf::Vector2f position);
 	void spawnAnt();
 
-	void update();
+	void update(int frame);
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	void generate(int size);
@@ -32,7 +32,9 @@ private:
 	int m_frame = 60;
 	sf::Vector2f m_center;
 
-	std::unordered_map<int, Ant*> m_ants;
+	//std::unordered_map<int, Ant*> m_ants;
+	std::vector<Ant*> m_ants;
+	std::vector<Ant*>::iterator m_iterator;
 	Queen* m_queen;
 };
 

@@ -4,75 +4,82 @@
 
 Colony::Colony(sf::Vector2f center) {
 	m_center = center;
+
+	m_iterator = m_ants.begin();
 }
 
-void Colony::addAnt(Ant * ant) {
-	m_ants.emplace(index++, ant);
+void Colony::addAnt(Ant* ant) {
+	m_ants.push_back(ant);
 }
 
 void Colony::removeAnt(int index) {
-	m_ants.erase(index);
+	m_ants.erase(m_ants.begin() + index);
 }
 
 void Colony::spawnAnt(sf::Vector2f position) {
-	m_ants.emplace(index++, new Ant(position));
+	m_ants.push_back(new Ant(position));
 }
 
 void Colony::spawnAnt() {
-	m_ants.emplace(index++, new Ant());
+	m_ants.push_back(new Ant());
 }
 
-void Colony::update() {
-	auto i = m_ants.begin();
-	while (i != m_ants.end()) {
-		i->second->update(m_frame);
+void Colony::update(int frame) {
+	int stage = m_ants.size() / 10 + 1;
 
-		if ((*i).second->getHealth() > 0)
-			++i;
-		else
-			i = m_ants.erase(i);
+	for (int i = 0; i < stage; i++) {
+		if (frame * stage + i < m_ants.size()) {
+			m_ants.at(frame * stage + i)->update();
+
+			if (m_ants.at(frame * stage + i)->getHealth() <= 0) {
+				m_ants.erase(m_iterator + frame * stage + i);
+			}
+		}
 	}
 
-	m_queen->update(m_frame);
+	m_queen->update();
 	if (m_queen->getStatus()) {
 		sf::Vector2f pos = sf::Vector2f(m_center.x, m_center.y + 3);
-		Grid::GetGrid()[(int)pos.y][(int)pos.x] = { 1, nullptr };
+		//Grid::GetGrid()[(int)pos.y][(int)pos.x] = { 1, nullptr };
 
-		m_ants.emplace(index++, new Ant(pos));
+		//m_ants.push_back(new Ant(pos));
 
 		m_queen->setStatus(false);
 	}
-
-	if (m_frame >= 60)
-		m_frame = 0;
-	
-	m_frame++;
 }
 
 void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	auto i = m_ants.begin();
+	auto k = 0;
+
+	sf::Vertex* vertices = new sf::Vertex[m_ants.size() * 4];
+
+	i = m_ants.begin();
 	while (i != m_ants.end()) {
-		auto v = i->second->getVertices();
-		//std::vector<sf::Vertex> vertices;
-		
-		//for (int o = 0; o < v.size(); o++) {
-		//	vertices.push_back(v.at(o));
-		//}
+		auto v = (*i)->getTrail();
+		auto w = (*i)->getVertices();
 
-		if (v.size() > 0) {
-
+		if (v.size()) {
 			target.draw(&v[0], v.size(), sf::Quads);
 		}
-
+			
 		
-		if ((*i).second->getHealth() > 0) {
-			target.draw(*(*i).second, states);
-			++i;
-		}
+		
+		vertices[k + 0] = w[0];
+		vertices[k + 1] = w[1];
+		vertices[k + 2] = w[2];
+		vertices[k + 3] = w[3];
+
+		k += 4;
+		
+		++i;
 	}
 
+	target.draw(vertices, m_ants.size() * 4, sf::Quads);
 	target.draw(*m_queen, states);
+
+	delete[] vertices;
 }
 
 void Colony::generate(int size) {
@@ -98,7 +105,7 @@ void Colony::generate(int size) {
 		sf::Vector2f pos = sf::Vector2f(m_center.x + x, m_center.y + y);
 		Grid::Assign((int)pos.y, (int)pos.x, { 1, nullptr });
 
-		m_ants.emplace(index++, new Ant(pos));
+		m_ants.push_back(new Ant(pos));
 	}
 
 }
