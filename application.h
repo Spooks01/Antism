@@ -29,7 +29,7 @@ private:
 	Overlay *m_overlay;
 	sf::RenderWindow m_window;
 	Grid* m_grid;
-	sf::Text m_label, m_tempOverlayLabel;
+	sf::Text m_label;
 	Fps fps;
 	sf::View m_view;
 	Colony *m_colony;
@@ -37,6 +37,5 @@ private:
 	sf::Font m_font;
 	sf::RectangleShape m_logo;
 	sf::Texture m_logoTexture;
-	bool editingOverlayPh, editingOverlayFo;
 };
 

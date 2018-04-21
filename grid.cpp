@@ -3,7 +3,7 @@
 Cell** Grid::m_cells = nullptr;
 
 std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> Grid::Pheromones;
-std::vector <std::pair<int, std::vector<sf::Vertex>>> Grid::Pheromones2;
+std::vector <std::pair<int, std::vector<sf::Vertex>>> Grid::Pheromones2;;
 std::vector <std::pair<Cell*, sf::Vector2i>> Grid::Food;
 std::vector <void*> Grid::Colonies;
 int Grid::m_height = 0;
@@ -38,7 +38,7 @@ void Grid::Assign(int i, int j, Cell data, sf::Vector2i position) {
 void Grid::update() {
 	//std::cout << "Ph: " << m_pvertices.size() << std::endl;
 
-	auto i = Pheromones.begin();
+	/*auto i = Pheromones.begin();
 	while (i != Pheromones.end()) {
 		if ((*i).first->attributes.second < Config::PheremoneDecay) {
 			(*i).first = {};
@@ -49,7 +49,7 @@ void Grid::update() {
 			(*i).first->attributes.second -= Config::PheremoneDecay;
 			++i;
 		}
-	}
+	}*/
 }
 
 sf::Vector2f Grid::getCenter() {

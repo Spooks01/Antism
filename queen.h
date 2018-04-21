@@ -2,6 +2,8 @@
 
 #include "ant.h"
 
+
+
 class Queen : public Ant
 {
 public:
@@ -16,7 +18,7 @@ public:
 		setSize(sf::Vector2f(3, 3));
 	}
 
-	void update() override {
+	void update(int frame) override {
 		if (m_cooldown >= m_spawn_rate) {
 			m_cooldown = 0.f;
 			m_status = true;
