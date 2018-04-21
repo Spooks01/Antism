@@ -266,9 +266,17 @@ void Application::update() {
 				editingOverlayPh = true;
 				m_tempOverlayLabel.setPosition(m_overlay->pheremoneDecay.getPosition());
 				if (event.type == sf::Event::TextEntered) {
+					if (event.text.unicode == '\b') {
+						if (temp.getSize() != 0) {
+							temp.erase(temp.getSize() - 1, 1);
+							m_tempOverlayLabel.setString(temp);
+						}
+					}
+					else {
 						temp += event.text.unicode;
 						std::cout << temp.toAnsiString();
 						m_tempOverlayLabel.setString(temp);
+					}
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
 					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0) {
@@ -291,9 +299,17 @@ void Application::update() {
 				editingOverlayFo = true;
 				m_tempOverlayLabel.setPosition(m_overlay->foodSmellRadius.getPosition());
 				if (event.type == sf::Event::TextEntered) {
-					temp += event.text.unicode;
-					std::cout << temp.toAnsiString();
-					m_tempOverlayLabel.setString(temp);
+					if (event.text.unicode == '\b') {
+						if (temp.getSize() != 0) {
+							temp.erase(temp.getSize() - 1, 1);
+							m_tempOverlayLabel.setString(temp);
+						}
+					}
+					else {
+						temp += event.text.unicode;
+						std::cout << temp.toAnsiString();
+						m_tempOverlayLabel.setString(temp);
+					}
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
 					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0) {
