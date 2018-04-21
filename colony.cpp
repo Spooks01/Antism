@@ -1,5 +1,7 @@
 #include "colony.h"
 
+#include <thread>
+
 Colony::Colony(sf::Vector2f center) {
 	m_center = center;
 }
@@ -23,7 +25,7 @@ void Colony::spawnAnt() {
 void Colony::update() {
 	auto i = m_ants.begin();
 	while (i != m_ants.end()) {
-		i->second->update();
+		i->second->update(m_frame);
 
 		if ((*i).second->getHealth() > 0)
 			++i;
@@ -31,7 +33,7 @@ void Colony::update() {
 			i = m_ants.erase(i);
 	}
 
-	m_queen->update();
+	m_queen->update(m_frame);
 	if (m_queen->getStatus()) {
 		sf::Vector2f pos = sf::Vector2f(m_center.x, m_center.y + 3);
 		Grid::GetGrid()[(int)pos.y][(int)pos.x] = { 1, nullptr };
@@ -40,12 +42,30 @@ void Colony::update() {
 
 		m_queen->setStatus(false);
 	}
+
+	if (m_frame >= 60)
+		m_frame = 0;
+	
+	m_frame++;
 }
 
 void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	auto i = m_ants.begin();
 	while (i != m_ants.end()) {
+		auto v = i->second->getVertices();
+		//std::vector<sf::Vertex> vertices;
+		
+		//for (int o = 0; o < v.size(); o++) {
+		//	vertices.push_back(v.at(o));
+		//}
+
+		if (v.size() > 0) {
+
+			target.draw(&v[0], v.size(), sf::Quads);
+		}
+
+		
 		if ((*i).second->getHealth() > 0) {
 			target.draw(*(*i).second, states);
 			++i;

@@ -150,7 +150,8 @@ void Application::run() {
 		if (state == Run) {
 			m_colony->update();
 			
-			std::thread phero(&Grid::update);
+			//std::thread phero(&Grid::update);
+			//phero.join();
 
 			m_overlay->updateStats(m_colony->getAntCount(), food.size());
 			m_window.setView(m_view);
@@ -175,15 +176,15 @@ void Application::run() {
 
 			m_window.draw(*m_colony);
 
-			phero.join();
+			
 			if (pheromone_toggle) {	
-				auto v = Grid::Pheromones;
+				/*auto v = Grid::Pheromones;
 				for (size_t i = 0; i < v.size(); i++) {
 					if (v[i].second.size() == 0)
 						continue;
 				
 					m_window.draw(&v[i].second[0], 4, sf::Quads);
-				}
+				}*/
 			}
 			
 			m_window.setView(m_window.getDefaultView());

@@ -9,9 +9,7 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 		this->food = food;
 	}
 	else if (id == -2) {
-		this->attributes.first += attributes.first;
 		if (attributes.second > 0) {
-			this->attributes.second += attributes.second;
 
 			std::vector<sf::Vertex> quads;
 
@@ -45,4 +43,7 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 
 		this->ant = ant;
 	}
+
+	this->attributes.first += attributes.first;
+	this->attributes.second += attributes.second;
 }
