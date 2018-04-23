@@ -31,6 +31,7 @@ private:
 	Grid* m_grid;
 	sf::Text m_label, m_tempOverlayLabel, m_paused;
 	Fps fps;
+	int m_maxFrames;
 	sf::View m_view;
 	Colony *m_colony;
 	sf::RectangleShape m_bg;

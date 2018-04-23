@@ -55,6 +55,7 @@ void Ant::update() {
 	}
 	else
 		Grid::Assign(v.y, v.x, { -2, nullptr, nullptr, { 0, -m_decay } });
+	//std::cout << m_trail.size() << std::endl;
 	
 }
 

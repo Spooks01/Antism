@@ -26,7 +26,7 @@ void Colony::spawnAnt() {
 
 void Colony::update(int frame) {
 	int stage = m_ants.size() / 10 + 1;
-
+	m_numFrames = frame;
 	for (int i = 0; i < stage; i++) {
 		if (frame * stage + i < m_ants.size()) {
 			m_ants.at(frame * stage + i)->update();
@@ -50,6 +50,31 @@ void Colony::update(int frame) {
 
 void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
+	int stage = (m_ants.size() / 10 + 1);
+	int k = 0;
+	sf::Vertex* vertices = new sf::Vertex[stage * 4];
+
+	for (int i = 0; i < stage; i++) {
+		if (m_numFrames * stage + i < m_ants.size()) {
+			auto v = m_ants.at(m_numFrames * stage + i)->getTrail();
+			auto w = m_ants.at(m_numFrames * stage + i)->getVertices();
+
+			if (v.size()) {
+				target.draw(&v[0], v.size(), sf::Quads);
+			}
+
+			vertices[k + 0] = w[0];
+			vertices[k + 1] = w[1];
+			vertices[k + 2] = w[2];
+			vertices[k + 3] = w[3];
+
+			k += 4;
+		}
+	}
+
+	target.draw(vertices, stage * 4, sf::Quads);
+	target.draw(*m_queen, states);
+	/*
 	auto i = m_ants.begin();
 	auto k = 0;
 
@@ -78,7 +103,7 @@ void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 
 	target.draw(vertices, m_ants.size() * 4, sf::Quads);
 	target.draw(*m_queen, states);
-
+	*/
 	delete[] vertices;
 }
 
@@ -117,4 +142,8 @@ void Colony::clean() {
 		delete m_ants[i];
 	}
 	m_ants.clear();
+}
+
+void Colony::passFrames(int f) {
+	m_numFrames = f;
 }

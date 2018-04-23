@@ -18,6 +18,7 @@ std::vector<Food*> food;
 std::vector<sf::VertexArray> m_smells;
 
 Application::Application(int width, int height, bool vS, std::string title) {
+	m_maxFrames = 10;
 	editingOverlayPh = false;
 	editingOverlayFo = false;
 	state = Menu;
@@ -77,7 +78,7 @@ Application::~Application() {
 
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
-	m_colony->generate(5);
+	m_colony->generate(10);
 
 	std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
@@ -130,15 +131,15 @@ void Application::setup() {
 	buttonLabels.at(2).setPosition(sf::Vector2f(buttonList.at(2).getPosition().x + 85, buttonList.at(2).getPosition().y + 10));
 }
 
+int num_frames;
 void Application::run() {
 	setup();
 	
 	sf::Clock clock;
 	sf::Time frame = sf::milliseconds(60);
 	sf::Time elapsed = frame;
-	int num_frames = 0;
+	num_frames = 0;
 	//phero.detach();
-
 	while (m_window.isOpen()) {
 		if (num_frames > 10)
 			num_frames = 0;
@@ -153,21 +154,27 @@ void Application::run() {
 		//} while ((elapsed - frame).asMilliseconds() < num_frames * frame.asMilliseconds());
 
 		//elapsed = clock.restart();
-		
-		m_window.clear(sf::Color::Black);
-		if (state == Pause) {
+		if (num_frames == m_maxFrames) {
+			m_window.clear(sf::Color::Black);
+		}
+		if (state == Pause) {	
+			m_colony->passFrames(num_frames);
 			m_window.setView(m_view);
-			m_window.draw(m_bg);
-			if (smell_toggle) {
-				for (size_t i = 0; i < m_smells.size(); ++i)
-					m_window.draw(m_smells.at(i));
-			}
-			for (size_t i = 0; i < food.size(); ++i)
-				m_window.draw(*food[i]);
-
 			m_window.draw(*m_colony);
+			if (num_frames == m_maxFrames - 1) {
+				m_window.draw(m_bg);
+				if (smell_toggle) {
+					for (size_t i = 0; i < m_smells.size(); ++i)
+						m_window.draw(m_smells.at(i));
+				}
+				for (size_t i = 0; i < food.size(); ++i)
+					m_window.draw(*food[i]);
+			}
+			
 			m_window.setView(m_window.getDefaultView());
-			m_window.draw(m_paused);
+			if (num_frames == m_maxFrames - 1) {
+				m_window.draw(m_paused);
+			}
 		
 		}
 		if (state == Run) {
@@ -186,55 +193,58 @@ void Application::run() {
 
 			//	continue;
 			//}
-
-			m_window.draw(m_bg);
-
-			if (smell_toggle) {
-				for (size_t i = 0; i < m_smells.size(); ++i)
-					m_window.draw(m_smells.at(i));
-			}
-			
-			for (size_t i = 0; i < food.size(); ++i)
-				m_window.draw(*food[i]);
-
 			m_window.draw(*m_colony);
+			if (num_frames == m_maxFrames - 1) {
+				//m_window.setView(m_view);
+				m_window.draw(m_bg);
 
+				if (smell_toggle) {
+					for (size_t i = 0; i < m_smells.size(); ++i)
+						m_window.draw(m_smells.at(i));
+				}
+
+				for (size_t i = 0; i < food.size(); ++i)
+					m_window.draw(*food[i]);
+
+				if (pheromone_toggle) {
+					/*auto v = Grid::Pheromones;
+					for (size_t i = 0; i < v.size(); i++) {
+						if (v[i].second.size() == 0)
+							continue;
+
+						m_window.draw(&v[i].second[0], 4, sf::Quads);
+					}*/
 			
-			if (pheromone_toggle) {	
-				/*auto v = Grid::Pheromones;
-				for (size_t i = 0; i < v.size(); i++) {
-					if (v[i].second.size() == 0)
-						continue;
-				
-					m_window.draw(&v[i].second[0], 4, sf::Quads);
-				}*/
+				}
 			}
-			
 			m_window.setView(m_window.getDefaultView());
-			if (toggle) {
-				m_window.draw(*m_overlay);
-				m_window.draw(m_overlay->overlayAntCount);
-				m_window.draw(m_overlay->overlayFoodCount);
-				m_window.draw(m_overlay->div1);
-				if (!editingOverlayPh) {
-					m_window.draw(m_overlay->pheremoneDecay);
+			if (num_frames == m_maxFrames - 1) {
+
+				if (toggle) {
+					m_window.draw(*m_overlay);
+					m_window.draw(m_overlay->overlayAntCount);
+					m_window.draw(m_overlay->overlayFoodCount);
+					m_window.draw(m_overlay->div1);
+					if (!editingOverlayPh) {
+						m_window.draw(m_overlay->pheremoneDecay);
+					}
+					else {
+						m_window.draw(m_tempOverlayLabel);
+					}
+					if (!editingOverlayFo) {
+						m_window.draw(m_overlay->foodSmellRadius);
+					}
+					else {
+						m_window.draw(m_tempOverlayLabel);
+					}
+					m_window.draw(*m_overlay->ovButton);
+					m_window.draw(m_overlay->buttonLabel);
 				}
-				else {
-					m_window.draw(m_tempOverlayLabel);
-				}
-				if (!editingOverlayFo) {
-					m_window.draw(m_overlay->foodSmellRadius);
-				}
-				else {
-					m_window.draw(m_tempOverlayLabel);
-				}
-				m_window.draw(*m_overlay->ovButton);
-				m_window.draw(m_overlay->buttonLabel);
 			}
 
-			
 		}
 		if (state == Menu) {
+			//std::cout << num_frames << std::endl;
 			m_window.clear(sf::Color::Black);
 			m_window.draw(m_bg);
 			m_window.draw(m_logo);
@@ -245,8 +255,11 @@ void Application::run() {
 			}
 		}
 
-		m_window.draw(m_label);
-		m_window.display();
+		
+		if (num_frames == m_maxFrames - 1) {
+			m_window.draw(m_label);
+			m_window.display();
+		}
 
 		num_frames++;
 	}
@@ -306,6 +319,7 @@ void Application::update() {
 				if (event.type == sf::Event::MouseWheelMoved)
 					m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+					std::cout << num_frames << std::endl;
 					state = Menu;
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {
