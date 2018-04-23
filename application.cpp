@@ -162,7 +162,8 @@ void Application::run() {
 			m_window.clear(sf::Color::Black);
 		}
 		if (state == Pause) {	
-			m_colony->passFrames(Config::MaxFrames);
+			m_colony->passFrames(num_frames);
+			
 			m_window.setView(m_view);
 			m_window.draw(*m_colony);
 			if (num_frames == Config::MaxFrames - 1) {
@@ -197,7 +198,7 @@ void Application::run() {
 
 			//	continue;
 			//}
-			//m_window.draw(*m_colony);
+			m_window.draw(*m_colony);
 			if (num_frames == Config::MaxFrames - 1) {
 				//m_window.draw(*m_clickableArea);
 				//m_window.setView(m_view);
