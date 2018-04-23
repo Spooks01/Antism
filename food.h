@@ -16,6 +16,6 @@ public:
 private:
 	float m_smell_strength = 100;
 	float m_decay = 0.33f;
-	int m_radius = 3;
+	int m_radius = Config::FoodSmellRadius;
 };
 

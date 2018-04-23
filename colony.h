@@ -26,12 +26,14 @@ public:
 	int getAntCount() {
 		return m_ants.size();
 	}
+	void passFrames(int f);
+
 private:
 	int index = 0;
 	int m_generation = 0;
 	int m_frame = 60;
 	sf::Vector2f m_center;
-
+	int m_numFrames;
 	//std::unordered_map<int, Ant*> m_ants;
 	std::vector<Ant*> m_ants;
 	std::vector<Ant*>::iterator m_iterator;

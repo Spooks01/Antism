@@ -71,6 +71,11 @@ void Ant::update() {
 			
 		count--;		
 	}
+
+
+	//std::cout << m_trail.size() << std::endl;
+	
+
 }
 
 float Ant::getHealth() {

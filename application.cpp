@@ -18,6 +18,8 @@ std::vector<Food*> food;
 std::vector<sf::VertexArray> m_smells;
 
 Application::Application(int width, int height, bool vS, std::string title) {
+	m_clickableArea = new Zone(width, height);
+	m_maxFrames = 10;
 	editingOverlayPh = false;
 	editingOverlayFo = false;
 	state = Menu;
@@ -57,6 +59,13 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_label.setCharacterSize(18);
 	m_label.setFillColor(sf::Color::White);
 
+	m_paused.setFont(m_font);
+	m_paused.setString("Paused");
+	m_paused.setCharacterSize(18);
+	m_paused.setFillColor(sf::Color::White);
+	m_paused.setOrigin(sf::Vector2f(m_paused.getLocalBounds().width/2,0));
+	m_paused.setPosition(sf::Vector2f(width / 2, 0));
+
 	m_logoTexture.loadFromFile("logoTexture.png");
 	m_logoTexture.setSmooth(true);
 	m_logo.setTexture(&m_logoTexture);
@@ -70,9 +79,11 @@ Application::~Application() {
 
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
-	m_colony->generate(1);
 
-	std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
+	m_colony->generate(5);
+
+
+	//std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
 	for (int i = 0; i < 100; i++) {
 		food.push_back(new Food(sf::Vector2f((float)(rand() % m_window.getSize().x + 1), (float)(rand() % m_window.getSize().y + 1))));
@@ -123,15 +134,15 @@ void Application::setup() {
 	buttonLabels.at(2).setPosition(sf::Vector2f(buttonList.at(2).getPosition().x + 85, buttonList.at(2).getPosition().y + 10));
 }
 
+int num_frames;
 void Application::run() {
 	setup();
 	
 	sf::Clock clock;
 	sf::Time frame = sf::milliseconds(Config::MaxFrames);
 	sf::Time elapsed = frame;
-	int num_frames = 0;
+	num_frames = 0;
 	//phero.detach();
-
 	while (m_window.isOpen()) {
 		if (num_frames > Config::MaxFrames)
 			num_frames = 0;
@@ -141,13 +152,35 @@ void Application::run() {
 			//elapsed = clock.getElapsedTime();
 
 			//std::cout << "->" << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() << "\n";
-
+		m_window.setView(m_view);
 		update();
+		m_window.setView(m_window.getDefaultView());
 		//} while ((elapsed - frame).asMilliseconds() < num_frames * frame.asMilliseconds());
 
 		//elapsed = clock.restart();
+		if (num_frames == Config::MaxFrames) {
+			m_window.clear(sf::Color::Black);
+		}
+		if (state == Pause) {	
+			m_colony->passFrames(Config::MaxFrames);
+			m_window.setView(m_view);
+			m_window.draw(*m_colony);
+			if (num_frames == Config::MaxFrames - 1) {
+				m_window.draw(m_bg);
+				if (smell_toggle) {
+					for (size_t i = 0; i < m_smells.size(); ++i)
+						m_window.draw(m_smells.at(i));
+				}
+				for (size_t i = 0; i < food.size(); ++i)
+					m_window.draw(*food[i]);
+			}
+			
+			m_window.setView(m_window.getDefaultView());
+			if (num_frames == Config::MaxFrames - 1) {
+				m_window.draw(m_paused);
+			}
 		
-		m_window.clear(sf::Color::Black);
+		}
 		if (state == Run) {
 			m_colony->update(num_frames);
 			
@@ -156,7 +189,7 @@ void Application::run() {
 
 			m_overlay->updateStats(m_colony->getAntCount(), food.size());
 			m_window.setView(m_view);
-
+			
 			//elapsed = clock.restart();
 			//std::cout << frame.asSeconds() << " " << elapsed.asSeconds() << " " << (frame - elapsed).asSeconds() << "\n";
 			//if (elapsed > frame) {
@@ -164,44 +197,51 @@ void Application::run() {
 
 			//	continue;
 			//}
+			//m_window.draw(*m_colony);
+			if (num_frames == Config::MaxFrames - 1) {
+				//m_window.draw(*m_clickableArea);
+				//m_window.setView(m_view);
+				m_window.draw(m_bg);
+				if (smell_toggle) {
+					for (size_t i = 0; i < m_smells.size(); ++i)
+						m_window.draw(m_smells.at(i));
+				}
 
-			m_window.draw(m_bg);
+				for (size_t i = 0; i < food.size(); ++i)
+					m_window.draw(*food[i]);
 
-			if (smell_toggle) {
-				for (size_t i = 0; i < m_smells.size(); ++i)
-					m_window.draw(m_smells.at(i));
-			}
-			
-			for (size_t i = 0; i < food.size(); ++i)
-				m_window.draw(*food[i]);
 
 			m_window.draw(*m_colony);
-			
-			m_window.setView(m_window.getDefaultView());
-			if (toggle) {
-				m_window.draw(*m_overlay);
-				m_window.draw(m_overlay->overlayAntCount);
-				m_window.draw(m_overlay->overlayFoodCount);
-				m_window.draw(m_overlay->div1);
-				if (!editingOverlayPh) {
-					m_window.draw(m_overlay->pheremoneDecay);
-				}
-				else {
-					m_window.draw(m_tempOverlayLabel);
-				}
-				if (!editingOverlayFo) {
-					m_window.draw(m_overlay->foodSmellRadius);
-				}
-				else {
-					m_window.draw(m_tempOverlayLabel);
-				}
-				m_window.draw(*m_overlay->ovButton);
-				m_window.draw(m_overlay->buttonLabel);
+	
 			}
 
-			
+			m_window.setView(m_window.getDefaultView());
+			if (num_frames == m_maxFrames - 1) {
+				if (toggle) {
+					m_window.draw(*m_overlay);
+					m_window.draw(m_overlay->overlayAntCount);
+					m_window.draw(m_overlay->overlayFoodCount);
+					m_window.draw(m_overlay->div1);
+					if (!editingOverlayPh) {
+						m_window.draw(m_overlay->pheremoneDecay);
+					}
+					else {
+						m_window.draw(m_tempOverlayLabel);
+					}
+					if (!editingOverlayFo) {
+						m_window.draw(m_overlay->foodSmellRadius);
+					}
+					else {
+						m_window.draw(m_tempOverlayLabel);
+					}
+					m_window.draw(*m_overlay->ovButton);
+					m_window.draw(m_overlay->buttonLabel);
+				}
+			}
+
 		}
 		if (state == Menu) {
+			//std::cout << num_frames << std::endl;
 			m_window.clear(sf::Color::Black);
 			m_window.draw(m_bg);
 			m_window.draw(m_logo);
@@ -212,8 +252,11 @@ void Application::run() {
 			}
 		}
 
-		m_window.draw(m_label);
-		m_window.display();
+		
+		if (num_frames == Config::MaxFrames - 1) {
+			m_window.draw(m_label);
+			m_window.display();
+		}
 
 		num_frames++;
 	}
@@ -221,9 +264,31 @@ void Application::run() {
 sf::String temp;
 std::string::size_type si;
 void Application::update() {
+	m_clickableArea->clicked = false;
 	sf::Event event;
 	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2, m_window.getSize().y / 2);
 	m_overlay->checkTextHover((sf::Vector2f) sf::Mouse::getPosition(m_window));
+
+	if (state == Pause) {
+		while (m_window.pollEvent(event)) {
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {
+				state = Run;
+			}
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+				m_view.move(0, -1);
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
+				m_view.move(0, 1);
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
+				m_view.move(-1, 0);
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
+				m_view.move(1, 0);
+			if (event.type == sf::Event::MouseWheelMoved)
+				m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+				state = Menu;
+			}
+		}
+	}
 
 	if (state == Run) {
 		while (m_window.pollEvent(event)) {
@@ -234,7 +299,7 @@ void Application::update() {
 				sf::FloatRect visibleArea(0.f, 0.f, (float)event.size.width, (float)event.size.height);
 				m_window.setView(sf::View(visibleArea));
 			}
-			if (!editingOverlayPh) {
+			if (!editingOverlayPh && !editingOverlayFo) {
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
 					toggle = !toggle;
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1)
@@ -249,10 +314,32 @@ void Application::update() {
 					m_view.move(-100, 0);
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
 					m_view.move(100, 0);
-				if (event.type == sf::Event::MouseWheelMoved)
+				if (event.type == sf::Event::MouseWheelMoved) {
 					m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
+				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+					std::cout << num_frames << std::endl;
 					state = Menu;
+				}
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {
+					state = Pause;
+				}
+				if (m_clickableArea->update(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)))) {
+					//add food
+					Food* newFood = new Food(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)));
+					food.push_back(newFood);
+					int r = newFood->getRadius();
+					int i = newFood->getPosition().y;
+					int j = newFood->getPosition().x;
+					sf::VertexArray va(sf::Quads);
+
+					va.append({ sf::Vector2f(j - r + 0.f, i - r + 0.f), sf::Color(255, 255, 0, 100) });
+					va.append({ sf::Vector2f(j + r + 1.f, i - r + 0.f), sf::Color(255, 255, 0, 100) });
+					va.append({ sf::Vector2f(j + r + 1.f, i + r + 1.f), sf::Color(255, 255, 0, 100) });
+					va.append({ sf::Vector2f(j - r + 0.f, i + r + 1.f), sf::Color(255, 255, 0, 100) });
+
+					m_smells.push_back(va);
+					//delete newFood;
 				}
 			}
 			if (m_overlay->editMode == 1 && toggle) {
@@ -323,7 +410,7 @@ void Application::update() {
 			}
 			if (m_overlay->ovButton->update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
 				Config::writeConfig();
-			}
+			}			
 		}
 	} else if (state == Menu) {
 		while (m_window.pollEvent(event)) {
