@@ -57,6 +57,13 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_label.setCharacterSize(18);
 	m_label.setFillColor(sf::Color::White);
 
+	m_paused.setFont(m_font);
+	m_paused.setString("Paused");
+	m_paused.setCharacterSize(18);
+	m_paused.setFillColor(sf::Color::White);
+	m_paused.setOrigin(sf::Vector2f(m_paused.getLocalBounds().width/2,0));
+	m_paused.setPosition(sf::Vector2f(width / 2, 0));
+
 	m_logoTexture.loadFromFile("logoTexture.png");
 	m_logoTexture.setSmooth(true);
 	m_logo.setTexture(&m_logoTexture);
@@ -148,6 +155,21 @@ void Application::run() {
 		//elapsed = clock.restart();
 		
 		m_window.clear(sf::Color::Black);
+		if (state == Pause) {
+			m_window.setView(m_view);
+			m_window.draw(m_bg);
+			if (smell_toggle) {
+				for (size_t i = 0; i < m_smells.size(); ++i)
+					m_window.draw(m_smells.at(i));
+			}
+			for (size_t i = 0; i < food.size(); ++i)
+				m_window.draw(*food[i]);
+
+			m_window.draw(*m_colony);
+			m_window.setView(m_window.getDefaultView());
+			m_window.draw(m_paused);
+		
+		}
 		if (state == Run) {
 			m_colony->update(num_frames);
 			
@@ -236,6 +258,27 @@ void Application::update() {
 	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2, m_window.getSize().y / 2);
 	m_overlay->checkTextHover((sf::Vector2f) sf::Mouse::getPosition(m_window));
 
+	if (state == Pause) {
+		while (m_window.pollEvent(event)) {
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {
+				state = Run;
+			}
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
+				m_view.move(0, -100);
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
+				m_view.move(0, 100);
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
+				m_view.move(-100, 0);
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
+				m_view.move(100, 0);
+			if (event.type == sf::Event::MouseWheelMoved)
+				m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+				state = Menu;
+			}
+		}
+	}
+
 	if (state == Run) {
 		while (m_window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
@@ -264,6 +307,9 @@ void Application::update() {
 					m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
 					state = Menu;
+				}
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {
+					state = Pause;
 				}
 			}
 			if (m_overlay->editMode == 1 && toggle) {

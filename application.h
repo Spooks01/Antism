@@ -29,7 +29,7 @@ private:
 	Overlay *m_overlay;
 	sf::RenderWindow m_window;
 	Grid* m_grid;
-	sf::Text m_label, m_tempOverlayLabel;
+	sf::Text m_label, m_tempOverlayLabel, m_paused;
 	Fps fps;
 	sf::View m_view;
 	Colony *m_colony;
