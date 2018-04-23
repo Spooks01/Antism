@@ -8,6 +8,7 @@ bool Config::vsync = true;
 float Config::PheremoneDecay = 0.0f;
 float Config::smellStrength = 0.0f;
 float Config::FoodSmellRadius = 0.0f;
+int Config::MaxFrames = 5;
 
 
 Config::Config()

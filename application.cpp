@@ -70,7 +70,7 @@ Application::~Application() {
 
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
-	m_colony->generate(5);
+	m_colony->generate(1);
 
 	std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
@@ -127,13 +127,13 @@ void Application::run() {
 	setup();
 	
 	sf::Clock clock;
-	sf::Time frame = sf::milliseconds(60);
+	sf::Time frame = sf::milliseconds(Config::MaxFrames);
 	sf::Time elapsed = frame;
 	int num_frames = 0;
 	//phero.detach();
 
 	while (m_window.isOpen()) {
-		if (num_frames > 10)
+		if (num_frames > Config::MaxFrames)
 			num_frames = 0;
 		//std::cout << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() <<"\n";
 		
@@ -176,17 +176,6 @@ void Application::run() {
 				m_window.draw(*food[i]);
 
 			m_window.draw(*m_colony);
-
-			
-			if (pheromone_toggle) {	
-				/*auto v = Grid::Pheromones;
-				for (size_t i = 0; i < v.size(); i++) {
-					if (v[i].second.size() == 0)
-						continue;
-				
-					m_window.draw(&v[i].second[0], 4, sf::Quads);
-				}*/
-			}
 			
 			m_window.setView(m_window.getDefaultView());
 			if (toggle) {
