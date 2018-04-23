@@ -1,5 +1,47 @@
+<<<<<<< Updated upstream
 ﻿  colony.cpp
 c:\users\chris\documents\github\antism\config.h(39): warning C4018: '>': signed/unsigned mismatch
 c:\users\chris\documents\github\antism\colony.cpp(34): warning C4018: '<': signed/unsigned mismatch
 c:\users\chris\documents\github\antism\colony.cpp(61): warning C4018: '<': signed/unsigned mismatch
   antism.vcxproj -> C:\Users\Chris\Documents\GitHub\Antism\Debug\antism.exe
+=======
+﻿  ant.cpp
+d:\documents\gitkraken\antism\config.h(38): warning C4018: '>': signed/unsigned mismatch
+d:\documents\gitkraken\antism\ant.cpp(99): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(100): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(164): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(165): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(166): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.13.26128\include\utility(200): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+  d:\documents\gitkraken\antism\ant.cpp(121): note: see reference to function template instantiation 'std::pair<float,float>::pair<int,float,0>(_Other1 &&,_Other2 &&) noexcept' being compiled
+          with
+          [
+              _Other1=int,
+              _Other2=float
+          ]
+  d:\documents\gitkraken\antism\ant.cpp(121): note: see reference to function template instantiation 'std::pair<float,float>::pair<int,float,0>(_Other1 &&,_Other2 &&) noexcept' being compiled
+          with
+          [
+              _Other1=int,
+              _Other2=float
+          ]
+  antism.cpp
+d:\documents\gitkraken\antism\config.h(38): warning C4018: '>': signed/unsigned mismatch
+d:\documents\gitkraken\antism\overlay.h(6): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  application.cpp
+d:\documents\gitkraken\antism\config.h(38): warning C4018: '>': signed/unsigned mismatch
+d:\documents\gitkraken\antism\overlay.h(6): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  cell.cpp
+d:\documents\gitkraken\antism\config.h(38): warning C4018: '>': signed/unsigned mismatch
+  colony.cpp
+d:\documents\gitkraken\antism\config.h(38): warning C4018: '>': signed/unsigned mismatch
+d:\documents\gitkraken\antism\colony.cpp(31): warning C4018: '<': signed/unsigned mismatch
+  food.cpp
+d:\documents\gitkraken\antism\config.h(38): warning C4018: '>': signed/unsigned mismatch
+d:\documents\gitkraken\antism\food.cpp(26): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  queen.cpp
+d:\documents\gitkraken\antism\config.h(38): warning C4018: '>': signed/unsigned mismatch
+  Generating Code...
+  LINK : D:\Documents\GitKraken\Antism\Debug\antism.exe not found or not built by the last incremental link; performing full link
+  antism.vcxproj -> D:\Documents\GitKraken\Antism\Debug\antism.exe
+>>>>>>> Stashed changes
