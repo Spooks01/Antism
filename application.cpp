@@ -275,6 +275,8 @@ void Application::update() {
 
 	if (state == Pause) {
 		while (m_window.pollEvent(event)) {
+			if (event.type == sf::Event::Closed)
+				m_window.close();
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {
 				state = Run;
 			}
