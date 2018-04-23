@@ -14,6 +14,7 @@
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="pheromone.cpp" />
     <ClCompile Include="cell.cpp" />
+    <ClCompile Include="zone.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ant.h" />
@@ -28,6 +29,7 @@
     <ClInclude Include="timer.h" />
     <ClInclude Include="pheromone.h" />
     <ClInclude Include="cell.h" />
+    <ClInclude Include="zone.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.cfg" />

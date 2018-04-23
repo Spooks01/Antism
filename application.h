@@ -11,6 +11,7 @@
 #include "grid.h"
 #include "colony.h"
 #include "food.h"
+#include "zone.h"
 
 class Application
 {
@@ -39,5 +40,6 @@ private:
 	sf::RectangleShape m_logo;
 	sf::Texture m_logoTexture;
 	bool editingOverlayPh, editingOverlayFo;
+	Zone* m_clickableArea;
 };
 

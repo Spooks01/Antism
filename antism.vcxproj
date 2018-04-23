@@ -170,6 +170,7 @@
     <ClInclude Include="pheromone.h" />
     <ClInclude Include="queen.h" />
     <ClInclude Include="timer.h" />
+    <ClInclude Include="zone.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ant.cpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="pheromone.cpp" />
     <ClCompile Include="queen.cpp" />
     <ClCompile Include="timer.cpp" />
+    <ClCompile Include="zone.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.cfg" />

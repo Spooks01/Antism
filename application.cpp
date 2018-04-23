@@ -18,6 +18,7 @@ std::vector<Food*> food;
 std::vector<sf::VertexArray> m_smells;
 
 Application::Application(int width, int height, bool vS, std::string title) {
+	m_clickableArea = new Zone(width, height);
 	m_maxFrames = 10;
 	editingOverlayPh = false;
 	editingOverlayFo = false;
@@ -149,8 +150,9 @@ void Application::run() {
 			//elapsed = clock.getElapsedTime();
 
 			//std::cout << "->" << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() << "\n";
-
+		m_window.setView(m_view);
 		update();
+		m_window.setView(m_window.getDefaultView());
 		//} while ((elapsed - frame).asMilliseconds() < num_frames * frame.asMilliseconds());
 
 		//elapsed = clock.restart();
@@ -185,7 +187,7 @@ void Application::run() {
 
 			m_overlay->updateStats(m_colony->getAntCount(), food.size());
 			m_window.setView(m_view);
-
+			
 			//elapsed = clock.restart();
 			//std::cout << frame.asSeconds() << " " << elapsed.asSeconds() << " " << (frame - elapsed).asSeconds() << "\n";
 			//if (elapsed > frame) {
@@ -195,9 +197,9 @@ void Application::run() {
 			//}
 			m_window.draw(*m_colony);
 			if (num_frames == m_maxFrames - 1) {
+				//m_window.draw(*m_clickableArea);
 				//m_window.setView(m_view);
 				m_window.draw(m_bg);
-
 				if (smell_toggle) {
 					for (size_t i = 0; i < m_smells.size(); ++i)
 						m_window.draw(m_smells.at(i));
@@ -219,7 +221,6 @@ void Application::run() {
 			}
 			m_window.setView(m_window.getDefaultView());
 			if (num_frames == m_maxFrames - 1) {
-
 				if (toggle) {
 					m_window.draw(*m_overlay);
 					m_window.draw(m_overlay->overlayAntCount);
@@ -267,6 +268,7 @@ void Application::run() {
 sf::String temp;
 std::string::size_type si;
 void Application::update() {
+	m_clickableArea->clicked = false;
 	sf::Event event;
 	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2, m_window.getSize().y / 2);
 	m_overlay->checkTextHover((sf::Vector2f) sf::Mouse::getPosition(m_window));
@@ -277,13 +279,13 @@ void Application::update() {
 				state = Run;
 			}
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-				m_view.move(0, -100);
+				m_view.move(0, -1);
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
-				m_view.move(0, 100);
+				m_view.move(0, 1);
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-				m_view.move(-100, 0);
+				m_view.move(-1, 0);
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-				m_view.move(100, 0);
+				m_view.move(1, 0);
 			if (event.type == sf::Event::MouseWheelMoved)
 				m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
@@ -301,7 +303,7 @@ void Application::update() {
 				sf::FloatRect visibleArea(0.f, 0.f, (float)event.size.width, (float)event.size.height);
 				m_window.setView(sf::View(visibleArea));
 			}
-			if (!editingOverlayPh) {
+			if (!editingOverlayPh && !editingOverlayFo) {
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
 					toggle = !toggle;
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1)
@@ -316,14 +318,32 @@ void Application::update() {
 					m_view.move(-100, 0);
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
 					m_view.move(100, 0);
-				if (event.type == sf::Event::MouseWheelMoved)
+				if (event.type == sf::Event::MouseWheelMoved) {
 					m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
+				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
 					std::cout << num_frames << std::endl;
 					state = Menu;
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {
 					state = Pause;
+				}
+				if (m_clickableArea->update(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)))) {
+					//add food
+					Food* newFood = new Food(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)));
+					food.push_back(newFood);
+					int r = newFood->getRadius();
+					int i = newFood->getPosition().y;
+					int j = newFood->getPosition().x;
+					sf::VertexArray va(sf::Quads);
+
+					va.append({ sf::Vector2f(j - r + 0.f, i - r + 0.f), sf::Color(255, 255, 0, 100) });
+					va.append({ sf::Vector2f(j + r + 1.f, i - r + 0.f), sf::Color(255, 255, 0, 100) });
+					va.append({ sf::Vector2f(j + r + 1.f, i + r + 1.f), sf::Color(255, 255, 0, 100) });
+					va.append({ sf::Vector2f(j - r + 0.f, i + r + 1.f), sf::Color(255, 255, 0, 100) });
+
+					m_smells.push_back(va);
+					//delete newFood;
 				}
 			}
 			if (m_overlay->editMode == 1 && toggle) {
@@ -394,7 +414,7 @@ void Application::update() {
 			}
 			if (m_overlay->ovButton->update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
 				Config::writeConfig();
-			}
+			}			
 		}
 	} else if (state == Menu) {
 		while (m_window.pollEvent(event)) {
