@@ -79,9 +79,11 @@ Application::~Application() {
 
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
-	m_colony->generate(10);
 
-	std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
+	m_colony->generate(5);
+
+
+	//std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
 	for (int i = 0; i < 100; i++) {
 		food.push_back(new Food(sf::Vector2f((float)(rand() % m_window.getSize().x + 1), (float)(rand() % m_window.getSize().y + 1))));
@@ -137,12 +139,12 @@ void Application::run() {
 	setup();
 	
 	sf::Clock clock;
-	sf::Time frame = sf::milliseconds(60);
+	sf::Time frame = sf::milliseconds(Config::MaxFrames);
 	sf::Time elapsed = frame;
 	num_frames = 0;
 	//phero.detach();
 	while (m_window.isOpen()) {
-		if (num_frames > 10)
+		if (num_frames > Config::MaxFrames)
 			num_frames = 0;
 		//std::cout << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() <<"\n";
 		
@@ -156,14 +158,14 @@ void Application::run() {
 		//} while ((elapsed - frame).asMilliseconds() < num_frames * frame.asMilliseconds());
 
 		//elapsed = clock.restart();
-		if (num_frames == m_maxFrames) {
+		if (num_frames == Config::MaxFrames) {
 			m_window.clear(sf::Color::Black);
 		}
 		if (state == Pause) {	
-			m_colony->passFrames(num_frames);
+			m_colony->passFrames(Config::MaxFrames);
 			m_window.setView(m_view);
 			m_window.draw(*m_colony);
-			if (num_frames == m_maxFrames - 1) {
+			if (num_frames == Config::MaxFrames - 1) {
 				m_window.draw(m_bg);
 				if (smell_toggle) {
 					for (size_t i = 0; i < m_smells.size(); ++i)
@@ -174,7 +176,7 @@ void Application::run() {
 			}
 			
 			m_window.setView(m_window.getDefaultView());
-			if (num_frames == m_maxFrames - 1) {
+			if (num_frames == Config::MaxFrames - 1) {
 				m_window.draw(m_paused);
 			}
 		
@@ -195,8 +197,8 @@ void Application::run() {
 
 			//	continue;
 			//}
-			m_window.draw(*m_colony);
-			if (num_frames == m_maxFrames - 1) {
+			//m_window.draw(*m_colony);
+			if (num_frames == Config::MaxFrames - 1) {
 				//m_window.draw(*m_clickableArea);
 				//m_window.setView(m_view);
 				m_window.draw(m_bg);
@@ -208,17 +210,11 @@ void Application::run() {
 				for (size_t i = 0; i < food.size(); ++i)
 					m_window.draw(*food[i]);
 
-				if (pheromone_toggle) {
-					/*auto v = Grid::Pheromones;
-					for (size_t i = 0; i < v.size(); i++) {
-						if (v[i].second.size() == 0)
-							continue;
 
-						m_window.draw(&v[i].second[0], 4, sf::Quads);
-					}*/
-			
-				}
+			m_window.draw(*m_colony);
+	
 			}
+
 			m_window.setView(m_window.getDefaultView());
 			if (num_frames == m_maxFrames - 1) {
 				if (toggle) {
@@ -257,7 +253,7 @@ void Application::run() {
 		}
 
 		
-		if (num_frames == m_maxFrames - 1) {
+		if (num_frames == Config::MaxFrames - 1) {
 			m_window.draw(m_label);
 			m_window.display();
 		}

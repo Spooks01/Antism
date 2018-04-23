@@ -24,8 +24,11 @@ public:
 
 protected:
 	float m_pheromone = 1.f;
+	float m_decay = 0.25f;
+
 	//float m_decay = 1.f;
-	float m_decay = Config::PheremoneDecay;
+
+
 	float m_identifier = 100.f;
 	float m_health = 1500;
 	std::deque<sf::Vector2i> m_trail;

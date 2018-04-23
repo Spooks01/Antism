@@ -25,8 +25,11 @@ void Colony::spawnAnt() {
 }
 
 void Colony::update(int frame) {
-	int stage = m_ants.size() / 10 + 1;
+
+	int stage = m_ants.size() / Config::MaxFrames + 1;
+
 	m_numFrames = frame;
+
 	for (int i = 0; i < stage; i++) {
 		if (frame * stage + i < m_ants.size()) {
 			m_ants.at(frame * stage + i)->update();
@@ -50,7 +53,7 @@ void Colony::update(int frame) {
 
 void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
-	int stage = (m_ants.size() / 10 + 1);
+	int stage = (m_ants.size() / Config::MaxFrames + 1);
 	int k = 0;
 	sf::Vertex* vertices = new sf::Vertex[stage * 4];
 
@@ -89,8 +92,6 @@ void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 			target.draw(&v[0], v.size(), sf::Quads);
 		}
 			
-		
-		
 		vertices[k + 0] = w[0];
 		vertices[k + 1] = w[1];
 		vertices[k + 2] = w[2];
