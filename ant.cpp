@@ -64,7 +64,7 @@ void Ant::update() {
 	}
 
 	// Directional test (north-east)
-	// scan[1][0] = 5;
+	// scan[2][0] = 5;
 
 	// Calculate sum of scan[][] 
 	float sum = 0;
@@ -76,24 +76,29 @@ void Ant::update() {
 		}
 	}
 
-	/* Normalisation of scan[][] to range 0...1
+	// std::cout << "SUM: " << sum << std::endl;
+
+	// Normalisation of scan[][] to range 0...1
 	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
 		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
 			if (scan[a][b] != -1) {
-				scan[a][b] /= sum;
+				scan[a][b] /= (sum * pow(100, -1));
 				// std::cout << scan[a][b] << std::endl;
 			}
 		}
-	} */
+	}
 
 	// Fitness Proportionate Selection (roulette wheel selection)
-	float random = (((rand() % 100 + 1) * sum) / 100);
+	float random = ((rand() % 100 + 1));
+	// std::cout << "random: " << random << std::endl;
 	float lower = 0;
 	float upper = 0;
 	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
 		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
 			if (scan[a][b] != -1) {
 				upper = lower + scan[a][b];
+				// std::cout << "lower: " << lower << std::endl;
+				// std::cout << "upper: " << upper << std::endl;
 				if (lower < random && random <= upper) {
 					dx = (int)(a - 1);
 					dy = (int)(b - 1);
@@ -103,7 +108,7 @@ void Ant::update() {
 		}
 	}
 
-	move(sf::Vector2f((float)dx, (float)dy));	
+	move(sf::Vector2f((float)dx, (float)dy));
 	//m_health--;
 
 	int count = 5;
