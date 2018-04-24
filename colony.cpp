@@ -37,14 +37,15 @@ void Colony::update(int frame) {
 		if (frame * stage + i < m_ants.size()) {
 			m_ants.at(frame * stage + i)->update();
 
-			int count = 5;
-
+			int count = 1 / Config::PheremoneDecay + 1;
+			//int count = 5;
 			//std::cout << " --------------- SET ----------------- " << std::endl;
 
 			auto p = m_ants.at(frame * stage + i)->getPosition();
 			auto v = m_ants.at(frame * stage + i)->getTTrail();
 			auto t = m_ants.at(frame * stage + i)->getTrail();
 			auto b = v->begin();
+			int ite = 4;
 			while (b != v->end() && count > 0) {
 				auto p = *b;
 				//std::cout << "Size: " << v->size() << "; Count: " << count << " " << p.y << " " << p.x << " + " << Grid::Get(p.y, p.x).attributes.second << std::endl;
@@ -63,16 +64,29 @@ void Colony::update(int frame) {
 					if (std::find(pha.begin(), pha.end(), p) == pha.end()) {
 						Grid::Assign(p.y, p.x, { -2, nullptr, nullptr,{ 0, -Config::PheremoneDecay } });
 					} else
-						pha.push_back(p);  
+						pha.push_back(p);
+					/*
+					if ((t->end() - 1)->color.a > 0) {
 
-					(t->end() - 1)->color.a -= 50;
-					(t->end() - 2)->color.a -= 50;
-					(t->end() - 3)->color.a -= 50;
-					(t->end() - 4)->color.a -= 50;
+						(t->end() - 1)->color.a -= 50;
+						(t->end() - 2)->color.a -= 50;
+						(t->end() - 3)->color.a -= 50;
+						(t->end() - 4)->color.a -= 50;
+					}
+					*/
+					
+					if (t->at(ite - 1).color.a > 0) {
+						t->at(ite - 1).color.a = -25;
+						t->at(ite - 2).color.a = -25;
+						t->at(ite - 3).color.a = -25;
+						t->at(ite - 4).color.a = -25;
+						
+					}
 					
 					++b;
+					ite += 4;
 				}
-
+				
 				count--;
 			}
 

@@ -77,11 +77,11 @@ Application::~Application() {
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
 
-	m_colony->generate(1);
+	m_colony->generate(100);
 
 	//std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 0; i++) {
 		food.push_back(new Food(sf::Vector2f((float)(rand() % m_window.getSize().x + 1), (float)(rand() % m_window.getSize().y + 1))));
 	}
 
