@@ -80,7 +80,7 @@ Application::~Application() {
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
 
-	m_colony->generate(5);
+	m_colony->generate(1);
 
 
 	//std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
@@ -162,7 +162,8 @@ void Application::run() {
 			m_window.clear(sf::Color::Black);
 		}
 		if (state == Pause) {	
-			m_colony->passFrames(Config::MaxFrames);
+			m_colony->passFrames(num_frames);
+			
 			m_window.setView(m_view);
 			m_window.draw(*m_colony);
 			if (num_frames == Config::MaxFrames - 1) {
@@ -197,7 +198,7 @@ void Application::run() {
 
 			//	continue;
 			//}
-			//m_window.draw(*m_colony);
+			m_window.draw(*m_colony);
 			if (num_frames == Config::MaxFrames - 1) {
 				//m_window.draw(*m_clickableArea);
 				//m_window.setView(m_view);
@@ -271,6 +272,8 @@ void Application::update() {
 
 	if (state == Pause) {
 		while (m_window.pollEvent(event)) {
+			if (event.type == sf::Event::Closed)
+				m_window.close();
 			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {
 				state = Run;
 			}

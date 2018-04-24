@@ -5,7 +5,7 @@ int Config::applicationWidth = 1280;
 int Config::applicationHeight = 720;
 bool Config::vsync = true;
 
-float Config::PheremoneDecay = 0.0f;
+float Config::PheremoneDecay = 0.25f;
 float Config::smellStrength = 0.0f;
 float Config::FoodSmellRadius = 0.0f;
 int Config::MaxFrames = 10;
