@@ -30,7 +30,11 @@ protected:
 	//float m_decay = 1.f;
 
 	float m_identifier = 100.f;
-	float m_health = 1500;
+	float m_health = 100;
+	float pstr; // pheromone strength
+	float sstr; // smell strength
+	float alpha = 2; // alpha parameter
+	float beta = 3; // beta parameter
 	std::deque<sf::Vector2i> m_trail;
 	std::vector<sf::Vertex> m_pvertices;
 

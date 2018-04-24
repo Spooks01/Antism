@@ -22,25 +22,94 @@ Ant::Ant(sf::Vector2f position)
 	m_health = float(rand() % 1500 + 1000);
 }
 
-
 Ant::~Ant()
 {
 }
 
 void Ant::update() {
-	float x = (float)(rand() % 1 + 1);
-	float y = (float)(rand() % 1 + 1);
+	sf::Vector2f pos = getPosition();
+	sf::Vector2i limit = Grid::GetSize();
+	float x = pos.x;
+	float y = pos.y;
+	float dx = 0;
+	float dy = 0;
+	float scan[3][3];
 
-	int dx = rand() % 2 + 1;
-	int dy = rand() % 2 + 1;
-	
-	if (dx == 2)
-		x = -x;
-	if (dy == 2)
-		y = -y;
+	// Path Selection Formula
+	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
+		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
+			if (!(a == 1 && b == 1)) {
+				if (!((x + (a - 1)) < 0 || (x + (a - 1)) >= limit.x || (y + (b - 1)) < 0 || (y + (b - 1)) >= limit.y)) {
+					pstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.second;
+					sstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.first;
 
-	move(sf::Vector2f((float)x, (float)y));
-	
+					if ((pow(pstr, alpha) * pow(sstr, beta)) != 0) { // If there is adjacent pheromone AND adjacent smell
+						scan[a][b] = (pow(pstr, alpha) * pow(sstr, beta)) / (pow(pstr, alpha) + pow(sstr, beta));
+					}
+					else if ((pow(pstr, alpha) + pow(sstr, beta) == 0)) { // If there is no adjacent pheromone or smell
+						scan[a][b] = 2;
+					}
+					else {
+						scan[a][b] = (pow(pstr, alpha) + pow(sstr, beta)); // If there is only adjacent pheromone OR adjacent smell
+					}
+				}
+				else {
+					scan[a][b] = -1;
+				}
+			}
+			else {
+				scan[a][b] = -1;
+			}
+		}
+	}
+
+	// Directional test (north-east)
+	// scan[2][0] = 5;
+
+	// Calculate sum of scan[][] 
+	float sum = 0;
+	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
+		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
+			if (scan[a][b] != -1) {
+				sum += scan[a][b];
+			}
+		}
+	}
+
+
+	// std::cout << "SUM: " << sum << std::endl;
+
+	// Normalisation of scan[][] to range 0...1
+	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
+		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
+			if (scan[a][b] != -1) {
+				scan[a][b] /= (sum * pow(100, -1));
+				// std::cout << scan[a][b] << std::endl;
+			}
+		}
+	}
+
+	// Fitness Proportionate Selection (roulette wheel selection)
+	float random = ((rand() % 100 + 1));
+	// std::cout << "random: " << random << std::endl;
+	float lower = 0;
+	float upper = 0;
+	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
+		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
+			if (scan[a][b] != -1) {
+				upper = lower + scan[a][b];
+				// std::cout << "lower: " << lower << std::endl;
+				// std::cout << "upper: " << upper << std::endl;
+				if (lower < random && random <= upper) {
+					dx = (int)(a - 1);
+					dy = (int)(b - 1);
+				}
+				lower += scan[a][b];
+			}
+		}
+	}
+
+	move(sf::Vector2f((float)dx, (float)dy));
 	//m_health--;
 
 	int count = 5;

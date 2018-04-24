@@ -82,7 +82,6 @@ void Application::setup() {
 
 	m_colony->generate(1);
 
-
 	//std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
 	for (int i = 0; i < 100; i++) {
