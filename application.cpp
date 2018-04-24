@@ -77,8 +77,7 @@ Application::~Application() {
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
 
-	m_colony->generate(100);
-
+	m_colony->generate(1);
 
 	//std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	

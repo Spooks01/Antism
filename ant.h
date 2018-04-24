@@ -19,7 +19,8 @@ public:
 	virtual sf::Vector2f getPosition() { return { m_vertices[0].position.x, m_vertices[0].position.y }; }
 
 	float getHealth();
-	std::vector<sf::Vertex> getTrail() { return m_pvertices; }
+	std::vector<sf::Vertex>* getTrail() { return &m_pvertices; }
+	std::deque<sf::Vector2i>* getTTrail() { return &m_trail; }
 	sf::Vertex* getVertices() { return m_vertices; }
 
 protected:

@@ -76,6 +76,7 @@ void Ant::update() {
 		}
 	}
 
+
 	// std::cout << "SUM: " << sum << std::endl;
 
 	// Normalisation of scan[][] to range 0...1
@@ -120,7 +121,7 @@ void Ant::update() {
 
 		//std::cout << "Size: " << m_trail.size() << "; Count: " << count << " " << (*qq).y << " " << (*qq).x << " + " << Grid::Get((*qq).y, (*qq).x).attributes.second << std::endl;
 
-
+/*
 		if (Grid::Get(v.y, v.x).attributes.second < m_decay || Grid::Get(v.y, v.x).attributes.second == 0) {
 			Grid::Assign(v.y, v.x, { -5 });
 
@@ -136,7 +137,7 @@ void Ant::update() {
 
 			++qq;
 		}
-			
+			*/
 		count--;		
 	}
 

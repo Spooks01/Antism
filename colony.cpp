@@ -28,11 +28,53 @@ void Colony::update(int frame) {
 
 	int stage = m_ants.size() / Config::MaxFrames + 1;
 
+	std::vector<sf::Vector2i> pha;
+	//sf::Vector2i* pha = new sf::Vector2i[4 * m_ants.size()];
+	int k = 0;
 	m_numFrames = frame;
 
 	for (int i = 0; i < stage; i++) {
 		if (frame * stage + i < m_ants.size()) {
 			m_ants.at(frame * stage + i)->update();
+
+			int count = 5;
+
+			//std::cout << " --------------- SET ----------------- " << std::endl;
+
+			auto p = m_ants.at(frame * stage + i)->getPosition();
+			auto v = m_ants.at(frame * stage + i)->getTTrail();
+			auto t = m_ants.at(frame * stage + i)->getTrail();
+			auto b = v->begin();
+			while (b != v->end() && count > 0) {
+				auto p = *b;
+				//std::cout << "Size: " << v->size() << "; Count: " << count << " " << p.y << " " << p.x << " + " << Grid::Get(p.y, p.x).attributes.second << std::endl;
+
+				if ((Grid::Get(p.y, p.x).attributes.second < Config::PheremoneDecay || Grid::Get(p.y, p.x).attributes.second == 0)) {
+					Grid::Assign(p.y, p.x, { -5 });
+
+					b = v->erase(b);
+
+					t->pop_back();
+					t->pop_back();
+					t->pop_back();
+					t->pop_back();
+				}
+				else {
+					if (std::find(pha.begin(), pha.end(), p) == pha.end()) {
+						Grid::Assign(p.y, p.x, { -2, nullptr, nullptr,{ 0, -Config::PheremoneDecay } });
+					} else
+						pha.push_back(p);  
+
+					(t->end() - 1)->color.a -= 50;
+					(t->end() - 2)->color.a -= 50;
+					(t->end() - 3)->color.a -= 50;
+					(t->end() - 4)->color.a -= 50;
+					
+					++b;
+				}
+
+				count--;
+			}
 
 			if (m_ants.at(frame * stage + i)->getHealth() <= 0) {
 				m_ants.erase(m_iterator + frame * stage + i);
@@ -40,6 +82,8 @@ void Colony::update(int frame) {
 		}
 	}
 
+	
+	
 	m_queen->update();
 	if (m_queen->getStatus()) {
 		sf::Vector2f pos = sf::Vector2f(m_center.x, m_center.y + 3);
@@ -49,6 +93,8 @@ void Colony::update(int frame) {
 
 		m_queen->setStatus(false);
 	}
+
+	pha.clear();
 }
 
 void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
@@ -62,8 +108,8 @@ void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 			auto v = m_ants.at(m_numFrames * stage + i)->getTrail();
 			auto w = m_ants.at(m_numFrames * stage + i)->getVertices();
 
-			if (v.size()) {
-				target.draw(&v[0], v.size(), sf::Quads);
+			if (v->size()) {
+				target.draw(&(*v)[0], v->size(), sf::Quads);
 			}
 
 			vertices[k + 0] = w[0];
