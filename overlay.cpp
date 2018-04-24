@@ -1,8 +1,7 @@
 #include "overlay.h"
 
 Overlay::Overlay(sf::Font * font) {
-	setFillColor(sf::Color(255, 255, 255, 64));
-	setSize(sf::Vector2f(400, 300));
+	this->setFillColor(sf::Color(255, 255, 255, 64));
 	overlayAntCount.setFont(*font);
 	overlayAntCount.setCharacterSize(18);
 	overlayAntCount.setFillColor(sf::Color::White);
