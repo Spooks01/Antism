@@ -40,10 +40,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 
 	m_font.loadFromFile("arial.ttf");
 
-	m_overlay = new Overlay(&m_font);
-	m_overlay->setPosition(1000, 0);
-	m_overlay->setSize(sf::Vector2f(280, 720));
-	m_overlay->setUpText();
+	m_overlay = new Overlay(&m_font, &width, &height);
 	m_tempOverlayLabel.setFont(m_font);
 	m_tempOverlayLabel.setString("");
 	m_tempOverlayLabel.setCharacterSize(18);
@@ -217,7 +214,7 @@ void Application::run() {
 			}
 
 			m_window.setView(m_window.getDefaultView());
-			if (num_frames == m_maxFrames - 1) {
+			if (num_frames == Config::MaxFrames - 1) {
 				if (toggle) {
 					m_window.draw(*m_overlay);
 					m_window.draw(m_overlay->overlayAntCount);

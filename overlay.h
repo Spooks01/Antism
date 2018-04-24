@@ -3,11 +3,11 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include "Config.h"
-#include "button.h";
+#include "button.h"
 class Overlay : public sf::RectangleShape
 {
 public:
-	Overlay(sf::Font *font);;
+	Overlay(sf::Font *font, int *w, int *h);;
 	~Overlay();
 
 	void updateStats(int nAnt, int nFo);;

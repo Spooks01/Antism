@@ -1,7 +1,10 @@
 #include "overlay.h"
+#include <iostream>
 
-Overlay::Overlay(sf::Font * font) {
+Overlay::Overlay(sf::Font * font, int *w, int *h) {
 	this->setFillColor(sf::Color(255, 255, 255, 64));
+	this->setSize(sf::Vector2f(*w / 4, *h));
+	this->setPosition(*w - *w / 4, 0);
 	overlayAntCount.setFont(*font);
 	overlayAntCount.setCharacterSize(18);
 	overlayAntCount.setFillColor(sf::Color::White);
@@ -21,7 +24,7 @@ Overlay::Overlay(sf::Font * font) {
 	buttonLabel.setFont(*font);
 	buttonLabel.setCharacterSize(18);
 	buttonLabel.setFillColor(sf::Color::White);
-
+	this->setUpText();
 }
 
 Overlay::~Overlay()
@@ -42,13 +45,13 @@ void Overlay::updateFieldFo(sf::String newText) {
 }
 
 void Overlay::setUpText() {
-	overlayAntCount.setPosition(sf::Vector2f(this->getPosition().x + 30, this->getPosition().y + 25));
-	overlayFoodCount.setPosition(sf::Vector2f(this->getPosition().x + 30, this->getPosition().y + 50));
+	overlayAntCount.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 25));
+	overlayFoodCount.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 50));
 	div1.setPosition(sf::Vector2f(this->getPosition().x, this->getPosition().y + 75));
-	pheremoneDecay.setPosition(sf::Vector2f(this->getPosition().x + 30, this->getPosition().y + 100));
-	foodSmellRadius.setPosition(sf::Vector2f(this->getPosition().x + 30, this->getPosition().y + 125));
-	ovButton = new Button(sf::Vector2f(this->getPosition().x + 10, this->getPosition().y + 150), sf::Vector2f(this->getSize().x - 20, 30), sf::Color(255, 255, 255, 100));
-	buttonLabel.setPosition(sf::Vector2f(ovButton->getPosition().x + 70, ovButton->getPosition().y + 5));
+	pheremoneDecay.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 100));
+	foodSmellRadius.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 125));
+	ovButton = new Button(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 150), sf::Vector2f(this->getGlobalBounds().width - this->getGlobalBounds().width*0.2, 30), sf::Color(255, 255, 255, 100));
+	buttonLabel.setPosition(sf::Vector2f(ovButton->getPosition().x + 5.5 * 18, ovButton->getPosition().y + 18/4));
 	buttonLabel.setString("Save changes");
 }
 
