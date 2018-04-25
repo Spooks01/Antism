@@ -17,6 +17,7 @@ public:
 	static float smellStrength;
 	static float FoodSmellRadius;
 	static int MaxFrames;
+	static int SimSpeed;
 
 	static bool isFloatNumber(const std::string& string) {
 		std::string::const_iterator it = string.begin();

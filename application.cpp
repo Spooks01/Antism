@@ -77,7 +77,7 @@ Application::~Application() {
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
 
-	m_colony->generate(100);
+	m_colony->generate(1000);
 
 	//std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
@@ -132,8 +132,7 @@ void Application::setup() {
 
 int num_frames;
 void Application::run() {
-	setup();
-	
+	setup();	
 	sf::Clock clock;
 	sf::Time frame = sf::milliseconds(Config::MaxFrames);
 	sf::Time elapsed = frame;
@@ -179,7 +178,15 @@ void Application::run() {
 		
 		}
 		if (state == Run) {
-			m_colony->update(num_frames);
+			//since the movement speed of the ants is tied to fps, this is the only way to slow them without seriously changing how the updates work
+			//skipping an update means they stay still, set SimSpeed to 2 to halve it, could probably improve this with floats but I'm lazy
+			std::cout << (int)time.elapsed() % Config::SimSpeed << std::endl;
+			if ((int)time.elapsed() % Config::SimSpeed == 0) {
+				m_colony->update(num_frames);
+			}
+			else {
+				m_colony->passFrames(num_frames);
+			}
 			
 			//std::thread phero(&Grid::update);
 			//phero.join();
@@ -475,3 +482,4 @@ void Application::update() {
 
 	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
 }
+

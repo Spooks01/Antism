@@ -11,8 +11,8 @@ public:
 	~Overlay();
 
 	void updateStats(int nAnt, int nFo);;
-	void updateFieldPh(sf::String nT);
-	void updateFieldFo(sf::String nT);
+	void updateFieldPh(std::string nT);
+	void updateFieldFo(std::string newText);
 	void setUpText();
 	
 	void checkTextHover(sf::Vector2f mousePos);

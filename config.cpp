@@ -9,6 +9,7 @@ float Config::PheremoneDecay = 0.25f;
 float Config::smellStrength = 0.0f;
 float Config::FoodSmellRadius = 0.0f;
 int Config::MaxFrames = 10;
+int Config::SimSpeed = 1;
 
 
 Config::Config()

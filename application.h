@@ -23,7 +23,6 @@ public:
 	void update();
 
 	void setup();
-	
 private:
 	enum States { Menu, Run, Pause };
 	States state;
@@ -41,5 +40,6 @@ private:
 	sf::Texture m_logoTexture;
 	bool editingOverlayPh, editingOverlayFo;
 	Zone* m_clickableArea;
+	Timer time;
 };
 

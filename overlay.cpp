@@ -16,11 +16,15 @@ Overlay::Overlay(sf::Font * font, int *w, int *h) {
 	pheremoneDecay.setFont(*font);
 	pheremoneDecay.setCharacterSize(18);
 	pheremoneDecay.setFillColor(sf::Color::White);
-	pheremoneDecay.setString("Pheremone decay: " + std::to_string(Config::PheremoneDecay));
+	std::string temp = std::to_string(Config::PheremoneDecay);
+	temp.erase(temp.find_last_not_of('0') + 1, std::string::npos);
+	pheremoneDecay.setString("Pheremone decay: " + temp);
 	foodSmellRadius.setFont(*font);
 	foodSmellRadius.setCharacterSize(18);
 	foodSmellRadius.setFillColor(sf::Color::White);
-	foodSmellRadius.setString("New food radius: " + std::to_string(Config::FoodSmellRadius));
+	temp = std::to_string(Config::FoodSmellRadius);
+	temp.erase(temp.find_last_not_of('0') + 2, std::string::npos);
+	foodSmellRadius.setString("New food radius: " + temp);
 	buttonLabel.setFont(*font);
 	buttonLabel.setCharacterSize(18);
 	buttonLabel.setFillColor(sf::Color::White);
@@ -36,11 +40,13 @@ void Overlay::updateStats(int nAnt, int nFo) {
 	overlayFoodCount.setString("Amount of food: " + std::to_string(nFo));
 }
 
-void Overlay::updateFieldPh(sf::String nT) {
+void Overlay::updateFieldPh(std::string nT) {
+	nT.erase(nT.find_last_not_of('0') + 1, std::string::npos);
 	pheremoneDecay.setString("Pheremone decay: " + nT);
 }
 
-void Overlay::updateFieldFo(sf::String newText) {
+void Overlay::updateFieldFo(std::string newText) {
+	newText.erase(newText.find_last_not_of('0') + 2, std::string::npos);
 	foodSmellRadius.setString("New food radius: " + newText);
 }
 
