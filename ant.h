@@ -14,6 +14,8 @@ public:
 	~Ant();
 
 	virtual void update();
+	virtual void getFood();
+	virtual void goHome();
 	virtual void move(sf::Vector2f offset);
 	virtual void setPosition(sf::Vector2f position);
 	virtual sf::Vector2f getPosition() { return { m_vertices[0].position.x, m_vertices[0].position.y }; }
@@ -33,9 +35,11 @@ protected:
 	float m_health = 100;
 	float pstr; // pheromone strength
 	float sstr; // smell strength
-	float alpha = 2; // alpha parameter
-	float beta = 3; // beta parameter
+	float alpha = 1; // alpha parameter
+	float beta = 5; // beta parameter
+	bool hasFood = false; 
 	std::deque<sf::Vector2i> m_trail;
+	std::deque<sf::Vector2f> m_trailoff;
 	std::vector<sf::Vertex> m_pvertices;
 
 	// Inherited via Drawable

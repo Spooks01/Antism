@@ -1,8 +1,18 @@
-﻿  application.cpp
+﻿  ant.cpp
 d:\documents\gitkraken\antism\config.h(39): warning C4018: '>': signed/unsigned mismatch
-d:\documents\gitkraken\antism\overlay.h(6): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\documents\gitkraken\antism\ant.cpp(99): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(131): warning C4244: '/=': conversion from 'double' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(138): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(149): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(150): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(222): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(223): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\documents\gitkraken\antism\ant.cpp(224): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  application.cpp
+d:\documents\gitkraken\antism\config.h(39): warning C4018: '>': signed/unsigned mismatch
 d:\documents\gitkraken\antism\food.h(19): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-d:\documents\gitkraken\antism\application.cpp(67): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-d:\documents\gitkraken\antism\application.cpp(335): warning C4244: 'initializing': conversion from 'const float' to 'int', possible loss of data
-d:\documents\gitkraken\antism\application.cpp(336): warning C4244: 'initializing': conversion from 'const float' to 'int', possible loss of data
+d:\documents\gitkraken\antism\application.cpp(64): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+d:\documents\gitkraken\antism\application.cpp(331): warning C4244: 'initializing': conversion from 'const float' to 'int', possible loss of data
+d:\documents\gitkraken\antism\application.cpp(332): warning C4244: 'initializing': conversion from 'const float' to 'int', possible loss of data
+  Generating Code...
   antism.vcxproj -> D:\Documents\GitKraken\Antism\Debug\antism.exe

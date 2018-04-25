@@ -27,89 +27,14 @@ Ant::~Ant()
 }
 
 void Ant::update() {
-	sf::Vector2f pos = getPosition();
-	sf::Vector2i limit = Grid::GetSize();
-	float x = pos.x;
-	float y = pos.y;
-	float dx = 0;
-	float dy = 0;
-	float scan[3][3];
 
-	// Path Selection Formula
-	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
-		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
-			if (!(a == 1 && b == 1)) {
-				if (!((x + (a - 1)) < 0 || (x + (a - 1)) >= limit.x || (y + (b - 1)) < 0 || (y + (b - 1)) >= limit.y)) {
-					pstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.second;
-					sstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.first;
-
-					if ((pow(pstr, alpha) * pow(sstr, beta)) != 0) { // If there is adjacent pheromone AND adjacent smell
-						scan[a][b] = (pow(pstr, alpha) * pow(sstr, beta)) / (pow(pstr, alpha) + pow(sstr, beta));
-					}
-					else if ((pow(pstr, alpha) + pow(sstr, beta) == 0)) { // If there is no adjacent pheromone or smell
-						scan[a][b] = 2;
-					}
-					else {
-						scan[a][b] = (pow(pstr, alpha) + pow(sstr, beta)); // If there is only adjacent pheromone OR adjacent smell
-					}
-				}
-				else {
-					scan[a][b] = -1;
-				}
-			}
-			else {
-				scan[a][b] = -1;
-			}
-		}
+	if (!hasFood) {
+		getFood();
+	}
+	else {
+		goHome();
 	}
 
-	// Directional test (north-east)
-	// scan[2][0] = 5;
-
-	// Calculate sum of scan[][] 
-	float sum = 0;
-	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
-		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
-			if (scan[a][b] != -1) {
-				sum += scan[a][b];
-			}
-		}
-	}
-
-
-	// std::cout << "SUM: " << sum << std::endl;
-
-	// Normalisation of scan[][] to range 0...1
-	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
-		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
-			if (scan[a][b] != -1) {
-				scan[a][b] /= (sum * pow(100, -1));
-				// std::cout << scan[a][b] << std::endl;
-			}
-		}
-	}
-
-	// Fitness Proportionate Selection (roulette wheel selection)
-	float random = ((rand() % 100 + 1));
-	// std::cout << "random: " << random << std::endl;
-	float lower = 0;
-	float upper = 0;
-	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
-		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
-			if (scan[a][b] != -1) {
-				upper = lower + scan[a][b];
-				// std::cout << "lower: " << lower << std::endl;
-				// std::cout << "upper: " << upper << std::endl;
-				if (lower < random && random <= upper) {
-					dx = (int)(a - 1);
-					dy = (int)(b - 1);
-				}
-				lower += scan[a][b];
-			}
-		}
-	}
-
-	move(sf::Vector2f((float)dx, (float)dy));
 	//m_health--;
 
 	int count = 5;
@@ -140,11 +65,114 @@ void Ant::update() {
 			*/
 		count--;		
 	}
-
-
 	//std::cout << m_trail.size() << std::endl;
-	
+}
 
+void Ant::getFood() {
+	sf::Vector2f pos = getPosition();
+	sf::Vector2i limit = Grid::GetSize();
+	float x = pos.x;
+	float y = pos.y;
+	float dx = 0;
+	float dy = 0;
+	float scan[3][3];
+
+	// Path Selection Formula
+	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
+		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
+			if (!(a == 1 && b == 1)) {
+				if (!((x + (a - 1)) < 0 || (x + (a - 1)) >= limit.x || (y + (b - 1)) < 0 || (y + (b - 1)) >= limit.y)) {
+					pstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.second;
+					sstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.first;
+					if (isinf(sstr)) {
+						hasFood = true;
+						// std::cout << " food found" << std::endl;
+					}
+
+					if ((pow(pstr, alpha) * pow(sstr, beta)) != 0) { // If there is adjacent pheromone AND adjacent smell
+						scan[a][b] = (pow(pstr, alpha) * pow(sstr, beta)) / (pow(pstr, alpha) + pow(sstr, beta));
+					}
+					else if ((pow(pstr, alpha) + pow(sstr, beta) == 0)) { // If there is no adjacent pheromone or smell
+						scan[a][b] = 1;
+					}
+					else {
+						scan[a][b] = pow(pow(pstr, alpha) + pow(sstr, beta), 0.5); // If there is only adjacent pheromone OR adjacent smell
+					}
+				}
+				else {
+					scan[a][b] = -1;
+				}
+			}
+			else {
+				scan[a][b] = -1;
+			}
+		}
+	}
+
+	// Directional test (north-east)
+	// scan[2][0] = 5;
+
+	// Calculate sum of scan[][] 
+	float sum = 0;
+	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
+		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
+			if (scan[a][b] != -1) {
+				sum += scan[a][b];
+			}
+		}
+	}
+
+	// std::cout << "SUM: " << sum << std::endl;
+
+	// Normalisation of scan[][] to range 0...1
+	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
+		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
+			if (scan[a][b] != -1) {
+				scan[a][b] /= (sum * pow(100, -1));
+				// std::cout << scan[a][b] << std::endl;
+			}
+		}
+	}
+
+	// Fitness Proportionate Selection (roulette wheel selection)
+	float random = ((rand() % 100 + 1));
+	// std::cout << "RANDOM: " << random << std::endl;
+	float lower = 0;
+	float upper = 0;
+	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
+		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
+			if (scan[a][b] != -1) {
+				upper = lower + scan[a][b];
+				// std::cout << "LOWER: " << lower << std::endl;
+				// std::cout << "UPPER: " << upper << std::endl;
+				if (lower < random && random <= upper) {
+					dx = (int)(a - 1);
+					dy = (int)(b - 1);
+				}
+				lower += scan[a][b];
+			}
+		}
+	}
+
+	move(sf::Vector2f((float)dx, (float)dy));
+}
+
+void Ant::goHome() {
+	float dx = 0;
+	float dy = 0;
+	if (!m_trailoff.empty()) {
+		sf::Vector2f pos = m_trailoff.back();
+		m_trailoff.pop_back();
+		dx = -pos.x;
+		dy = -pos.y;
+
+		move(sf::Vector2f((float)dx, (float)dy));
+	}
+	else {
+		// std::cout << "home now" << std::endl;
+		hasFood = false;
+		getFood();
+	}
 }
 
 float Ant::getHealth() {
@@ -177,6 +205,10 @@ void Ant::move(sf::Vector2f offset) {
 	Grid::Assign((int)np.y, (int)np.x, { -4, this, nullptr });
 
 	m_trail.push_back(sf::Vector2i(cp));
+
+	if (!hasFood) {
+		m_trailoff.push_back(sf::Vector2f(offset));
+	}
 
 	m_pvertices.insert(m_pvertices.begin(), { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(0, 0), sf::Color::Cyan });
 	m_pvertices.insert(m_pvertices.begin(), { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(1, 0), sf::Color::Cyan });
