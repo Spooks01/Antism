@@ -2,7 +2,7 @@
 
 #include "grid.h"
 
-void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attributes, sf::Vector2i position) {
+void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attributes, sf::Vector2i position, void *obstacle) {
 	if (id > -1) {
 		this->id = id;
 		this->ant = ant;
@@ -43,6 +43,17 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 		this->food = nullptr;
 		this->attributes.first = 0;
 		this->attributes.second = 0;
+	}
+
+	if (id == -6) {
+		if (obstacle == nullptr)
+			this->id = -1;
+		else {
+			this->id = 3;
+
+			Grid::Obstacles.push_back({ this, position });
+		}
+		this->obstacle = obstacle;
 	}
 
 }

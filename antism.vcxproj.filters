@@ -15,6 +15,7 @@
     <ClCompile Include="pheromone.cpp" />
     <ClCompile Include="cell.cpp" />
     <ClCompile Include="zone.cpp" />
+    <ClCompile Include="obstacle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ant.h" />
@@ -30,6 +31,7 @@
     <ClInclude Include="pheromone.h" />
     <ClInclude Include="cell.h" />
     <ClInclude Include="zone.h" />
+    <ClInclude Include="obstacle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config.cfg" />

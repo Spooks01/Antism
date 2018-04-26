@@ -10,6 +10,7 @@ public:
 	static void loadConfig(std::fstream *f);
 	static void loadConfig();
 	static void writeConfig();
+	static void loadDefaultValues();
 	static int applicationWidth;
 	static int applicationHeight;
 	static bool vsync;
@@ -18,6 +19,8 @@ public:
 	static float FoodSmellRadius;
 	static int MaxFrames;
 	static int SimSpeed;
+	static float AlphaParam;
+	static float BetaParam;
 
 	static bool isFloatNumber(const std::string& string) {
 		std::string::const_iterator it = string.begin();

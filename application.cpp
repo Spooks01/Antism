@@ -16,12 +16,15 @@ std::vector<sf::Text> buttonLabels;
 
 std::vector<Food*> food;
 std::vector<sf::VertexArray> m_smells;
+std::vector<Obstacle *> obstacles;
 
 Application::Application(int width, int height, bool vS, std::string title) {
 	m_clickableArea = new Zone(width, height);
 	m_maxFrames = 10;
 	editingOverlayPh = false;
 	editingOverlayFo = false;
+	editingOverlayA = false;
+	editingOverlayB = false;
 	state = Menu;
 	windowWidth = width;
 	windowHeight = height;
@@ -77,7 +80,7 @@ Application::~Application() {
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
 
-	m_colony->generate(1000);
+	m_colony->generate(100);
 
 	//std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
@@ -169,6 +172,9 @@ void Application::run() {
 				}
 				for (size_t i = 0; i < food.size(); ++i)
 					m_window.draw(*food[i]);
+
+				for (size_t i = 0; i < obstacles.size(); ++i)
+					m_window.draw(*obstacles[i]);
 			}
 			
 			m_window.setView(m_window.getDefaultView());
@@ -214,6 +220,9 @@ void Application::run() {
 				for (size_t i = 0; i < food.size(); ++i)
 					m_window.draw(*food[i]);
 
+				for (size_t j = 0; j < obstacles.size(); j++) {
+					m_window.draw(*obstacles[j]);
+				}
 
 			m_window.draw(*m_colony);
 	
@@ -239,8 +248,22 @@ void Application::run() {
 					else {
 						m_window.draw(m_tempOverlayLabel);
 					}
+					if (!editingOverlayA) {
+						m_window.draw(m_overlay->alpha);
+					}
+					else {
+						m_window.draw(m_tempOverlayLabel);
+					}
+					if (!editingOverlayB) {
+						m_window.draw(m_overlay->beta);
+					}
+					else {
+						m_window.draw(m_tempOverlayLabel);
+					}
 					m_window.draw(*m_overlay->ovButton);
 					m_window.draw(m_overlay->buttonLabel);
+					m_window.draw(*m_overlay->loadDefaults);
+					m_window.draw(m_overlay->defaultsLabel);
 				}
 			}
 
@@ -269,7 +292,6 @@ void Application::run() {
 sf::String temp;
 std::string::size_type si;
 void Application::update() {
-	m_clickableArea->clicked = false;
 	sf::Event event;
 	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2, m_window.getSize().y / 2);
 	m_overlay->checkTextHover((sf::Vector2f) sf::Mouse::getPosition(m_window));
@@ -339,7 +361,7 @@ void Application::update() {
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {
 					state = Pause;
 				}
-				if (m_clickableArea->update(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)))) {
+				if (m_clickableArea->update(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window))) == 1) {
 					//add food
 					Food* newFood = new Food(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)));
 					food.push_back(newFood);
@@ -356,6 +378,13 @@ void Application::update() {
 					m_smells.push_back(va);
 					//delete newFood;
 				}
+				if (m_clickableArea->update(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window))) == 0) {
+					//add food
+					Obstacle* newObs = new Obstacle(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)));
+					obstacles.push_back(newObs);
+					//delete newFood;
+				}
+
 			}
 			if (m_overlay->editMode == 1 && toggle) {
 				editingOverlayPh = true;
@@ -423,9 +452,82 @@ void Application::update() {
 					editingOverlayFo = false;
 				}
 			}
+			if (m_overlay->editMode == 3 && toggle) {
+				editingOverlayA = true;
+				m_tempOverlayLabel.setPosition(m_overlay->alpha.getPosition());
+				if (event.type == sf::Event::TextEntered) {
+					if (event.text.unicode == '\b') {
+						if (temp.getSize() != 0) {
+							temp.erase(temp.getSize() - 1, 1);
+							m_tempOverlayLabel.setString(temp);
+						}
+					}
+					else {
+						temp += event.text.unicode;
+						std::cout << temp.toAnsiString();
+						m_tempOverlayLabel.setString(temp);
+					}
+				}
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
+					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0) {
+						m_overlay->updateFieldA(std::to_string(Config::AlphaParam));
+						m_overlay->editMode = 0;
+					}
+					else {
+						Config::AlphaParam = std::stof(temp.toAnsiString(), &si);
+						m_overlay->updateFieldA(std::to_string(Config::AlphaParam));
+						m_overlay->editMode = 0;
+					}
+					std::cout << "Alpha: " << Config::AlphaParam;
+					//Config::writeConfig();
+					m_tempOverlayLabel.setString("");
+					temp = "";
+					editingOverlayA = false;
+				}
+			}
+			if (m_overlay->editMode == 4 && toggle) {
+				editingOverlayB = true;
+				m_tempOverlayLabel.setPosition(m_overlay->beta.getPosition());
+				if (event.type == sf::Event::TextEntered) {
+					if (event.text.unicode == '\b') {
+						if (temp.getSize() != 0) {
+							temp.erase(temp.getSize() - 1, 1);
+							m_tempOverlayLabel.setString(temp);
+						}
+					}
+					else {
+						temp += event.text.unicode;
+						std::cout << temp.toAnsiString();
+						m_tempOverlayLabel.setString(temp);
+					}
+				}
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
+					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0) {
+						m_overlay->updateFieldB(std::to_string(Config::BetaParam));
+						m_overlay->editMode = 0;
+					}
+					else {
+						Config::BetaParam = std::stof(temp.toAnsiString(), &si);
+						m_overlay->updateFieldB(std::to_string(Config::BetaParam));
+						m_overlay->editMode = 0;
+					}
+					std::cout << "Beta: " << Config::BetaParam;
+					//Config::writeConfig();
+					m_tempOverlayLabel.setString("");
+					temp = "";
+					editingOverlayB = false;
+				}
+			}
 			if (m_overlay->ovButton->update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
 				Config::writeConfig();
 			}			
+			if (m_overlay->loadDefaults->update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
+				Config::loadDefaultValues();
+				m_overlay->updateFieldPh(std::to_string(Config::PheremoneDecay));
+				m_overlay->updateFieldFo(std::to_string(Config::FoodSmellRadius));
+				m_overlay->updateFieldA(std::to_string(Config::AlphaParam));
+				m_overlay->updateFieldB(std::to_string(Config::BetaParam));
+			}
 		}
 	} else if (state == Menu) {
 		while (m_window.pollEvent(event)) {
@@ -456,6 +558,7 @@ void Application::update() {
 					
 					m_grid->clear();
 					food.clear();
+					obstacles.clear();
 					smell_toggle = false;
 					pheromone_toggle = false;
 					toggle = false;

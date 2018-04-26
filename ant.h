@@ -35,8 +35,8 @@ protected:
 	float m_health = 100;
 	float pstr; // pheromone strength
 	float sstr; // smell strength
-	float alpha = 1; // alpha parameter
-	float beta = 5; // beta parameter
+	float alpha = Config::AlphaParam; // alpha parameter
+	float beta = Config::BetaParam; // beta parameter
 	bool hasFood = false; 
 	std::deque<sf::Vector2i> m_trail;
 	std::deque<sf::Vector2f> m_trailoff;

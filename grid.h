@@ -38,6 +38,7 @@ public:
 	static std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> Pheromones;
 	static std::vector <std::pair<int, std::vector<sf::Vertex>>> Pheromones2;
 	static std::vector <std::pair<Cell*, sf::Vector2i>> Food;
+	static std::vector <std::pair<Cell* , sf::Vector2i>> Obstacles;
 	// For more colonies
 	static std::vector <void*> Colonies;
 

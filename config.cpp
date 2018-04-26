@@ -10,6 +10,8 @@ float Config::smellStrength = 0.0f;
 float Config::FoodSmellRadius = 0.0f;
 int Config::MaxFrames = 10;
 int Config::SimSpeed = 1;
+float Config::AlphaParam = 1;
+float Config::BetaParam = 5;
 
 
 Config::Config()
@@ -80,4 +82,12 @@ void Config::writeConfig(){
 		<< "//screen resolution height" << std::endl
 		<< applicationHeight << std::endl;
 	file->close();
+}
+
+void Config::loadDefaultValues() {
+	Config::AlphaParam = 1;
+	Config::BetaParam = 5;
+	Config::PheremoneDecay = 0.01;
+	Config::FoodSmellRadius = 25;
+	Config::writeConfig();
 }

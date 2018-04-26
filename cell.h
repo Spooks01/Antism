@@ -18,15 +18,16 @@ public:
 	0  = Food
 	1  = Basic Ant
 	2  = Queen
+	3  = Obstacle
 	*/
 	int id = -1;
 	void* ant = nullptr;
 	void* food = nullptr;
-
 	// Smell & Pheromone
 	std::pair<float, float> attributes = std::make_pair<float, float>(0, 0);
+	void* obstacle = nullptr;
 
 	inline void assign(Cell cell, sf::Vector2i position = sf::Vector2i()) { assign(cell.id, cell.ant, cell.food, cell.attributes, position); }
-	void assign(int id = -1, void* ant = nullptr, void* food = nullptr, std::pair<float, float> attributes = std::make_pair<float, float>(0, 0), sf::Vector2i position = sf::Vector2i());
+	void assign(int id = -1, void* ant = nullptr, void* food = nullptr, std::pair<float, float> attributes = std::make_pair<float, float>(0, 0), sf::Vector2i position = sf::Vector2i(), void *obstacle = nullptr);
 };
 

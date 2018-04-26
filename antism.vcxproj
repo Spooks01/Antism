@@ -166,6 +166,7 @@
     <ClInclude Include="config.h" />
     <ClInclude Include="food.h" />
     <ClInclude Include="grid.h" />
+    <ClInclude Include="obstacle.h" />
     <ClInclude Include="overlay.h" />
     <ClInclude Include="pheromone.h" />
     <ClInclude Include="queen.h" />
@@ -182,6 +183,7 @@
     <ClCompile Include="config.cpp" />
     <ClCompile Include="food.cpp" />
     <ClCompile Include="grid.cpp" />
+    <ClCompile Include="obstacle.cpp" />
     <ClCompile Include="overlay.cpp" />
     <ClCompile Include="pheromone.cpp" />
     <ClCompile Include="queen.cpp" />

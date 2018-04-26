@@ -11,6 +11,7 @@
 #include "grid.h"
 #include "colony.h"
 #include "food.h"
+#include "obstacle.h"
 #include "zone.h"
 
 class Application
@@ -38,7 +39,7 @@ private:
 	sf::Font m_font;
 	sf::RectangleShape m_logo;
 	sf::Texture m_logoTexture;
-	bool editingOverlayPh, editingOverlayFo;
+	bool editingOverlayPh, editingOverlayFo, editingOverlayA, editingOverlayB;
 	Zone* m_clickableArea;
 	Timer time;
 };

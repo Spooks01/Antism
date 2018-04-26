@@ -13,6 +13,8 @@ public:
 	void updateStats(int nAnt, int nFo);;
 	void updateFieldPh(std::string nT);
 	void updateFieldFo(std::string newText);
+	void updateFieldA(std::string nT);
+	void updateFieldB(std::string nT);
 	void setUpText();
 	
 	void checkTextHover(sf::Vector2f mousePos);
@@ -29,9 +31,12 @@ public:
 	//editable
 	sf::Text pheremoneDecay;
 	sf::Text foodSmellRadius;
+	sf::Text alpha;
+	sf::Text beta;
 	//save edited fields
-	sf::Text buttonLabel;
+	sf::Text buttonLabel, defaultsLabel;
 	Button *ovButton;
+	Button *loadDefaults;
 	//filewrite
 	std::string temp;
 };
