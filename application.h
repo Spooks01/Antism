@@ -30,7 +30,7 @@ private:
 	Overlay *m_overlay;
 	sf::RenderWindow m_window;
 	Grid* m_grid;
-	sf::Text m_label, m_tempOverlayLabel, m_paused;
+	sf::Text m_label, m_tempOverlayLabel, m_paused, colonySize;
 	Fps fps;
 	int m_maxFrames;
 	sf::View m_view;
@@ -39,7 +39,7 @@ private:
 	sf::Font m_font;
 	sf::RectangleShape m_logo;
 	sf::Texture m_logoTexture;
-	bool editingOverlayPh, editingOverlayFo, editingOverlayA, editingOverlayB;
+	bool editingOverlayPh, editingOverlayFo, editingOverlayA, editingOverlayB, appRun;
 	Zone* m_clickableArea;
 	Timer time;
 };

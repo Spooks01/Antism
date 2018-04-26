@@ -25,6 +25,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	editingOverlayFo = false;
 	editingOverlayA = false;
 	editingOverlayB = false;
+	appRun = false;
 	state = Menu;
 	windowWidth = width;
 	windowHeight = height;
@@ -71,6 +72,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	m_logo.setTexture(&m_logoTexture);
 	m_logo.setSize(sf::Vector2f(height / 4.f, height / 4.f));
 	m_logo.setPosition(sf::Vector2f((width / 2.f) - height / 8.f, height / 8.f));
+	
 }
 
 Application::~Application() {
@@ -79,8 +81,6 @@ Application::~Application() {
 
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
-
-	m_colony->generate(100);
 
 	//std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
@@ -131,6 +131,32 @@ void Application::setup() {
 	buttonLabels.at(2).setCharacterSize(18);
 	buttonLabels.at(2).setFillColor(sf::Color::White);
 	buttonLabels.at(2).setPosition(sf::Vector2f(buttonList.at(2).getPosition().x + 85, buttonList.at(2).getPosition().y + 10));
+
+	//buttons for incrementing the colony size 
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) + 75, (windowHeight / 2.f) - 70), sf::Vector2f(25, 50), sf::Color(100, 100, 100, 255)));
+	
+	buttonLabels.push_back(sf::Text());
+	buttonLabels.at(3).setFont(m_font);
+	buttonLabels.at(3).setString(">");
+	buttonLabels.at(3).setCharacterSize(18);
+	buttonLabels.at(3).setFillColor(sf::Color::White);
+	buttonLabels.at(3).setPosition(sf::Vector2f(buttonList.at(3).getPosition().x + 10, buttonList.at(3).getPosition().y + 15));
+
+	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, (windowHeight / 2.f) - 70), sf::Vector2f(25, 50), sf::Color(100, 100, 100, 255)));
+
+	buttonLabels.push_back(sf::Text());
+	buttonLabels.at(4).setFont(m_font);
+	buttonLabels.at(4).setString("<");
+	buttonLabels.at(4).setCharacterSize(18);
+	buttonLabels.at(4).setFillColor(sf::Color::White);
+	buttonLabels.at(4).setPosition(sf::Vector2f(buttonList.at(4).getPosition().x + 10, buttonList.at(4).getPosition().y + 15));
+
+
+	colonySize.setFont(m_font);
+	colonySize.setString(std::to_string(Config::ColonySize));
+	colonySize.setCharacterSize(18);
+	colonySize.setFillColor(sf::Color::White);
+	colonySize.setPosition(sf::Vector2f(buttonList.at(3).getPosition().x - 90, buttonList.at(3).getPosition().y + 15));
 }
 
 int num_frames;
@@ -273,10 +299,18 @@ void Application::run() {
 			m_window.clear(sf::Color::Black);
 			m_window.draw(m_bg);
 			m_window.draw(m_logo);
+			if (!appRun) {
+				m_window.draw(colonySize);
+			}
 			
 			for (size_t i = 0; i < buttonList.size(); i++) {
-				m_window.draw(buttonList.at(i));
-				m_window.draw(buttonLabels.at(i));
+				if ((i == 4 || i == 3) && appRun) {
+				
+				}
+				else {
+					m_window.draw(buttonList.at(i));
+					m_window.draw(buttonLabels.at(i));
+				}
 			}
 		}
 
@@ -542,8 +576,10 @@ void Application::update() {
 		for (size_t i = 0; i < buttonList.size(); i++) {
 			if (i == 0) {
 				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
+					
 					state = Run;
-
+					appRun = true;
+					m_colony->generate(Config::ColonySize);
 					buttonLabels.at(i).setPosition(sf::Vector2f(buttonList.at(i).getPosition().x + 70, buttonList.at(i).getPosition().y + 10));
 					buttonLabels.at(i).setString("Resume");
 				}
@@ -565,14 +601,32 @@ void Application::update() {
 					
 					m_smells.clear();
 					Config::loadConfig();
+					Config::loadDefaultColonySize();
 					m_overlay->updateFieldPh(std::to_string(Config::PheremoneDecay));
 					m_overlay->updateFieldFo(std::to_string(Config::FoodSmellRadius));
+					appRun = false;
 					setup();
 				}
 			}
 			if (i == 2) {
 				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
 					m_window.close();
+				}
+			}
+			if (i == 3 && !appRun) {
+				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
+					if (num_frames = Config::MaxFrames - 1) {
+						Config::ColonySize++;
+						colonySize.setString(std::to_string(Config::ColonySize));
+					}
+				}
+			}
+			if (i == 4 && !appRun) {
+				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
+					if ((num_frames = Config::MaxFrames - 1) && Config::ColonySize > 1) {
+						Config::ColonySize--;
+						colonySize.setString(std::to_string(Config::ColonySize));
+					}
 				}
 			}
 		}

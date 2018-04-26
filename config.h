@@ -11,6 +11,7 @@ public:
 	static void loadConfig();
 	static void writeConfig();
 	static void loadDefaultValues();
+	static void loadDefaultColonySize();
 	static int applicationWidth;
 	static int applicationHeight;
 	static bool vsync;
@@ -21,6 +22,7 @@ public:
 	static int SimSpeed;
 	static float AlphaParam;
 	static float BetaParam;
+	static int ColonySize;
 
 	static bool isFloatNumber(const std::string& string) {
 		std::string::const_iterator it = string.begin();

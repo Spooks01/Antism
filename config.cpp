@@ -12,6 +12,7 @@ int Config::MaxFrames = 10;
 int Config::SimSpeed = 1;
 float Config::AlphaParam = 1;
 float Config::BetaParam = 5;
+int Config::ColonySize = 100;
 
 
 Config::Config()
@@ -89,5 +90,10 @@ void Config::loadDefaultValues() {
 	Config::BetaParam = 5;
 	Config::PheremoneDecay = 0.01;
 	Config::FoodSmellRadius = 25;
+	Config::ColonySize = 100;
 	Config::writeConfig();
+}
+
+void Config::loadDefaultColonySize() {
+	Config::ColonySize = 100;
 }
