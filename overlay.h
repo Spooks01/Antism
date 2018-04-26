@@ -23,6 +23,7 @@ public:
 	sf::Text overlayAntCount;
 	sf::Text overlayQueenCount;
 	sf::Text overlayFoodCount;
+	sf::Text simSpeed;
 	//Divider
 	sf::RectangleShape div1;
 	//editable

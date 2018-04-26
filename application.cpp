@@ -180,7 +180,7 @@ void Application::run() {
 		if (state == Run) {
 			//since the movement speed of the ants is tied to fps, this is the only way to slow them without seriously changing how the updates work
 			//skipping an update means they stay still, set SimSpeed to 2 to halve it, could probably improve this with floats but I'm lazy
-			std::cout << (int)time.elapsed() % Config::SimSpeed << std::endl;
+			//std::cout << (int)time.elapsed() % Config::SimSpeed << std::endl;
 			if ((int)time.elapsed() % Config::SimSpeed == 0) {
 				m_colony->update(num_frames);
 			}
@@ -225,6 +225,7 @@ void Application::run() {
 					m_window.draw(*m_overlay);
 					m_window.draw(m_overlay->overlayAntCount);
 					m_window.draw(m_overlay->overlayFoodCount);
+					m_window.draw(m_overlay->simSpeed);
 					m_window.draw(m_overlay->div1);
 					if (!editingOverlayPh) {
 						m_window.draw(m_overlay->pheremoneDecay);
@@ -310,6 +311,14 @@ void Application::update() {
 					toggle = !toggle;
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1)
 					smell_toggle = !smell_toggle;
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S) {
+					if (Config::SimSpeed == 1) {
+						Config::SimSpeed = 2;
+					}
+					else {
+						Config::SimSpeed = 1;
+					}
+				}	
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num2)
 					pheromone_toggle = !pheromone_toggle;
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
