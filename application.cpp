@@ -31,7 +31,7 @@ Application::Application(int width, int height, bool vS, std::string title) {
 	windowHeight = height;
 	m_window.create(sf::VideoMode(width, height), title);
 
-	m_window.setVerticalSyncEnabled(vS);
+	m_window.setVerticalSyncEnabled(true);
 	m_window.setFramerateLimit(60);
 
 	m_view.setViewport(sf::FloatRect(0, 0, 1, 1));
@@ -162,26 +162,31 @@ void Application::setup() {
 int num_frames;
 void Application::run() {
 	setup();	
-	sf::Clock clock;
-	sf::Time frame = sf::milliseconds(Config::MaxFrames);
-	sf::Time elapsed = frame;
 	num_frames = 0;
+
+	Timer timer;
+	double start = 0, elapsed = 0;
+
 	//phero.detach();
-	while (m_window.isOpen()) {
+	while (m_window.isOpen()) {		
+		elapsed = timer.elapsed();
+
+		while (elapsed - start < 1 / 60.f) {
+
+			elapsed = timer.elapsed();
+		}
+
+		start = elapsed;
+
+
 		if (num_frames > Config::MaxFrames)
 			num_frames = 0;
-		//std::cout << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() <<"\n";
-		
-		//do {
-			//elapsed = clock.getElapsedTime();
 
-			//std::cout << "->" << (elapsed - frame).asMilliseconds() << " " << frame.asMilliseconds() << "\n";
 		m_window.setView(m_view);
 		update();
 		m_window.setView(m_window.getDefaultView());
-		//} while ((elapsed - frame).asMilliseconds() < num_frames * frame.asMilliseconds());
 
-		//elapsed = clock.restart();
+		
 		if (num_frames == Config::MaxFrames) {
 			m_window.clear(sf::Color::Black);
 		}
