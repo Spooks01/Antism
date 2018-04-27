@@ -171,18 +171,19 @@ void Application::run() {
 	while (m_window.isOpen()) {		
 		elapsed = timer.elapsed();
 		m_window.clear(sf::Color::Black);
-		while (elapsed - start < 1 / 60.f && num_frames < Config::MaxFrames - 1) {
-			std::cout << num_frames << std::endl;
+
+		while (elapsed - start < 1 / 60.f || num_frames < Config::MaxFrames) {
+			//std::cout << num_frames << std::endl;
 			m_window.setView(m_view);
 			update();
 			m_window.setView(m_window.getDefaultView());
 			elapsed = timer.elapsed();
 		}
-		if (num_frames >= Config::MaxFrames - 1)
-			num_frames = 0;
-		start = elapsed;
 		
+		if (num_frames > Config::MaxFrames - 1)
+			num_frames = 0;
 
+		start = elapsed;
 		
 		if (state == Pause) {
 
@@ -296,15 +297,17 @@ void Application::run() {
 		}
 
 		
-			m_window.draw(m_label);
-			m_window.display();
+		m_window.draw(m_label);
+		m_window.display();
 		m_label.setString("FPS: " + std::to_string(fps.elapsed()));
 	}
+
+	
 }
 sf::String temp;
 std::string::size_type si;
 void Application::update() {
-	std::cout << num_frames << std::endl;
+	//std::cout << num_frames << std::endl;
 	sf::Event event;
 	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2, m_window.getSize().y / 2);
 	m_overlay->checkTextHover((sf::Vector2f) sf::Mouse::getPosition(m_window));
@@ -599,7 +602,7 @@ void Application::update() {
 			}
 			if (i == 3 && !appRun) {
 				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
-					if (num_frames = Config::MaxFrames - 1) {
+					if (num_frames == Config::MaxFrames) {
 						Config::ColonySize++;
 						colonySize.setString(std::to_string(Config::ColonySize));
 					}
@@ -607,7 +610,7 @@ void Application::update() {
 			}
 			if (i == 4 && !appRun) {
 				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
-					if ((num_frames = Config::MaxFrames - 1) && Config::ColonySize > 1) {
+					if ((num_frames == Config::MaxFrames) && Config::ColonySize > 1) {
 						Config::ColonySize--;
 						colonySize.setString(std::to_string(Config::ColonySize));
 					}

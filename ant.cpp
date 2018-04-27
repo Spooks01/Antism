@@ -7,7 +7,7 @@ Ant::Ant()
 	m_vertices[2].color = sf::Color::Green;
 	m_vertices[3].color = sf::Color::Green;
 
-	m_health = float(rand() % 1500 + 1000);
+	//m_health = float(rand() % 1500 + 1000);
 }
 
 Ant::Ant(sf::Vector2f position)
@@ -19,53 +19,41 @@ Ant::Ant(sf::Vector2f position)
 	m_vertices[2].color = sf::Color::Green;
 	m_vertices[3].color = sf::Color::Green;
 
-	m_health = float(rand() % 1500 + 1000);
+	//m_health = float(rand() % 1500 + 1000);
 }
 
 Ant::~Ant()
 {
 }
 
+void Ant::setBlanc() {
+	Grid::Assign((int)m_vertices[0].position.y, (int)m_vertices[0].position.x, { -4, nullptr, nullptr });
+
+	m_vertices[0] = { sf::Vector2f(0, 0), sf::Color(0, 0, 0, 0)};
+	m_vertices[1] = { sf::Vector2f(0, 0), sf::Color(0, 0, 0, 0)};
+	m_vertices[2] = { sf::Vector2f(0, 0), sf::Color(0, 0, 0, 0)};
+	m_vertices[3] = { sf::Vector2f(0, 0), sf::Color(0, 0, 0, 0)};
+}
+
 void Ant::update() {
+	std::cout << m_health << std::endl;
 
-	if (!hasFood) {
-		getFood();
-	}
-	else {
-		goHome();
-	}
+	if (alive) {
+		if (m_health <= 0) {
+			alive = false;
+			setBlanc();
 
-	//m_health--;
+		}
 
-	int count = 5;
-
-	auto qq = m_trail.begin();
-	//std::cout << " --------------- SET ----------------- " << std::endl;
-	while (qq != m_trail.end() && count > 0) {
-		auto v = *qq;
-
-		//std::cout << "Size: " << m_trail.size() << "; Count: " << count << " " << (*qq).y << " " << (*qq).x << " + " << Grid::Get((*qq).y, (*qq).x).attributes.second << std::endl;
-
-/*
-		if (Grid::Get(v.y, v.x).attributes.second < m_decay || Grid::Get(v.y, v.x).attributes.second == 0) {
-			Grid::Assign(v.y, v.x, { -5 });
-
-			qq = m_trail.erase(qq);
-
-			m_pvertices.pop_back();
-			m_pvertices.pop_back();
-			m_pvertices.pop_back();
-			m_pvertices.pop_back();
+		if (!hasFood) {
+			getFood();
 		}
 		else {
-			Grid::Assign(v.y, v.x, { -2, nullptr, nullptr,{ 0, -m_decay } });
-
-			++qq;
+			goHome();
 		}
-			*/
-		count--;		
+
+		m_health--;
 	}
-	//std::cout << m_trail.size() << std::endl;
 }
 
 void Ant::getFood() {

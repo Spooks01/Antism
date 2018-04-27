@@ -2,8 +2,7 @@
 
 Cell** Grid::m_cells = nullptr;
 
-std::vector <std::pair<Cell*, std::vector<sf::Vertex>>> Grid::Pheromones;
-std::vector <std::pair<int, std::vector<sf::Vertex>>> Grid::Pheromones2;;
+std::vector <std::pair<Cell*, sf::Vertex*>> Grid::Pheromones;
 std::vector <std::pair<Cell*, sf::Vector2i>> Grid::Food;
 std::vector <std::pair<Cell*, sf::Vector2i>> Grid::Obstacles;
 std::vector <void*> Grid::Colonies;

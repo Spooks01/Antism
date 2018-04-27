@@ -32,6 +32,17 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 			this->id = 1;
 
 		this->ant = ant;
+
+		if (attributes.second > 0) {
+			/*sf::Vertex vertices[4];
+
+			vertices[0] = { sf::Vector2f(position.x, position.y) + sf::Vector2f(0, 0), sf::Color::Cyan };
+			vertices[1] = { sf::Vector2f(position.x, position.y) + sf::Vector2f(1, 0), sf::Color::Cyan };
+			vertices[2] = { sf::Vector2f(position.x, position.y) + sf::Vector2f(1, 1), sf::Color::Cyan };
+			vertices[3] = { sf::Vector2f(position.x, position.y) + sf::Vector2f(0, 1), sf::Color::Cyan };
+
+			Grid::Pheromones.push_back({ this, vertices });*/
+		}
 	}
 	
 	this->attributes.first += attributes.first;
@@ -55,5 +66,5 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 		}
 		this->obstacle = obstacle;
 	}
-
+	
 }

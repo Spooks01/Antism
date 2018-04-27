@@ -37,8 +37,8 @@ void Colony::update(int frame) {
 		if (frame * stage + i < m_ants.size()) {
 			m_ants.at(frame * stage + i)->update();
 
-			int count = 1 / Config::PheremoneDecay + 1;
-			//int count = 5;
+			int count = 1.f / Config::PheremoneDecay + 1;
+
 			//std::cout << " --------------- SET ----------------- " << std::endl;
 
 			auto p = m_ants.at(frame * stage + i)->getPosition();
@@ -59,6 +59,8 @@ void Colony::update(int frame) {
 					t->pop_back();
 					t->pop_back();
 					t->pop_back();
+
+
 				}
 				else {
 					if (std::find(pha.begin(), pha.end(), p) == pha.end()) {
@@ -90,14 +92,12 @@ void Colony::update(int frame) {
 				count--;
 			}
 
-			if (m_ants.at(frame * stage + i)->getHealth() <= 0) {
-				m_ants.erase(m_iterator + frame * stage + i);
+			if (m_ants.at(frame * stage + i)->isDeleteSafe()) {
+				m_ants.erase(m_ants.begin() + frame * stage + i);
 			}
 		}
 	}
 
-	
-	
 	m_queen->update();
 	if (m_queen->getStatus()) {
 		sf::Vector2f pos = sf::Vector2f(m_center.x, m_center.y + 3);
@@ -137,34 +137,7 @@ void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 
 	target.draw(vertices, m_ants.size() * 4, sf::Quads);
 	target.draw(*m_queen, states);
-	/*
-	auto i = m_ants.begin();
-	auto k = 0;
 
-	sf::Vertex* vertices = new sf::Vertex[m_ants.size() * 4];
-
-	i = m_ants.begin();
-	while (i != m_ants.end()) {
-		auto v = (*i)->getTrail();
-		auto w = (*i)->getVertices();
-
-		if (v.size()) {
-			target.draw(&v[0], v.size(), sf::Quads);
-		}
-			
-		vertices[k + 0] = w[0];
-		vertices[k + 1] = w[1];
-		vertices[k + 2] = w[2];
-		vertices[k + 3] = w[3];
-
-		k += 4;
-		
-		++i;
-	}
-
-	target.draw(vertices, m_ants.size() * 4, sf::Quads);
-	target.draw(*m_queen, states);
-	*/
 	delete[] vertices;
 }
 

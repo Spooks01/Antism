@@ -19,6 +19,8 @@ public:
 	virtual void move(sf::Vector2f offset);
 	virtual void setPosition(sf::Vector2f position);
 	virtual sf::Vector2f getPosition() { return { m_vertices[0].position.x, m_vertices[0].position.y }; }
+	virtual bool getStatus() { return alive; }
+	virtual bool isDeleteSafe() { return (m_trail.size() == 0 && !alive); }
 
 	float getHealth();
 	std::vector<sf::Vertex>* getTrail() { return &m_pvertices; }
@@ -38,12 +40,15 @@ protected:
 	float alpha = Config::AlphaParam; // alpha parameter
 	float beta = Config::BetaParam; // beta parameter
 	bool hasFood = false; 
+	bool alive = true;
 	std::deque<sf::Vector2i> m_trail;
 	std::deque<sf::Vector2f> m_trailoff;
 	std::vector<sf::Vertex> m_pvertices;
 
 	// Inherited via Drawable
 	virtual void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
+
+	virtual void setBlanc();
 
 	int m_size = 1;
 	sf::Vertex m_vertices[4];
