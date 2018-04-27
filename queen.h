@@ -65,9 +65,16 @@ public:
 		return m_status;
 	}
 
-	
+	void increaseCapacity() {
+		m_capacity++;
+	}
+
+	void decreaseCapacity() {
+		m_capacity--;
+	}
 
 private:
+	int m_capacity = Config::QueenCapacity;
 	float m_spawn_rate = 20.f;
 	float m_cooldown = 0.f;
 	bool m_status = false;

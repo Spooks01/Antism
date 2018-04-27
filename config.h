@@ -26,6 +26,7 @@ public:
 	static float MaxSmell;
 	static float MaxPheromone;
 	static int FoodCapacity;
+	static int QueenCapacity;
 
 	static bool isFloatNumber(const std::string& string) {
 		std::string::const_iterator it = string.begin();

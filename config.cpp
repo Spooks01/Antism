@@ -15,6 +15,7 @@ int Config::ColonySize = 100;
 float Config::MaxSmell = 100;
 float Config::MaxPheromone = 100;
 int Config::FoodCapacity = 1;
+int Config::QueenCapacity = 1;
 
 Config::Config()
 {
