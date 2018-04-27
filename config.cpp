@@ -1,8 +1,8 @@
 #include "config.h"
 #include <fstream>
 #include <string>
-int Config::applicationWidth = 1280;
-int Config::applicationHeight = 720;
+int Config::applicationWidth;
+int Config::applicationHeight;
 bool Config::vsync = true;
 
 float Config::PheremoneDecay = 0.25f;
