@@ -398,7 +398,7 @@ void Application::update() {
 				}
 				if (m_clickableArea->update(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window))) == 1) {
 					//add food
-					if (m_grid->Get(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).y, m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).x).id == -1) {
+					if (m_grid->Get(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).y, m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).x).id == -1 && m_grid->Get(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).y, m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).x).attributes.second == 0) {
 						Food* newFood = new Food(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)));
 						food.push_back(newFood);
 						Grid::UpdateSmellRadius();
@@ -406,7 +406,7 @@ void Application::update() {
 				}
 				if (m_clickableArea->update(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window))) == 0) {
 					//add obstacle
-					if (m_grid->Get(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).y, m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).x).id == -1) {
+					if (m_grid->Get(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).y, m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).x).id == -1 && m_grid->Get(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).y, m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)).x).attributes.second == 0) {
 						Obstacle* newObs = new Obstacle(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)));
 						obstacles.push_back(newObs);
 					}
