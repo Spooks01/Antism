@@ -34,12 +34,15 @@ public:
 	static Cell* GetPointer(int i, int j) {
 		return &m_cells[i][j];
 	}
+	
+	static void UpdateSmellRadius();
 
 	sf::Vector2f getCenter();
 
 public:
 	static std::vector <std::pair<Cell*, sf::Vertex*>> Pheromones;
 	static std::vector <std::pair<Cell*, sf::Vector2i>> Food;
+	static std::vector <sf::VertexArray> SmellRadius;
 	static std::vector <std::pair<Cell* ,sf::Vector2i>> Obstacles;
 	// For more colonies
 	static std::vector <void*> Colonies;

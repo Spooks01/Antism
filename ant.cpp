@@ -1,4 +1,5 @@
 #include "ant.h"
+#include "food.h"
 
 Ant::Ant()
 {
@@ -7,7 +8,7 @@ Ant::Ant()
 	m_vertices[2].color = sf::Color::Green;
 	m_vertices[3].color = sf::Color::Green;
 
-	//m_health = float(rand() % 1500 + 1000);
+	m_health = float(rand() % 1500 + 1000);
 }
 
 Ant::Ant(sf::Vector2f position)
@@ -19,7 +20,7 @@ Ant::Ant(sf::Vector2f position)
 	m_vertices[2].color = sf::Color::Green;
 	m_vertices[3].color = sf::Color::Green;
 
-	//m_health = float(rand() % 1500 + 1000);
+	m_health = float(rand() % 1500 + 1000);
 }
 
 Ant::~Ant()
@@ -74,6 +75,11 @@ void Ant::getFood() {
 					sstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.first;
 					if (isinf(sstr)) {
 						hasFood = true;
+						auto f = ((Food*)Grid::Get((int)(y + (b - 1)), (int)(x + (a - 1))).food);
+						if (f->getCapacity() > 1)
+							f->lowerCapacity();
+						else
+							f->despawn();
 						// std::cout << " food found" << std::endl;
 					}
 

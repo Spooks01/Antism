@@ -23,6 +23,9 @@ public:
 	static float AlphaParam;
 	static float BetaParam;
 	static int ColonySize;
+	static float MaxSmell;
+	static float MaxPheromone;
+	static int FoodCapacity;
 
 	static bool isFloatNumber(const std::string& string) {
 		std::string::const_iterator it = string.begin();

@@ -12,7 +12,9 @@ int Config::MaxFrames = 10;
 float Config::AlphaParam = 1;
 float Config::BetaParam = 5;
 int Config::ColonySize = 100;
-
+float Config::MaxSmell = 100;
+float Config::MaxPheromone = 100;
+int Config::FoodCapacity = 1;
 
 Config::Config()
 {

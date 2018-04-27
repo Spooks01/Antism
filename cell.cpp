@@ -23,7 +23,7 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 			
 
 		this->food = food;
-		this->attributes.first += attributes.first;
+		//this->attributes.first += attributes.first;
 	}
 	else if (id == -4) {
 		if (ant == nullptr)
@@ -44,9 +44,10 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 			Grid::Pheromones.push_back({ this, vertices });*/
 		}
 	}
-	
-	this->attributes.first += attributes.first;
-	this->attributes.second += attributes.second;
+	if (this->attributes.first < Config::MaxSmell)
+		this->attributes.first += attributes.first;
+	if (this->attributes.second < Config::MaxPheromone)
+		this->attributes.second += attributes.second;
 
 	if (id == -5) {
 		this->id = -1;

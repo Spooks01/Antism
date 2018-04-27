@@ -88,7 +88,7 @@ void Application::setup() {
 		food.push_back(new Food(sf::Vector2f((float)(rand() % m_window.getSize().x + 1), (float)(rand() % m_window.getSize().y + 1))));
 	}
 
-	auto k = Grid::Food.begin();
+	/*auto k = Grid::Food.begin();
 	while (k != Grid::Food.end()) {
 		int r = ((Food*)((*k).first->food))->getRadius();
 		int i = (*k).second.x;
@@ -103,7 +103,9 @@ void Application::setup() {
 		m_smells.push_back(va);
 
 		++k;
-	}
+	}*/
+
+	Grid::UpdateSmellRadius();
 
 	buttonList.push_back(Button(sf::Vector2f((windowWidth / 2.f) - 100, windowHeight / 2.f), sf::Vector2f(200, 50), sf::Color(100, 100, 100, 255)));
 
@@ -192,11 +194,15 @@ void Application::run() {
 
 				m_window.draw(m_bg);
 				if (smell_toggle) {
-					for (size_t i = 0; i < m_smells.size(); ++i)
-						m_window.draw(m_smells.at(i));
+					for (size_t i = 0; i < Grid::SmellRadius.size(); ++i)
+						m_window.draw(Grid::SmellRadius.at(i));
 				}
-				for (size_t i = 0; i < food.size(); ++i)
-					m_window.draw(*food[i]);
+				for (size_t i = 0; i < Grid::Food.size(); i++) {
+					auto f = (Food*)(Grid::Food.at(i).first->food);
+					m_window.draw(*f);
+				}
+				//for (size_t i = 0; i < food.size(); ++i)
+				//	m_window.draw(*food[i]);
 
 				for (size_t i = 0; i < obstacles.size(); ++i)
 					m_window.draw(*obstacles[i]);
@@ -222,12 +228,16 @@ void Application::run() {
 				//m_window.setView(m_view);
 				m_window.draw(m_bg);
 				if (smell_toggle) {
-					for (size_t i = 0; i < m_smells.size(); ++i)
-						m_window.draw(m_smells.at(i));
+					for (size_t i = 0; i < Grid::SmellRadius.size(); ++i)
+						m_window.draw(Grid::SmellRadius.at(i));
 				}
 
-				for (size_t i = 0; i < food.size(); ++i)
-					m_window.draw(*food[i]);
+				for (size_t i = 0; i < Grid::Food.size(); i++) {
+					auto f = (Food*)(Grid::Food.at(i).first->food);
+					m_window.draw(*f);
+				}
+				//for (size_t i = 0; i < food.size(); ++i)
+				//	m_window.draw(*food[i]);
 
 				for (size_t j = 0; j < obstacles.size(); j++) {
 					m_window.draw(*obstacles[j]);
@@ -385,18 +395,11 @@ void Application::update() {
 				if (m_clickableArea->update(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window))) == 1) {
 					//add food
 					Food* newFood = new Food(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window)));
+					
 					food.push_back(newFood);
-					int r = newFood->getRadius();
-					int i = newFood->getPosition().y;
-					int j = newFood->getPosition().x;
-					sf::VertexArray va(sf::Quads);
 
-					va.append({ sf::Vector2f(j - r + 0.f, i - r + 0.f), sf::Color(255, 255, 0, 100) });
-					va.append({ sf::Vector2f(j + r + 1.f, i - r + 0.f), sf::Color(255, 255, 0, 100) });
-					va.append({ sf::Vector2f(j + r + 1.f, i + r + 1.f), sf::Color(255, 255, 0, 100) });
-					va.append({ sf::Vector2f(j - r + 0.f, i + r + 1.f), sf::Color(255, 255, 0, 100) });
+					Grid::UpdateSmellRadius();
 
-					m_smells.push_back(va);
 					//delete newFood;
 				}
 				if (m_clickableArea->update(m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window))) == 0) {
@@ -586,7 +589,6 @@ void Application::update() {
 					pheromone_toggle = false;
 					toggle = false;
 					
-					m_smells.clear();
 					Config::loadConfig();
 					Config::loadDefaultColonySize();
 					m_overlay->updateFieldPh(std::to_string(Config::PheremoneDecay));
