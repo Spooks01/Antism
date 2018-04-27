@@ -35,8 +35,6 @@ protected:
 
 	float m_identifier = 100.f;
 	float m_health = 100;
-	float pstr; // pheromone strength
-	float sstr; // smell strength
 	float alpha = Config::AlphaParam; // alpha parameter
 	float beta = Config::BetaParam; // beta parameter
 	bool hasFood = false; 

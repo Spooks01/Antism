@@ -61,7 +61,10 @@ void Grid::UpdateSmellRadius() {
 
 	auto k = Grid::Food.begin();
 	while (k != Grid::Food.end()) {
-		int r = ((Foodc*)((*k).first->food))->getRadius();
+		int r = 0;
+		if ((Foodc*)((*k).first->food)) {
+			r = ((Foodc*)((*k).first->food))->getRadius();
+		}
 		int i = (*k).second.x;
 		int j = (*k).second.y;
 		sf::VertexArray va(sf::Quads);

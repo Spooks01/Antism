@@ -82,6 +82,8 @@ Application::~Application() {
 void Application::setup() {
 	m_colony = new Colony(sf::Vector2f(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f));
 
+	m_colony->generate(100);
+
 	//std::cout << Grid::GetSize().x << " " << Grid::GetSize().y << std::endl;
 	
 	for (int i = 0; i < 0; i++) {
@@ -234,7 +236,9 @@ void Application::run() {
 
 				for (size_t i = 0; i < Grid::Food.size(); i++) {
 					auto f = (Food*)(Grid::Food.at(i).first->food);
-					m_window.draw(*f);
+					if (f != NULL) {
+						m_window.draw(*f);
+					}
 				}
 				//for (size_t i = 0; i < food.size(); ++i)
 				//	m_window.draw(*food[i]);
@@ -386,7 +390,7 @@ void Application::update() {
 					m_view.zoom(1 - 0.05f * event.mouseWheel.delta);
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
-					std::cout << num_frames << std::endl;
+					// std::cout << num_frames << std::endl;
 					state = Menu;
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P) {

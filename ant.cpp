@@ -8,7 +8,7 @@ Ant::Ant()
 	m_vertices[2].color = sf::Color::Green;
 	m_vertices[3].color = sf::Color::Green;
 
-	m_health = float(rand() % 1500 + 1000);
+	m_health = float(rand() % 5000 + 2500);
 }
 
 Ant::Ant(sf::Vector2f position)
@@ -20,7 +20,7 @@ Ant::Ant(sf::Vector2f position)
 	m_vertices[2].color = sf::Color::Green;
 	m_vertices[3].color = sf::Color::Green;
 
-	m_health = float(rand() % 1500 + 1000);
+	m_health = float(rand() % 5000 + 2500);
 }
 
 Ant::~Ant()
@@ -37,7 +37,7 @@ void Ant::setBlanc() {
 }
 
 void Ant::update() {
-	std::cout << m_health << std::endl;
+	// std::cout << m_health << std::endl;
 
 	if (alive) {
 		if (m_health <= 0) {
@@ -71,16 +71,18 @@ void Ant::getFood() {
 		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
 			if (!(a == 1 && b == 1)) {
 				if (!((x + (a - 1)) < 0 || (x + (a - 1)) >= limit.x || (y + (b - 1)) < 0 || (y + (b - 1)) >= limit.y)) {
-					pstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.second;
-					sstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.first;
-					if (isinf(sstr)) {
+					float pstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.second;
+					float sstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.first;
+					if (((Food*)Grid::Get((int)(y + (b - 1)), (int)(x + (a - 1))).food)) {
 						hasFood = true;
 						auto f = ((Food*)Grid::Get((int)(y + (b - 1)), (int)(x + (a - 1))).food);
-						if (f->getCapacity() > 1)
+						std::cout << f->getCapacity() << std::endl;
+						if (f->getCapacity() > 1) {
 							f->lowerCapacity();
+						}
 						else
-							f->despawn();
-						// std::cout << " food found" << std::endl;
+							f->despawn(); 
+						std::cout << " food found" << std::endl;
 					}
 
 					if ((pow(pstr, alpha) * pow(sstr, beta)) != 0) { // If there is adjacent pheromone AND adjacent smell
@@ -163,7 +165,7 @@ void Ant::goHome() {
 		move(sf::Vector2f((float)dx, (float)dy));
 	}
 	else {
-		// std::cout << "home now" << std::endl;
+		std::cout << "home now" << std::endl;
 		hasFood = false;
 		getFood();
 	}
