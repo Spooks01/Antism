@@ -256,6 +256,7 @@ void Application::run() {
 				if (toggle) {
 					m_window.draw(*m_overlay);
 					m_window.draw(m_overlay->overlayAntCount);
+					m_window.draw(m_overlay->overlayFoodInColony);
 					m_window.draw(m_overlay->overlayFoodCount);
 					m_window.draw(m_overlay->simSpeed);
 					m_window.draw(m_overlay->div1);
@@ -354,7 +355,7 @@ void Application::update() {
 		m_colony->update(num_frames);
 		//std::thread phero(&Grid::update);
 		//phero.join();
-		m_overlay->updateStats(m_colony->getAntCount(), food.size());
+		m_overlay->updateStats(m_colony->getAntCount(), food.size(), m_colony->getStoredFood());
 		while (m_window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
 				m_window.close();

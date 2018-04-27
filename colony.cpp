@@ -6,6 +6,7 @@ Colony::Colony(sf::Vector2f center) {
 	m_center = center;
 
 	m_iterator = m_ants.begin();
+	m_colonyFood = 0;
 }
 
 void Colony::addAnt(Ant* ant) {
@@ -22,6 +23,14 @@ void Colony::spawnAnt(sf::Vector2f position) {
 
 void Colony::spawnAnt() {
 	m_ants.push_back(new Ant());
+}
+
+void Colony::depositFood() {
+	m_colonyFood++;
+}
+
+int Colony::getStoredFood() {
+	return m_colonyFood;
 }
 
 void Colony::update(int frame) {
@@ -91,7 +100,11 @@ void Colony::update(int frame) {
 				
 				count--;
 			}
-
+			if (m_ants.at(frame * stage + i)->isHome) {
+				this->depositFood();
+				m_ants.at(frame * stage + i)->isHome = false;
+				std::cout << "food deposited" << std::endl;
+			}
 			if (m_ants.at(frame * stage + i)->isDeleteSafe()) {
 				m_ants.erase(m_ants.begin() + frame * stage + i);
 			}
@@ -99,13 +112,14 @@ void Colony::update(int frame) {
 	}
 
 	m_queen->update();
-	if (m_queen->getStatus()) {
+	if (m_queen->getStatus() && m_colonyFood > 10) {
 		sf::Vector2f pos = sf::Vector2f(m_center.x, m_center.y + 3);
 		//Grid::GetGrid()[(int)pos.y][(int)pos.x] = { 1, nullptr };
 
-		//m_ants.push_back(new Ant(pos));
+		m_ants.push_back(new Ant(pos));
 
 		m_queen->setStatus(false);
+		m_colonyFood--;
 	}
 
 	pha.clear();

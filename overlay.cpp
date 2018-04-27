@@ -5,9 +5,13 @@ Overlay::Overlay(sf::Font * font, int *w, int *h) {
 	this->setFillColor(sf::Color(255, 255, 255, 64));
 	this->setSize(sf::Vector2f(*w / 4, *h));
 	this->setPosition(*w - *w / 4, 0);
+	//stats
 	overlayAntCount.setFont(*font);
 	overlayAntCount.setCharacterSize(18);
 	overlayAntCount.setFillColor(sf::Color::White);
+	overlayFoodInColony.setFont(*font);
+	overlayFoodInColony.setCharacterSize(18);
+	overlayFoodInColony.setFillColor(sf::Color::White);
 	overlayFoodCount.setFont(*font);
 	overlayFoodCount.setCharacterSize(18);
 	overlayFoodCount.setFillColor(sf::Color::White);
@@ -59,9 +63,10 @@ Overlay::~Overlay()
 {
 }
 
-void Overlay::updateStats(int nAnt, int nFo) {
+void Overlay::updateStats(int nAnt, int nFo, int nFc) {
 	overlayAntCount.setString("Number of ants: " + std::to_string(nAnt));
-	overlayFoodCount.setString("Amount of food: " + std::to_string(nFo));
+	overlayFoodInColony.setString("Gathered food: " + std::to_string(nFc));
+	overlayFoodCount.setString("Food in environment: " + std::to_string(nFo));
 	if (Config::MaxFrames == 10) {
 		simSpeed.setString("Simulation speed: Full");
 	}
@@ -93,16 +98,17 @@ void Overlay::updateFieldB(std::string nT) {
 void Overlay::setUpText() {
 	overlayAntCount.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 25));
 	overlayFoodCount.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 50));
-	simSpeed.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 75));
-	div1.setPosition(sf::Vector2f(this->getPosition().x, this->getPosition().y + 100));
-	pheremoneDecay.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 125));
-	foodSmellRadius.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 150));
-	alpha.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 175));
-	beta.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 200));
-	ovButton = new Button(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 225), sf::Vector2f(this->getGlobalBounds().width - this->getGlobalBounds().width*0.2, 30), sf::Color(255, 255, 255, 100));
+	overlayFoodInColony.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 75));
+	simSpeed.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 100));
+	div1.setPosition(sf::Vector2f(this->getPosition().x, this->getPosition().y + 125));
+	pheremoneDecay.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 150));
+	foodSmellRadius.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 175));
+	alpha.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 200));
+	beta.setPosition(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 225));
+	ovButton = new Button(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 250), sf::Vector2f(this->getGlobalBounds().width - this->getGlobalBounds().width*0.2, 30), sf::Color(255, 255, 255, 100));
 	buttonLabel.setPosition(sf::Vector2f(ovButton->getPosition().x + ovButton->getLocalBounds().width*0.25, ovButton->getPosition().y + 18/4));
 	buttonLabel.setString("Save changes");
-	loadDefaults = new Button(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 275), sf::Vector2f(this->getGlobalBounds().width - this->getGlobalBounds().width*0.2, 30), sf::Color(255, 255, 255, 100));
+	loadDefaults = new Button(sf::Vector2f(this->getPosition().x + this->getSize().x*0.1, this->getPosition().y + 300), sf::Vector2f(this->getGlobalBounds().width - this->getGlobalBounds().width*0.2, 30), sf::Color(255, 255, 255, 100));
 	defaultsLabel.setPosition(sf::Vector2f(loadDefaults->getPosition().x + loadDefaults->getLocalBounds().width*0.25, loadDefaults->getPosition().y + 18 / 4));
 	defaultsLabel.setString("Load default config");
 }

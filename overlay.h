@@ -7,10 +7,10 @@
 class Overlay : public sf::RectangleShape
 {
 public:
-	Overlay(sf::Font *font, int *w, int *h);;
+	Overlay(sf::Font *font, int *w, int *h);
 	~Overlay();
 
-	void updateStats(int nAnt, int nFo);;
+	void updateStats(int nAnt, int nFo, int nFc);
 	void updateFieldPh(std::string nT);
 	void updateFieldFo(std::string newText);
 	void updateFieldA(std::string nT);
@@ -24,6 +24,7 @@ public:
 	//stats
 	sf::Text overlayAntCount;
 	sf::Text overlayQueenCount;
+	sf::Text overlayFoodInColony;
 	sf::Text overlayFoodCount;
 	sf::Text simSpeed;
 	//Divider

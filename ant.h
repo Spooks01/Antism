@@ -21,7 +21,7 @@ public:
 	virtual sf::Vector2f getPosition() { return { m_vertices[0].position.x, m_vertices[0].position.y }; }
 	virtual bool getStatus() { return alive; }
 	virtual bool isDeleteSafe() { return (m_trail.size() == 0 && !alive); }
-
+	bool isHome;
 	float getHealth();
 	std::vector<sf::Vertex>* getTrail() { return &m_pvertices; }
 	std::deque<sf::Vector2i>* getTTrail() { return &m_trail; }

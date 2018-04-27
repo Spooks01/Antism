@@ -27,6 +27,8 @@ public:
 		return m_ants.size();
 	}
 	void passFrames(int f);
+	void depositFood();
+	int getStoredFood();
 
 private:
 	int index = 0;
@@ -34,6 +36,7 @@ private:
 	int m_frame = 60;
 	sf::Vector2f m_center;
 	int m_numFrames;
+	int m_colonyFood;
 	//std::unordered_map<int, Ant*> m_ants;
 	std::vector<Ant*> m_ants;
 	std::vector<Ant*>::iterator m_iterator;

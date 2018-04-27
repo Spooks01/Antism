@@ -22,7 +22,6 @@ public:
 
 	void run();
 	void update();
-
 	void setup();
 private:
 	enum States { Menu, Run, Pause };

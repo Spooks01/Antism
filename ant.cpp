@@ -58,6 +58,7 @@ void Ant::update() {
 }
 
 void Ant::getFood() {
+	//isHome = false;
 	sf::Vector2f pos = getPosition();
 	sf::Vector2i limit = Grid::GetSize();
 	float x = pos.x;
@@ -166,6 +167,7 @@ void Ant::goHome() {
 	}
 	else {
 		std::cout << "home now" << std::endl;
+		isHome = true;
 		hasFood = false;
 		getFood();
 	}
@@ -196,8 +198,9 @@ void Ant::move(sf::Vector2f offset) {
 		np.y = cp.y - 1;
 
 	setPosition(np);
-	
-	Grid::Assign((int)cp.y, (int)cp.x, { -4, nullptr, nullptr, { 0.f, m_pheromone } });
+	if (Grid::Get((int)np.y, (int)np.x).attributes.second <= 50) { 
+		Grid::Assign((int)cp.y, (int)cp.x, { -4, nullptr, nullptr,{ 0.f, m_pheromone } });
+	}
 	Grid::Assign((int)np.y, (int)np.x, { -4, this, nullptr });
 
 	m_trail.push_back(sf::Vector2i(cp));
