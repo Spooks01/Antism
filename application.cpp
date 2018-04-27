@@ -170,32 +170,25 @@ void Application::run() {
 	//phero.detach();
 	while (m_window.isOpen()) {		
 		elapsed = timer.elapsed();
-
-		while (elapsed - start < 1 / 60.f) {
-
+		m_window.clear(sf::Color::Black);
+		while (elapsed - start < 1 / 60.f && num_frames < Config::MaxFrames - 1) {
+			std::cout << num_frames << std::endl;
+			m_window.setView(m_view);
+			update();
+			m_window.setView(m_window.getDefaultView());
 			elapsed = timer.elapsed();
 		}
-
-		start = elapsed;
-
-
-		if (num_frames > Config::MaxFrames)
+		if (num_frames >= Config::MaxFrames - 1)
 			num_frames = 0;
-
-		m_window.setView(m_view);
-		update();
-		m_window.setView(m_window.getDefaultView());
+		start = elapsed;
+		
 
 		
-		if (num_frames == Config::MaxFrames) {
-			m_window.clear(sf::Color::Black);
-		}
-		if (state == Pause) {	
-			m_colony->passFrames(num_frames);
-			
+		if (state == Pause) {
+
 			m_window.setView(m_view);
-			m_window.draw(*m_colony);
-			if (num_frames == Config::MaxFrames - 1) {
+				m_window.draw(*m_colony);
+
 				m_window.draw(m_bg);
 				if (smell_toggle) {
 					for (size_t i = 0; i < m_smells.size(); ++i)
@@ -206,29 +199,15 @@ void Application::run() {
 
 				for (size_t i = 0; i < obstacles.size(); ++i)
 					m_window.draw(*obstacles[i]);
-			}
-			
 			m_window.setView(m_window.getDefaultView());
-			if (num_frames == Config::MaxFrames - 1) {
-				m_window.draw(m_paused);
-			}
+			m_window.draw(m_paused);
 		
 		}
 		if (state == Run) {
 			//since the movement speed of the ants is tied to fps, this is the only way to slow them without seriously changing how the updates work
 			//skipping an update means they stay still, set SimSpeed to 2 to halve it, could probably improve this with floats but I'm lazy
 			//std::cout << (int)time.elapsed() % Config::SimSpeed << std::endl;
-			if ((int)time.elapsed() % Config::SimSpeed == 0) {
-				m_colony->update(num_frames);
-			}
-			else {
-				m_colony->passFrames(num_frames);
-			}
 			
-			//std::thread phero(&Grid::update);
-			//phero.join();
-
-			m_overlay->updateStats(m_colony->getAntCount(), food.size());
 			m_window.setView(m_view);
 			
 			//elapsed = clock.restart();
@@ -238,8 +217,6 @@ void Application::run() {
 
 			//	continue;
 			//}
-			m_window.draw(*m_colony);
-			if (num_frames == Config::MaxFrames - 1) {
 				//m_window.draw(*m_clickableArea);
 				//m_window.setView(m_view);
 				m_window.draw(m_bg);
@@ -255,12 +232,12 @@ void Application::run() {
 					m_window.draw(*obstacles[j]);
 				}
 
-			m_window.draw(*m_colony);
+		
+					m_window.draw(*m_colony);
+			
 	
-			}
 
 			m_window.setView(m_window.getDefaultView());
-			if (num_frames == Config::MaxFrames - 1) {
 				if (toggle) {
 					m_window.draw(*m_overlay);
 					m_window.draw(m_overlay->overlayAntCount);
@@ -296,12 +273,11 @@ void Application::run() {
 					m_window.draw(*m_overlay->loadDefaults);
 					m_window.draw(m_overlay->defaultsLabel);
 				}
-			}
+			
 
 		}
 		if (state == Menu) {
 			//std::cout << num_frames << std::endl;
-			m_window.clear(sf::Color::Black);
 			m_window.draw(m_bg);
 			m_window.draw(m_logo);
 			if (!appRun) {
@@ -320,22 +296,21 @@ void Application::run() {
 		}
 
 		
-		if (num_frames == Config::MaxFrames - 1) {
 			m_window.draw(m_label);
 			m_window.display();
-		}
-
-		num_frames++;
+		m_label.setString("FPS: " + std::to_string(fps.elapsed()));
 	}
 }
 sf::String temp;
 std::string::size_type si;
 void Application::update() {
+	std::cout << num_frames << std::endl;
 	sf::Event event;
 	sf::Vector2i winc = sf::Vector2i(m_window.getSize().x / 2, m_window.getSize().y / 2);
 	m_overlay->checkTextHover((sf::Vector2f) sf::Mouse::getPosition(m_window));
 
 	if (state == Pause) {
+		m_colony->passFrames(num_frames);
 		while (m_window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
 				m_window.close();
@@ -359,6 +334,10 @@ void Application::update() {
 	}
 
 	if (state == Run) {
+		m_colony->update(num_frames);
+		//std::thread phero(&Grid::update);
+		//phero.join();
+		m_overlay->updateStats(m_colony->getAntCount(), food.size());
 		while (m_window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed)
 				m_window.close();
@@ -373,11 +352,11 @@ void Application::update() {
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1)
 					smell_toggle = !smell_toggle;
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S) {
-					if (Config::SimSpeed == 1) {
-						Config::SimSpeed = 2;
+					if (Config::MaxFrames == 10) {
+						Config::MaxFrames = 20;
 					}
 					else {
-						Config::SimSpeed = 1;
+						Config::MaxFrames = 10;
 					}
 				}	
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num2)
@@ -650,7 +629,7 @@ void Application::update() {
 		else
 			m_view.move(0, 15);
 	}
-
-	m_label.setString("FPS: " + std::to_string(fps.elapsed()));
+	num_frames++;
+	
 }
 

@@ -62,7 +62,7 @@ Overlay::~Overlay()
 void Overlay::updateStats(int nAnt, int nFo) {
 	overlayAntCount.setString("Number of ants: " + std::to_string(nAnt));
 	overlayFoodCount.setString("Amount of food: " + std::to_string(nFo));
-	if (Config::SimSpeed == 1) {
+	if (Config::MaxFrames == 10) {
 		simSpeed.setString("Simulation speed: Full");
 	}
 	else {

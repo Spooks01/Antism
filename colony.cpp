@@ -115,12 +115,12 @@ void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	int stage = (m_ants.size() / Config::MaxFrames + 1);
 	int k = 0;
-	sf::Vertex* vertices = new sf::Vertex[stage * 4];
+	sf::Vertex* vertices = new sf::Vertex[m_ants.size() * 4];
 
-	for (int i = 0; i < stage; i++) {
-		if (m_numFrames * stage + i < m_ants.size()) {
-			auto v = m_ants.at(m_numFrames * stage + i)->getTrail();
-			auto w = m_ants.at(m_numFrames * stage + i)->getVertices();
+	for (int i = 0; i < m_ants.size(); i++) {
+	//	if (m_numFrames * stage + i < m_ants.size()) {
+			auto v = m_ants.at(i)->getTrail();
+			auto w = m_ants.at(i)->getVertices();
 
 			if (v->size()) {
 				target.draw(&(*v)[0], v->size(), sf::Quads);
@@ -132,10 +132,10 @@ void Colony::draw(sf::RenderTarget & target, sf::RenderStates states) const
 			vertices[k + 3] = w[3];
 
 			k += 4;
-		}
+		//}
 	}
 
-	target.draw(vertices, stage * 4, sf::Quads);
+	target.draw(vertices, m_ants.size() * 4, sf::Quads);
 	target.draw(*m_queen, states);
 	/*
 	auto i = m_ants.begin();
