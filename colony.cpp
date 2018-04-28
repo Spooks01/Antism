@@ -103,7 +103,7 @@ void Colony::update(int frame) {
 			if (m_ants.at(frame * stage + i)->isHome) {
 				this->depositFood();
 				m_ants.at(frame * stage + i)->isHome = false;
-				std::cout << "food deposited" << std::endl;
+				// std::cout << "food deposited" << std::endl;
 			}
 			if (m_ants.at(frame * stage + i)->isDeleteSafe()) {
 				m_ants.erase(m_ants.begin() + frame * stage + i);

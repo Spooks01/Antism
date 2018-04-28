@@ -14,6 +14,7 @@ public:
 	~Ant();
 
 	virtual void update();
+	virtual void foundFood(int y, int x);
 	virtual void getFood();
 	virtual void goHome();
 	virtual void move(sf::Vector2f offset);
@@ -28,16 +29,18 @@ public:
 	sf::Vertex* getVertices() { return m_vertices; }
 
 protected:
-	float m_pheromone = 1.f;
+	float m_pheromone = 5.f;
 	float m_decay = 0.25f;
 
 	//float m_decay = 1.f;
 
 	float m_identifier = 100.f;
-	float m_health = 100;
+	float m_health;
+	float m_healthmax;
 	float alpha = Config::AlphaParam; // alpha parameter
 	float beta = Config::BetaParam; // beta parameter
 	bool hasFood = false; 
+	bool goingHome = false;
 	bool alive = true;
 	std::deque<sf::Vector2i> m_trail;
 	std::deque<sf::Vector2f> m_trailoff;

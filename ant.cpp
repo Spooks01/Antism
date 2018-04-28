@@ -1,5 +1,6 @@
 #include "ant.h"
 #include "food.h"
+#include "obstacle.h"
 
 Ant::Ant()
 {
@@ -8,7 +9,8 @@ Ant::Ant()
 	m_vertices[2].color = sf::Color::Green;
 	m_vertices[3].color = sf::Color::Green;
 
-	m_health = float(rand() % 5000 + 2500);
+	m_healthmax = float(rand() % 2500 + 2500);
+	m_health = m_healthmax;
 }
 
 Ant::Ant(sf::Vector2f position)
@@ -20,7 +22,8 @@ Ant::Ant(sf::Vector2f position)
 	m_vertices[2].color = sf::Color::Green;
 	m_vertices[3].color = sf::Color::Green;
 
-	m_health = float(rand() % 5000 + 2500);
+	m_healthmax = float(rand() % 2500 + 2500);
+	m_health = m_healthmax;
 }
 
 Ant::~Ant()
@@ -43,18 +46,34 @@ void Ant::update() {
 		if (m_health <= 0) {
 			alive = false;
 			setBlanc();
-
-		}
-
-		if (!hasFood) {
-			getFood();
 		}
 		else {
-			goHome();
+			if (!hasFood) {
+				getFood();
+			}
+			else {
+				goHome();
+			}
 		}
 
 		m_health--;
 	}
+}
+
+void Ant::foundFood(int y, int x) {
+	hasFood = true;
+	goingHome = true;
+	m_health += m_healthmax / 8;
+
+	auto f = ((Food*)Grid::Get(y, x).food);
+	if (f->getCapacity() > 1) {
+		f->lowerCapacity();
+	}
+	else {
+		// std::cout << "food source depleted" << std::endl;
+		f->despawn();
+	}
+	// std::cout << "food found" << std::endl;
 }
 
 void Ant::getFood() {
@@ -67,33 +86,57 @@ void Ant::getFood() {
 	float dy = 0;
 	float scan[3][3];
 
+	// Forward Directional Bias
+	if (!m_trailoff.empty()) {
+		for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
+			for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
+				if (!(a == 1 && b == 1)) {
+					sf::Vector2f pos = m_trailoff.front();
+					int ox = pos.x;
+					int oy = pos.y;
+
+					if ((b - 1) == -oy && (a - 1) == -ox)  {
+						scan[a][b] = 0.7;
+					}
+					else if ((b - 1) == oy || (a - 1) == ox) {
+						scan[a][b] = 0.5;
+					}
+					else {
+						scan[a][b] = 0.6;
+					}
+				}
+			}
+		}
+	} 
+
 	// Path Selection Formula
 	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
 		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
-			if (!(a == 1 && b == 1)) {
-				if (!((x + (a - 1)) < 0 || (x + (a - 1)) >= limit.x || (y + (b - 1)) < 0 || (y + (b - 1)) >= limit.y)) {
-					float pstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.second;
-					float sstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.first;
-					if (((Food*)Grid::Get((int)(y + (b - 1)), (int)(x + (a - 1))).food)) {
-						hasFood = true;
-						auto f = ((Food*)Grid::Get((int)(y + (b - 1)), (int)(x + (a - 1))).food);
-						std::cout << f->getCapacity() << std::endl;
-						if (f->getCapacity() > 1) {
-							f->lowerCapacity();
+			if (!((x + (a - 1)) < 0 || (x + (a - 1)) >= limit.x || (y + (b - 1)) < 0 || (y + (b - 1)) >= limit.y)) {
+				if (!(a == 1 && b == 1)) {
+					if ((Grid::Get((int)(y + (b - 1)), (int)(x + (a - 1))).obstacle) == nullptr) {
+						float pstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.second;
+						float sstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.first;
+						if (sstr > 0) {
+							scan[a][b] = 1;
 						}
-						else
-							f->despawn(); 
-						std::cout << " food found" << std::endl;
-					}
 
-					if ((pow(pstr, alpha) * pow(sstr, beta)) != 0) { // If there is adjacent pheromone AND adjacent smell
-						scan[a][b] = (pow(pstr, alpha) * pow(sstr, beta)) / (pow(pstr, alpha) + pow(sstr, beta));
-					}
-					else if ((pow(pstr, alpha) + pow(sstr, beta) == 0)) { // If there is no adjacent pheromone or smell
-						scan[a][b] = 1;
+						if (((Food*)Grid::Get((int)(y + (b - 1)), (int)(x + (a - 1))).food)) {
+							foundFood((int)(y + (b - 1)), (int)(x + (a - 1)));
+						}
+
+						if ((pow(pstr, alpha) * pow(sstr, beta)) != 0) { // If there is adjacent pheromone AND adjacent smell
+							scan[a][b] *= (pow(pstr, alpha) * pow(sstr, beta)) / (pow(pstr, alpha) + pow(sstr, beta));
+						}
+						else if ((pow(pstr, alpha) + pow(sstr, beta) == 0)) { // If there is no adjacent pheromone or smell
+							scan[a][b] *= 1;
+						}
+						else {
+							scan[a][b] *= pow(pow(pstr, alpha) + pow(sstr, beta), 0.5); // If there is only adjacent pheromone OR adjacent smell
+						}
 					}
 					else {
-						scan[a][b] = pow(pow(pstr, alpha) + pow(sstr, beta), 0.5); // If there is only adjacent pheromone OR adjacent smell
+						scan[a][b] = -1;
 					}
 				}
 				else {
@@ -126,22 +169,18 @@ void Ant::getFood() {
 		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
 			if (scan[a][b] != -1) {
 				scan[a][b] /= (sum * pow(100, -1));
-				// std::cout << scan[a][b] << std::endl;
 			}
 		}
 	}
 
 	// Fitness Proportionate Selection (roulette wheel selection)
 	float random = ((rand() % 100 + 1));
-	// std::cout << "RANDOM: " << random << std::endl;
 	float lower = 0;
 	float upper = 0;
 	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
 		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
 			if (scan[a][b] != -1) {
 				upper = lower + scan[a][b];
-				// std::cout << "LOWER: " << lower << std::endl;
-				// std::cout << "UPPER: " << upper << std::endl;
 				if (lower < random && random <= upper) {
 					dx = (int)(a - 1);
 					dy = (int)(b - 1);
@@ -157,6 +196,7 @@ void Ant::getFood() {
 void Ant::goHome() {
 	float dx = 0;
 	float dy = 0;
+
 	if (!m_trailoff.empty()) {
 		sf::Vector2f pos = m_trailoff.back();
 		m_trailoff.pop_back();
@@ -166,9 +206,12 @@ void Ant::goHome() {
 		move(sf::Vector2f((float)dx, (float)dy));
 	}
 	else {
-		std::cout << "home now" << std::endl;
-		isHome = true;
-		hasFood = false;
+		// std::cout << "home now" << std::endl;
+		if (hasFood) {
+			isHome = true;
+			hasFood = false;
+		}
+		goingHome = false;
 		getFood();
 	}
 }
@@ -185,28 +228,18 @@ void Ant::draw(sf::RenderTarget & target, sf::RenderStates states) const
 void Ant::move(sf::Vector2f offset) {
 	sf::Vector2f cp = getPosition();
 	sf::Vector2f np = cp + offset;
-
 	sf::Vector2i limit = Grid::GetSize();
-	if (np.x < 0)
-		np.x = cp.x + 1;
-	else if (np.x >= limit.x)
-		np.x = cp.x - 1;
-
-	if (np.y < 0)
-		np.y = cp.y + 1;
-	else if (np.y >= limit.y)
-		np.y = cp.y - 1;
 
 	setPosition(np);
-	if (Grid::Get((int)np.y, (int)np.x).attributes.second <= 50) { 
-		Grid::Assign((int)cp.y, (int)cp.x, { -4, nullptr, nullptr,{ 0.f, m_pheromone } });
-	}
-	Grid::Assign((int)np.y, (int)np.x, { -4, this, nullptr });
 
 	m_trail.push_back(sf::Vector2i(cp));
 
-	if (!hasFood) {
+	if (!hasFood && !goingHome) {
 		m_trailoff.push_back(sf::Vector2f(offset));
+	}
+	else {
+		Grid::Assign((int)cp.y, (int)cp.x, { -4, nullptr, nullptr,{ 0.f, m_pheromone } });
+		Grid::Assign((int)np.y, (int)np.x, { -4, this, nullptr });
 	}
 
 	m_pvertices.insert(m_pvertices.begin(), { sf::Vector2f(cp.x, cp.y) + sf::Vector2f(0, 0), sf::Color::Cyan });
