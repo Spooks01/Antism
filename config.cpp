@@ -89,8 +89,8 @@ void Config::writeConfig(){
 
 void Config::loadDefaultValues() {
 	Config::AlphaParam = 1;
-	Config::BetaParam = 5;
-	Config::PheremoneDecay = 0.01;
+	Config::BetaParam = 8;
+	Config::PheremoneDecay = 0.5;
 	Config::FoodSmellRadius = 25;
 	Config::ColonySize = 100;
 	Config::writeConfig();

@@ -367,7 +367,7 @@ void Application::update() {
 			if (!editingOverlayPh && !editingOverlayFo) {
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Tab)
 					toggle = !toggle;
-				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1)
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Num1 && !(editingOverlayA || editingOverlayB || editingOverlayFo || editingOverlayPh))
 					smell_toggle = !smell_toggle;
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S) {
 					if (Config::MaxFrames == 10) {
@@ -464,7 +464,7 @@ void Application::update() {
 					}
 				}
 				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return) {
-					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0) {
+					if (!Config::isFloatNumber(temp) || std::stof(temp.toAnsiString(), &si) < 0 || std::stof(temp.toAnsiString(), &si) > Config::MaxSmell) {
 						m_overlay->updateFieldFo(std::to_string(Config::FoodSmellRadius));
 						m_overlay->editMode = 0;
 					}
@@ -570,12 +570,16 @@ void Application::update() {
 		for (size_t i = 0; i < buttonList.size(); i++) {
 			if (i == 0) {
 				if (buttonList.at(i).update((sf::Vector2f) sf::Mouse::getPosition(m_window))) {
-					
-					state = Run;
-					appRun = true;
-					m_colony->generate(Config::ColonySize);
-					buttonLabels.at(i).setPosition(sf::Vector2f(buttonList.at(i).getPosition().x + 70, buttonList.at(i).getPosition().y + 10));
-					buttonLabels.at(i).setString("Resume");
+					if (appRun) {
+						state = Run;
+					}
+					else {
+						state = Run;
+						appRun = true;
+						m_colony->generate(Config::ColonySize);
+						buttonLabels.at(i).setPosition(sf::Vector2f(buttonList.at(i).getPosition().x + 70, buttonList.at(i).getPosition().y + 10));
+						buttonLabels.at(i).setString("Resume");
+					}
 				}
 			}
 			if (i == 1) {
