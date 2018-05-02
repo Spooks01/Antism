@@ -23,7 +23,7 @@ Food::Food(sf::Vector2f position) {
 
 	spawn();
 
-	Grid::Assign((int)np.y, (int)np.x, { -3, nullptr, this, { m_smell_strength, 0.f } }, sf::Vector2i(np.y, np.x));
+	Grid::Assign((int)np.y, (int)np.x, { -3, nullptr, this, { m_smell_strength, 0.f }, nullptr }, sf::Vector2i(np.y, np.x));
 }
 
 void Food::spawn() {

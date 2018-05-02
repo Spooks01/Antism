@@ -27,7 +27,7 @@ public:
 	std::pair<float, float> attributes = std::make_pair<float, float>(0, 0);
 	void* obstacle = nullptr;
 
-	inline void assign(Cell cell, sf::Vector2i position = sf::Vector2i()) { assign(cell.id, cell.ant, cell.food, cell.attributes, position); }
+	inline void assign(Cell cell, sf::Vector2i position = sf::Vector2i()) { assign(cell.id, cell.ant, cell.food, cell.attributes, position, cell.obstacle); }
 	void assign(int id = -1, void* ant = nullptr, void* food = nullptr, std::pair<float, float> attributes = std::make_pair<float, float>(0, 0), sf::Vector2i position = sf::Vector2i(), void *obstacle = nullptr);
 };
 

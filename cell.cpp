@@ -17,7 +17,7 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 			this->id = -1;
 		else {
 			this->id = 0;
-
+		
 			Grid::Food.push_back({ this, position });
 		}
 			
@@ -58,11 +58,12 @@ void Cell::assign(int id, void * ant, void * food, std::pair<float, float> attri
 	}
 
 	if (id == -6) {
-		if (obstacle == nullptr)
+		if (obstacle == nullptr) {
 			this->id = -1;
+			std::cout << "nullptr" << std::endl;
+		}
 		else {
 			this->id = 3;
-
 			Grid::Obstacles.push_back({ this, position });
 		}
 		this->obstacle = obstacle;

@@ -21,8 +21,10 @@ Obstacle::Obstacle(sf::Vector2f position)
 		np.y = cp.y;
 
 	setPosition(np);
-	Grid::Assign((int)np.y, (int)np.x, { 3, nullptr, nullptr, { 0.f, 0.f }, this }, sf::Vector2i(np.y, np.x));
+	Grid::Assign((int)np.y, (int)np.x, { -6, nullptr, nullptr, { 0.f, 0.f }, this }, sf::Vector2i(np.y, np.x));
 }
+
+
 
 
 Obstacle::~Obstacle()
