@@ -85,29 +85,7 @@ void Ant::getFood() {
 	float dx = 0;
 	float dy = 0;
 	float scan[3][3];
-
-	// Forward Directional Bias
-	if (!m_trailoff.empty()) {
-		for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
-			for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
-				if (!(a == 1 && b == 1)) {
-					sf::Vector2f pos = m_trailoff.front();
-					int ox = pos.x;
-					int oy = pos.y;
-
-					if ((b - 1) == -oy && (a - 1) == -ox)  {
-						scan[a][b] = 0.7;
-					}
-					else if ((b - 1) == oy || (a - 1) == ox) {
-						scan[a][b] = 0.5;
-					}
-					else {
-						scan[a][b] = 0.6;
-					}
-				}
-			}
-		}
-	} 
+	float sum = 0;
 
 	// Path Selection Formula
 	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
@@ -117,14 +95,35 @@ void Ant::getFood() {
 					if ((Grid::Get((int)(y + (b - 1)), (int)(x + (a - 1))).obstacle) == nullptr) {
 						float pstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.second;
 						float sstr = Grid::GetGrid()[(int)(y + (b - 1))][(int)(x + (a - 1))].attributes.first;
-						if (sstr > 0) {
+
+						// Forward Directional Bias
+						if (sstr > 0 || pstr > 0) {
 							scan[a][b] = 1;
 						}
+						else {
+							if (!m_trailoff.empty()) {
+								sf::Vector2f pos = m_trailoff.front();
+								int ox = pos.x;
+								int oy = pos.y;
 
+								if ((b - 1) == -oy && (a - 1) == -ox) {
+									scan[a][b] = 0.7;
+								}
+								else if ((b - 1) == oy || (a - 1) == ox) {
+									scan[a][b] = 0.5;
+								}
+								else {
+									scan[a][b] = 0.6;
+								}
+							}
+						}
+							
+						// Check if there is adjacent food
 						if (((Food*)Grid::Get((int)(y + (b - 1)), (int)(x + (a - 1))).food)) {
 							foundFood((int)(y + (b - 1)), (int)(x + (a - 1)));
 						}
 
+						// Apply Path Selection Formula value to cell 
 						if ((pow(pstr, alpha) * pow(sstr, beta)) != 0) { // If there is adjacent pheromone AND adjacent smell
 							scan[a][b] *= (pow(pstr, alpha) * pow(sstr, beta)) / (pow(pstr, alpha) + pow(sstr, beta));
 						}
@@ -134,6 +133,10 @@ void Ant::getFood() {
 						else {
 							scan[a][b] *= pow(pow(pstr, alpha) + pow(sstr, beta), 0.5); // If there is only adjacent pheromone OR adjacent smell
 						}
+
+						// Calculate Sum of scan[][]
+						sum += scan[a][b];
+
 					}
 					else {
 						scan[a][b] = -1;
@@ -152,27 +155,6 @@ void Ant::getFood() {
 	// Directional test (north-east)
 	// scan[2][0] = 5;
 
-	// Calculate sum of scan[][] 
-	float sum = 0;
-	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
-		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
-			if (scan[a][b] != -1) {
-				sum += scan[a][b];
-			}
-		}
-	}
-
-	// std::cout << "SUM: " << sum << std::endl;
-
-	// Normalisation of scan[][] to range 0...1
-	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
-		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
-			if (scan[a][b] != -1) {
-				scan[a][b] /= (sum * pow(100, -1));
-			}
-		}
-	}
-
 	// Fitness Proportionate Selection (roulette wheel selection)
 	float random = ((rand() % 100 + 1));
 	float lower = 0;
@@ -180,6 +162,10 @@ void Ant::getFood() {
 	for (int a = 0; a < sizeof(*scan) / sizeof(**scan); a++) {
 		for (int b = 0; b < sizeof(scan) / sizeof(*scan); b++) {
 			if (scan[a][b] != -1) {
+				// Normalisation of scan[][] to range 0...100
+				scan[a][b] /= (sum * pow(100, -1));
+
+				// Upper and Lower bounds
 				upper = lower + scan[a][b];
 				if (lower < random && random <= upper) {
 					dx = (int)(a - 1);
@@ -231,7 +217,11 @@ void Ant::move(sf::Vector2f offset) {
 	sf::Vector2i limit = Grid::GetSize();
 
 	setPosition(np);
-
+/*
+	if (cp.x < 1 || cp.x >= limit.x - 1 || np.y < 1 || cp.y >= limit.y - 1) {
+		goingHome = true;
+	}
+*/
 	m_trail.push_back(sf::Vector2i(cp));
 
 	if (!hasFood && !goingHome) {
